@@ -109,7 +109,7 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 			float orig = (pcm.length / 2) / (float) VoiceNet.SAMPLE_RATE;
 			context.waitTicks(30);
 			context.runOnClient(mc -> VoiceClientNet.upload(id, pcm, true, 1.5f, 0.75f));
-			context.waitFor(mc -> ClientClips.get(id) != null && ClientClips.get(id).speed() == 0.75f);
+			context.waitFor(mc -> ClientClips.get(id) != null && ClientClips.get(id).speed() == 0.75f && ClientClips.ready(id));
 			float gSec = context.computeOnClient(mc -> ClientClips.get(id).seconds());
 			float gRatio = gSec / orig;
 			log("g) upload(pitch=1.5, speed=0.75) seconds=%.3f orig=%.3f ratio=%.3f", gSec, orig, gRatio);
@@ -120,7 +120,7 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 			// h) setTune(1,1) で元の長さに戻る
 			context.waitTicks(30);
 			context.runOnClient(mc -> VoiceClientNet.setTune(id, true, 1.0f, 1.0f));
-			context.waitFor(mc -> ClientClips.get(id) != null && ClientClips.get(id).speed() == 1.0f);
+			context.waitFor(mc -> ClientClips.get(id) != null && ClientClips.get(id).speed() == 1.0f && ClientClips.ready(id));
 			float hSec = context.computeOnClient(mc -> ClientClips.get(id).seconds());
 			log("h) setTune(1.0, 1.0) seconds=%.3f orig=%.3f", hSec, orig);
 			check(Math.abs(hSec - orig) < 0.01f, "seconds should return to the original, got " + hSec);
@@ -263,7 +263,7 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 		// 画面のバーにその値が出る状態で撮る: 声の調整を 高さ1.5・速さ0.75 にして同期を待つ
 		context.waitTicks(30);
 		context.runOnClient(m -> VoiceClientNet.setTune(clipId, true, 1.5f, 0.75f));
-		context.waitFor(m -> ClientClips.get(clipId) != null && ClientClips.get(clipId).pitch() == 1.5f && ClientClips.get(clipId).speed() == 0.75f);
+		context.waitFor(m -> ClientClips.get(clipId) != null && ClientClips.get(clipId).pitch() == 1.5f && ClientClips.get(clipId).speed() == 0.75f && ClientClips.ready(clipId));
 		context.waitTicks(30);
 		log("pj) tuned %s to pitch=1.5 speed=0.75 for the screenshot", clipId);
 		shot(context, "picker_detail");

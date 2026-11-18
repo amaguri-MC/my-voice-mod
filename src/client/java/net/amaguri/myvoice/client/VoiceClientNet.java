@@ -21,8 +21,29 @@ public final class VoiceClientNet {
 	private static long pendingSelfTuneAt = 0L;
 	private static final long PENDING_TTL_NANOS = 5_000_000_000L;
 
+	private record Tune(boolean followPitch, float pitch, float speed) {}
+	/** 音ごとの「最後の値だけ」の送信予約。 */
+	private static final java.util.Map<Identifier, Tune> PENDING = new java.util.LinkedHashMap<>();
+	/** サーバーの連投制限（1秒）に余裕を足した間隔。upload / setTune の最終送信時刻から数える。 */
+	private static final long MIN_GAP_NANOS = 1_100_000_000L;
+	private static long lastSendAt = System.nanoTime() - MIN_GAP_NANOS;
+
 	public static void init() {
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> joinedAt = System.nanoTime());
+		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
+			PENDING.clear();
+			pendingSelfTune = null;
+		});
+		net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(mc -> {
+			if (PENDING.isEmpty()) return;
+			if (!canSend()) { PENDING.clear(); return; }
+			if (System.nanoTime() - lastSendAt < MIN_GAP_NANOS) return;
+			var it = PENDING.entrySet().iterator();
+			var en = it.next();
+			it.remove();
+			Tune t = en.getValue();
+			setTune(en.getKey(), t.followPitch(), t.pitch(), t.speed());
+		});
 
 		ClientPlayNetworking.registerGlobalReceiver(VoiceNet.ClipS2C.TYPE, (payload, context) -> {
 			Minecraft mc = context.client();
@@ -79,6 +100,8 @@ public final class VoiceClientNet {
 			notifyNeedServer();
 			return;
 		}
+		PENDING.remove(sound); // 録音の送信が最新の値を持っている
+		lastSendAt = System.nanoTime();
 		ClientPlayNetworking.send(new VoiceNet.UploadClipC2S(sound, VoiceNet.SAMPLE_RATE, pcm, followPitch,
 				VoiceNet.clampTune(pitch), VoiceNet.clampTune(speed)));
 	}
@@ -93,9 +116,23 @@ public final class VoiceClientNet {
 		float sp = VoiceNet.clampTune(speed);
 		ClientClips.ClipInfo cur = ClientClips.get(sound);
 		if (cur != null && cur.followPitch() == followPitch && cur.pitch() == p && cur.speed() == sp) return; // サーバーも無処理
+		PENDING.remove(sound);
+		lastSendAt = System.nanoTime();
 		pendingSelfTune = sound;
 		pendingSelfTuneAt = System.nanoTime();
 		ClientPlayNetworking.send(new VoiceNet.SetTuneC2S(sound, followPitch, p, sp));
+	}
+
+	/** 調整の送信を予約する（音ごとに最後の値だけ。最終送信から 1.1 秒あけて tick で送る）。 */
+	public static void queueTune(Identifier sound, boolean followPitch, float pitch, float speed) {
+		if (sound == null) return;
+		PENDING.remove(sound); // 後勝ち（順番も最新に）
+		PENDING.put(sound, new Tune(followPitch, VoiceNet.clampTune(pitch), VoiceNet.clampTune(speed)));
+	}
+
+	/** その音の送信予約があるか（画面が表示を ClientClips に合わせてよいかの判定用）。 */
+	public static boolean hasPendingTune(Identifier sound) {
+		return PENDING.containsKey(sound);
 	}
 
 	/** サーバーにも My Voice が入っているか。 */

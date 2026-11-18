@@ -141,7 +141,7 @@ public final class VoiceCommands {
 		}
 		ClientClips.ClipInfo cur = ClientClips.get(sound);
 		if (cur.followPitch() == follow) return 1; // もう同じ設定
-		VoiceClientNet.setTune(sound, follow, cur.pitch(), cur.speed());
+		VoiceClientNet.queueTune(sound, follow, cur.pitch(), cur.speed());
 		return 1;
 	}
 
@@ -158,7 +158,7 @@ public final class VoiceCommands {
 		}
 		float pitch = FloatArgumentType.getFloat(ctx, "pitch");
 		float speed = FloatArgumentType.getFloat(ctx, "speed");
-		VoiceClientNet.setTune(sound, cur.followPitch(), pitch, speed);
+		VoiceClientNet.queueTune(sound, cur.followPitch(), pitch, speed);
 		return 1;
 	}
 

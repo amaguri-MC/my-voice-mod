@@ -58,6 +58,7 @@ public final class ClipPlayer {
 	private static int errorCount;
 	/** previewTuned の一時エントリ（ClientClips には入れない）。次の試聴か stopAll で片付ける。 */
 	private static ClientClips.Entry previewEntry;
+	private static int previewGen;
 
 	// ------------------------------------------------------------ 公開 API
 
@@ -104,10 +105,15 @@ public final class ClipPlayer {
 			releasePreview();
 			float p = VoiceNet.clampTune(pitch);
 			float sp = VoiceNet.clampTune(speed);
-			byte[] tuned = ClientClips.tune(e.rawPcm, e.info.sampleRate(), p, sp);
-			ClientClips.Entry tmp = new ClientClips.Entry(e.info, e.rawPcm, tuned);
-			previewEntry = tmp;
-			start(tmp, categoryVolume(SoundSource.MASTER), 1.0F, true, 0, 0, 0, false, 0F);
+			int gen = ++previewGen;
+			ClientClips.tuneAsync(e.rawPcm, e.info.sampleRate(), p, sp, tuned -> {
+				// 古い試聴の結果、または声が差し替わった・消えた場合は捨てる
+				if (gen != previewGen || ClientClips.entry(sound) != e) return;
+				releasePreview();
+				ClientClips.Entry tmp = new ClientClips.Entry(e.info, e.rawPcm, tuned);
+				previewEntry = tmp;
+				start(tmp, categoryVolume(SoundSource.MASTER), 1.0F, true, 0, 0, 0, false, 0F);
+			});
 			return true;
 		} catch (Throwable t) {
 			logError("previewTuned failed", t);
@@ -152,6 +158,7 @@ public final class ClipPlayer {
 	public static void stopAll() {
 		for (Src s : new ArrayList<>(SOURCES)) destroy(s);
 		SOURCES.clear();
+		previewGen++; // 加工待ちの試聴も捨てる
 		releasePreview();
 	}
 
@@ -306,6 +313,7 @@ public final class ClipPlayer {
 
 	private static int ensureBuffer(ClientClips.Entry e) {
 		long ctx = currentContext();
+		if (e.pcm == null) return 0; // 加工中は鳴らさない
 		if (e.alBuffer != 0 && e.alContext == ctx) return e.alBuffer;
 		e.alBuffer = 0; // 古いコンテキストの ID は捨てる（AL は呼ばない）
 		try {

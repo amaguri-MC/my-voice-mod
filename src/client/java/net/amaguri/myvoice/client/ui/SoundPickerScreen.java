@@ -345,7 +345,7 @@ public final class SoundPickerScreen extends Screen {
 		// 自分が動かしている最中・送る予約中・送信後 1 秒ほどは合わせない
 		if (pitchPendingTicks > 0) {
 			pitchPendingTicks--;
-		} else if (dragging == BAR_NONE && sendTarget == null && !previewDirty) {
+		} else if (dragging == BAR_NONE && sendTarget == null && !previewDirty && (selected == null || !VoiceClientNet.hasPendingTune(selected))) {
 			ClientClips.ClipInfo clip = clip();
 			if (clip != null) {
 				followLocal = clip.followPitch();
@@ -379,7 +379,7 @@ public final class SoundPickerScreen extends Screen {
 		}
 		lastSendMs = System.currentTimeMillis();
 		pitchPendingTicks = 20;
-		VoiceClientNet.setTune(target, followLocal, tunePitch, tuneSpeed);
+		VoiceClientNet.queueTune(target, followLocal, tunePitch, tuneSpeed);
 	}
 
 	@Override
