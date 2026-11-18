@@ -55,7 +55,7 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 		java.util.Random r = new java.util.Random(7);
 		for (int i = 0; i < n; i++) {
 			double t = (double) i / sr;
-			double amp = t < voiceSec ? 12000 : t < voiceSec + tailSec ? 1500 * Math.exp(-(t - voiceSec) * 6.0) : 0;
+			double amp = t < voiceSec ? 12000 : t < voiceSec + tailSec ? 3000 * Math.exp(-(t - voiceSec) * 6.0) : 0;
 			short v = (short) Math.round(Math.sin(2 * Math.PI * 440 * t) * amp + r.nextGaussian() * 8);
 			pcm[i * 2] = (byte) (v & 0xFF);
 			pcm[i * 2 + 1] = (byte) ((v >> 8) & 0xFF);
