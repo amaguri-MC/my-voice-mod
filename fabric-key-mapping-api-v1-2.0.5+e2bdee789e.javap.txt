@@ -1,0 +1,47 @@
+Compiled from "KeyMappingHelper.java"
+public final class net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper {
+  private net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper();
+  public static net.minecraft.client.KeyMapping registerKeyMapping(net.minecraft.client.KeyMapping);
+  public static com.mojang.blaze3d.platform.InputConstants$Key getBoundKeyOf(net.minecraft.client.KeyMapping);
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.api.client.keymapping.v1.package-info {
+}
+Compiled from "CategoryComparator.java"
+public class net.fabricmc.fabric.impl.client.keymapping.CategoryComparator implements java.util.Comparator<net.minecraft.client.KeyMapping$Category> {
+  public static final net.fabricmc.fabric.impl.client.keymapping.CategoryComparator INSTANCE;
+  public net.fabricmc.fabric.impl.client.keymapping.CategoryComparator();
+  public int compare(net.minecraft.client.KeyMapping$Category, net.minecraft.client.KeyMapping$Category);
+  public int compare(java.lang.Object, java.lang.Object);
+  static {};
+}
+Compiled from "KeyMappingRegistryImpl.java"
+public final class net.fabricmc.fabric.impl.client.keymapping.KeyMappingRegistryImpl {
+  private static final java.util.List<net.minecraft.client.KeyMapping> MODDED_KEY_BINDINGS;
+  private net.fabricmc.fabric.impl.client.keymapping.KeyMappingRegistryImpl();
+  public static net.minecraft.client.KeyMapping registerKeyMapping(net.minecraft.client.KeyMapping);
+  public static net.minecraft.client.KeyMapping[] process(net.minecraft.client.KeyMapping[]);
+  static {};
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.impl.client.keymapping.package-info {
+}
+Compiled from "KeyMappingAccessor.java"
+public interface net.fabricmc.fabric.mixin.client.keymapping.KeyMappingAccessor {
+  public abstract com.mojang.blaze3d.platform.InputConstants$Key fabric_getBoundKey();
+}
+Compiled from "KeyMappingCategoryMixin.java"
+abstract class net.fabricmc.fabric.mixin.client.keymapping.KeyMappingCategoryMixin {
+  private static java.util.List<net.minecraft.client.KeyMapping$Category> SORT_ORDER;
+  net.fabricmc.fabric.mixin.client.keymapping.KeyMappingCategoryMixin();
+  private static void onReturnRegister(net.minecraft.resources.Identifier, org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<net.minecraft.client.KeyMapping$Category>);
+}
+Compiled from "OptionsMixin.java"
+public class net.fabricmc.fabric.mixin.client.keymapping.OptionsMixin {
+  public net.minecraft.client.KeyMapping[] keyMappings;
+  public net.fabricmc.fabric.mixin.client.keymapping.OptionsMixin();
+  public void loadHook(org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.mixin.client.keymapping.package-info {
+}

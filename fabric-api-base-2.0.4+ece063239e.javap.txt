@@ -1,0 +1,166 @@
+Compiled from "AutoInvokingEvent.java"
+public interface net.fabricmc.fabric.api.event.AutoInvokingEvent extends java.lang.annotation.Annotation {
+}
+Compiled from "Event.java"
+public abstract class net.fabricmc.fabric.api.event.Event<T> {
+  protected volatile T invoker;
+  public static final net.minecraft.resources.Identifier DEFAULT_PHASE;
+  public net.fabricmc.fabric.api.event.Event();
+  public final T invoker();
+  public abstract void register(T);
+  public void register(net.minecraft.resources.Identifier, T);
+  public void addPhaseOrdering(net.minecraft.resources.Identifier, net.minecraft.resources.Identifier);
+  static {};
+}
+Compiled from "EventFactory.java"
+public final class net.fabricmc.fabric.api.event.EventFactory {
+  private net.fabricmc.fabric.api.event.EventFactory();
+  public static <T> net.fabricmc.fabric.api.event.Event<T> createArrayBacked(java.lang.Class<? super T>, java.util.function.Function<T[], T>);
+  public static <T> net.fabricmc.fabric.api.event.Event<T> createArrayBacked(java.lang.Class<T>, T, java.util.function.Function<T[], T>);
+  public static <T> net.fabricmc.fabric.api.event.Event<T> createWithPhases(java.lang.Class<? super T>, java.util.function.Function<T[], T>, net.minecraft.resources.Identifier...);
+  public static java.lang.String getHandlerName(java.lang.Object);
+  public static boolean isProfilingEnabled();
+  public static void invalidate();
+  private static java.lang.Object lambda$createArrayBacked$0(java.lang.Object, java.util.function.Function, java.lang.Object[]);
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.api.event.package-info {
+}
+Compiled from "BooleanFunction.java"
+public interface net.fabricmc.fabric.api.util.BooleanFunction<R> {
+  public abstract R apply(boolean);
+}
+Compiled from "EventResult.java"
+public final class net.fabricmc.fabric.api.util.EventResult extends java.lang.Enum<net.fabricmc.fabric.api.util.EventResult> implements net.minecraft.util.StringRepresentable {
+  public static final net.fabricmc.fabric.api.util.EventResult ALLOW;
+  public static final net.fabricmc.fabric.api.util.EventResult PASS;
+  public static final net.fabricmc.fabric.api.util.EventResult DENY;
+  public static final com.mojang.serialization.Codec<net.fabricmc.fabric.api.util.EventResult> CODEC;
+  private final java.lang.String name;
+  private static final net.fabricmc.fabric.api.util.EventResult[] $VALUES;
+  public static net.fabricmc.fabric.api.util.EventResult[] values();
+  public static net.fabricmc.fabric.api.util.EventResult valueOf(java.lang.String);
+  public boolean allowAction();
+  public boolean allowAction(boolean);
+  public java.lang.String getSerializedName();
+  private net.fabricmc.fabric.api.util.EventResult(java.lang.String);
+  private static net.fabricmc.fabric.api.util.EventResult[] $values();
+  static {};
+}
+Compiled from "NbtType.java"
+public final class net.fabricmc.fabric.api.util.NbtType {
+  public static final int END;
+  public static final int BYTE;
+  public static final int SHORT;
+  public static final int INT;
+  public static final int LONG;
+  public static final int FLOAT;
+  public static final int DOUBLE;
+  public static final int BYTE_ARRAY;
+  public static final int STRING;
+  public static final int LIST;
+  public static final int COMPOUND;
+  public static final int INT_ARRAY;
+  public static final int LONG_ARRAY;
+  private net.fabricmc.fabric.api.util.NbtType();
+}
+Compiled from "TriState.java"
+public final class net.fabricmc.fabric.api.util.TriState extends java.lang.Enum<net.fabricmc.fabric.api.util.TriState> implements net.minecraft.util.StringRepresentable {
+  public static final net.fabricmc.fabric.api.util.TriState FALSE;
+  public static final net.fabricmc.fabric.api.util.TriState DEFAULT;
+  public static final net.fabricmc.fabric.api.util.TriState TRUE;
+  public static final com.mojang.serialization.Codec<net.fabricmc.fabric.api.util.TriState> CODEC;
+  private final java.lang.String name;
+  private static final net.fabricmc.fabric.api.util.TriState[] $VALUES;
+  public static net.fabricmc.fabric.api.util.TriState[] values();
+  public static net.fabricmc.fabric.api.util.TriState valueOf(java.lang.String);
+  public static net.fabricmc.fabric.api.util.TriState of(boolean);
+  public static net.fabricmc.fabric.api.util.TriState of(java.lang.Boolean);
+  public boolean get();
+  public java.lang.Boolean getBoxed();
+  public boolean orElse(boolean);
+  public boolean orElseGet(java.util.function.BooleanSupplier);
+  public <T> java.util.Optional<T> map(net.fabricmc.fabric.api.util.BooleanFunction<? extends T>);
+  public <X extends java.lang.Throwable> boolean orElseThrow(java.util.function.Supplier<X>) throws X;
+  public static net.fabricmc.fabric.api.util.TriState fromSystemProperty(java.lang.String);
+  public java.lang.String getSerializedName();
+  private net.fabricmc.fabric.api.util.TriState(java.lang.String);
+  private static net.fabricmc.fabric.api.util.TriState[] $values();
+  static {};
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.api.util.package-info {
+}
+Compiled from "ArrayBackedEvent.java"
+class net.fabricmc.fabric.impl.base.event.ArrayBackedEvent<T> extends net.fabricmc.fabric.api.event.Event<T> {
+  private final java.util.function.Function<T[], T> invokerFactory;
+  private final java.lang.Object lock;
+  private T[] handlers;
+  private final java.util.Map<net.minecraft.resources.Identifier, net.fabricmc.fabric.impl.base.event.EventPhaseData<T>> phases;
+  private final java.util.List<net.fabricmc.fabric.impl.base.event.EventPhaseData<T>> sortedPhases;
+  net.fabricmc.fabric.impl.base.event.ArrayBackedEvent(java.lang.Class<? super T>, java.util.function.Function<T[], T>);
+  void update();
+  public void register(T);
+  public void register(net.minecraft.resources.Identifier, T);
+  private net.fabricmc.fabric.impl.base.event.EventPhaseData<T> getOrCreatePhase(net.minecraft.resources.Identifier, boolean);
+  private void rebuildInvoker(int);
+  public void addPhaseOrdering(net.minecraft.resources.Identifier, net.minecraft.resources.Identifier);
+  private static net.minecraft.resources.Identifier lambda$addPhaseOrdering$0(net.fabricmc.fabric.impl.base.event.EventPhaseData);
+  private static net.minecraft.resources.Identifier lambda$getOrCreatePhase$0(net.fabricmc.fabric.impl.base.event.EventPhaseData);
+}
+Compiled from "EventFactoryImpl.java"
+public final class net.fabricmc.fabric.impl.base.event.EventFactoryImpl {
+  private static final java.util.Set<net.fabricmc.fabric.impl.base.event.ArrayBackedEvent<?>> ARRAY_BACKED_EVENTS;
+  private net.fabricmc.fabric.impl.base.event.EventFactoryImpl();
+  public static void invalidate();
+  public static <T> net.fabricmc.fabric.api.event.Event<T> createArrayBacked(java.lang.Class<? super T>, java.util.function.Function<T[], T>);
+  public static void ensureContainsDefault(net.minecraft.resources.Identifier[]);
+  public static void ensureNoDuplicates(net.minecraft.resources.Identifier[]);
+  private static <T> T buildEmptyInvoker(java.lang.Class<T>, java.util.function.Function<T[], T>);
+  private static java.lang.Object lambda$buildEmptyInvoker$0(java.lang.Object, java.lang.Object, java.lang.reflect.Method, java.lang.Object[]) throws java.lang.Throwable;
+  static {};
+}
+Compiled from "EventPhaseData.java"
+class net.fabricmc.fabric.impl.base.event.EventPhaseData<T> extends net.fabricmc.fabric.impl.base.toposort.SortableNode<net.fabricmc.fabric.impl.base.event.EventPhaseData<T>> {
+  final net.minecraft.resources.Identifier id;
+  T[] listeners;
+  net.fabricmc.fabric.impl.base.event.EventPhaseData(net.minecraft.resources.Identifier, java.lang.Class<?>);
+  void addListener(T);
+  protected java.lang.String getDescription();
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.impl.base.event.package-info {
+}
+Compiled from "NodeSorting.java"
+class net.fabricmc.fabric.impl.base.toposort.NodeSorting$NodeScc<N extends net.fabricmc.fabric.impl.base.toposort.SortableNode<N>> {
+  final java.util.List<N> nodes;
+  final java.util.List<net.fabricmc.fabric.impl.base.toposort.NodeSorting$NodeScc<N>> subsequentSccs;
+  int inDegree;
+  private net.fabricmc.fabric.impl.base.toposort.NodeSorting$NodeScc(java.util.List<N>);
+}
+Compiled from "NodeSorting.java"
+public class net.fabricmc.fabric.impl.base.toposort.NodeSorting {
+  private static final org.slf4j.Logger LOGGER;
+  public static boolean ENABLE_CYCLE_WARNING;
+  public net.fabricmc.fabric.impl.base.toposort.NodeSorting();
+  public static <N extends net.fabricmc.fabric.impl.base.toposort.SortableNode<N>> boolean sort(java.util.List<N>, java.lang.String, java.util.Comparator<N>);
+  private static <N extends net.fabricmc.fabric.impl.base.toposort.SortableNode<N>> void forwardVisit(N, N, java.util.List<N>);
+  private static <N extends net.fabricmc.fabric.impl.base.toposort.SortableNode<N>> void clearStatus(java.util.List<N>);
+  private static <N extends net.fabricmc.fabric.impl.base.toposort.SortableNode<N>> void backwardVisit(N, java.util.List<N>);
+  private static net.fabricmc.fabric.impl.base.toposort.SortableNode lambda$sort$0(net.fabricmc.fabric.impl.base.toposort.NodeSorting$NodeScc);
+  static {};
+}
+Compiled from "SortableNode.java"
+public abstract class net.fabricmc.fabric.impl.base.toposort.SortableNode<N extends net.fabricmc.fabric.impl.base.toposort.SortableNode<N>> {
+  protected final java.util.List<N> subsequentNodes;
+  protected final java.util.List<N> previousNodes;
+  boolean visited;
+  public net.fabricmc.fabric.impl.base.toposort.SortableNode();
+  protected abstract java.lang.String getDescription();
+  protected void addSubsequentNode(N);
+  protected void addPreviousNode(N);
+  public static <N extends net.fabricmc.fabric.impl.base.toposort.SortableNode<N>> void link(N, N);
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.impl.base.toposort.package-info {
+}

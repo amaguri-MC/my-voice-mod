@@ -1,0 +1,846 @@
+Compiled from "FabricClientGameTest.java"
+public interface net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest {
+  public abstract void runTest(net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext);
+}
+Compiled from "TestInput.java"
+public interface net.fabricmc.fabric.api.client.gametest.v1.TestInput {
+  public abstract void holdKey(net.minecraft.client.KeyMapping);
+  public abstract void holdKey(java.util.function.Function<net.minecraft.client.Options, net.minecraft.client.KeyMapping>);
+  public abstract void holdKey(com.mojang.blaze3d.platform.InputConstants$Key);
+  public abstract void holdKey(int);
+  public abstract void holdMouse(int);
+  public abstract void holdControl();
+  public abstract void holdShift();
+  public abstract void holdAlt();
+  public abstract void releaseKey(net.minecraft.client.KeyMapping);
+  public abstract void releaseKey(java.util.function.Function<net.minecraft.client.Options, net.minecraft.client.KeyMapping>);
+  public abstract void releaseKey(com.mojang.blaze3d.platform.InputConstants$Key);
+  public abstract void releaseKey(int);
+  public abstract void releaseMouse(int);
+  public abstract void releaseControl();
+  public abstract void releaseShift();
+  public abstract void releaseAlt();
+  public abstract void pressKey(net.minecraft.client.KeyMapping);
+  public abstract void pressKey(java.util.function.Function<net.minecraft.client.Options, net.minecraft.client.KeyMapping>);
+  public abstract void pressKey(com.mojang.blaze3d.platform.InputConstants$Key);
+  public abstract void pressKey(int);
+  public abstract void pressMouse(int);
+  public abstract void holdKeyFor(net.minecraft.client.KeyMapping, int);
+  public abstract void holdKeyFor(java.util.function.Function<net.minecraft.client.Options, net.minecraft.client.KeyMapping>, int);
+  public abstract void holdKeyFor(com.mojang.blaze3d.platform.InputConstants$Key, int);
+  public abstract void holdKeyFor(int, int);
+  public abstract void holdMouseFor(int, int);
+  public abstract void lookAt(float, float);
+  public abstract void lookAt(net.minecraft.core.BlockPos);
+  public abstract void typeChar(int);
+  public abstract void typeChars(java.lang.String);
+  public abstract void scroll(double);
+  public abstract void scroll(double, double);
+  public abstract void setCursorPos(double, double);
+  public abstract void moveCursor(double, double);
+  public abstract void resizeWindow(int, int);
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.api.client.gametest.v1.package-info {
+}
+Compiled from "ClientGameTestContext.java"
+public interface net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext {
+  public static final int NO_TIMEOUT;
+  public static final int DEFAULT_TIMEOUT;
+  public abstract void waitTick();
+  public abstract void waitTicks(int);
+  public abstract int waitFor(java.util.function.Predicate<net.minecraft.client.Minecraft>);
+  public abstract int waitFor(java.util.function.Predicate<net.minecraft.client.Minecraft>, int);
+  public abstract int waitForScreen(java.lang.Class<? extends net.minecraft.client.gui.screens.Screen>);
+  public abstract void setScreen(java.util.function.Supplier<net.minecraft.client.gui.screens.Screen>);
+  public abstract void clickScreenButton(java.lang.String);
+  public abstract boolean tryClickScreenButton(java.lang.String);
+  public default java.nio.file.Path takeScreenshot(java.lang.String);
+  public abstract java.nio.file.Path takeScreenshot(net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotOptions);
+  public default void assertScreenshotEquals(java.lang.String);
+  public abstract void assertScreenshotEquals(net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonOptions);
+  public default org.joml.Vector2i assertScreenshotContains(java.lang.String);
+  public abstract org.joml.Vector2i assertScreenshotContains(net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonOptions);
+  public abstract net.fabricmc.fabric.api.client.gametest.v1.TestInput getInput();
+  public abstract net.fabricmc.fabric.api.client.gametest.v1.world.TestWorldBuilder worldBuilder();
+  public abstract void restoreDefaultGameOptions();
+  public abstract <E extends java.lang.Throwable> void runOnClient(org.apache.commons.lang3.function.FailableConsumer<net.minecraft.client.Minecraft, E>) throws E;
+  public abstract <T, E extends java.lang.Throwable> T computeOnClient(org.apache.commons.lang3.function.FailableFunction<net.minecraft.client.Minecraft, T, E>) throws E;
+}
+Compiled from "TestDedicatedServerConnection.java"
+public interface net.fabricmc.fabric.api.client.gametest.v1.context.TestDedicatedServerConnection extends net.fabricmc.fabric.api.client.gametest.v1.context.TestServerConnection,java.lang.AutoCloseable {
+  public abstract void close();
+}
+Compiled from "TestDedicatedServerContext.java"
+public interface net.fabricmc.fabric.api.client.gametest.v1.context.TestDedicatedServerContext extends net.fabricmc.fabric.api.client.gametest.v1.context.TestServerContext,java.lang.AutoCloseable {
+  public abstract net.fabricmc.fabric.api.client.gametest.v1.context.TestDedicatedServerConnection connect();
+  public abstract void close();
+}
+Compiled from "TestServerConnection.java"
+public interface net.fabricmc.fabric.api.client.gametest.v1.context.TestServerConnection {
+  public static final int DEFAULT_CHUNK_LOAD_TIMEOUT;
+  public default int waitForChunksDownload();
+  public abstract int waitForChunksDownload(int);
+  public default int waitForChunksRender();
+  public default int waitForChunksRender(int);
+  public default int waitForChunksRender(boolean);
+  public abstract int waitForChunksRender(boolean, int);
+  public abstract void waitForClientboundPackets();
+  public abstract void waitForServerboundPackets();
+  public abstract void waitForClientboundEntityUpdates(net.minecraft.world.entity.EntityType<?>, net.minecraft.world.entity.EntityType<?>...);
+  public abstract net.minecraft.client.player.LocalPlayer getClientPlayer();
+  public abstract net.minecraft.server.level.ServerPlayer getServerPlayer();
+  public abstract net.minecraft.client.multiplayer.ClientLevel getClientLevel();
+  public abstract net.minecraft.server.level.ServerLevel getServerLevel();
+}
+Compiled from "TestServerContext.java"
+public interface net.fabricmc.fabric.api.client.gametest.v1.context.TestServerContext {
+  public abstract void runCommand(java.lang.String);
+  public abstract <E extends java.lang.Throwable> void runOnServer(org.apache.commons.lang3.function.FailableConsumer<net.minecraft.server.MinecraftServer, E>) throws E;
+  public abstract <T, E extends java.lang.Throwable> T computeOnServer(org.apache.commons.lang3.function.FailableFunction<net.minecraft.server.MinecraftServer, T, E>) throws E;
+  public abstract int waitFor(java.util.function.Predicate<net.minecraft.server.MinecraftServer>);
+  public abstract int waitFor(java.util.function.Predicate<net.minecraft.server.MinecraftServer>, int);
+}
+Compiled from "TestSingleplayerContext.java"
+public interface net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext extends java.lang.AutoCloseable {
+  public abstract net.fabricmc.fabric.api.client.gametest.v1.world.TestWorldSave getWorldSave();
+  public abstract net.fabricmc.fabric.api.client.gametest.v1.context.TestServerConnection getConnection();
+  public abstract net.fabricmc.fabric.api.client.gametest.v1.context.TestServerContext getServer();
+  public abstract void close();
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.api.client.gametest.v1.context.package-info {
+}
+Compiled from "TestScreenshotCommonOptions.java"
+public interface net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotCommonOptions<SELF extends net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotCommonOptions<SELF>> {
+  public abstract SELF disableCounterPrefix();
+  public abstract SELF withDeltaTicks(float);
+  public abstract SELF withSize(int, int);
+  public abstract SELF withDestinationDir(java.nio.file.Path);
+}
+Compiled from "TestScreenshotComparisonAlgorithm.java"
+public interface net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage<DATA> {
+  public abstract int width();
+  public abstract int height();
+  public abstract DATA data();
+}
+Compiled from "TestScreenshotComparisonAlgorithm.java"
+public interface net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm {
+  public static net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm defaultAlgorithm();
+  public static net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm meanSquaredDifference(float);
+  public static net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm exact();
+  public abstract org.joml.Vector2i findColor(net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage<int[]>, net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage<int[]>);
+  public default org.joml.Vector2i findGrayscale(net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage<byte[]>, net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage<byte[]>);
+}
+Compiled from "TestScreenshotComparisonOptions.java"
+public interface net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonOptions extends net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotCommonOptions<net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonOptions> {
+  public static net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonOptions of(java.lang.String);
+  public static net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonOptions of(com.mojang.blaze3d.platform.NativeImage);
+  public abstract net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonOptions save();
+  public abstract net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonOptions saveWithFileName(java.lang.String);
+  public abstract net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonOptions withAlgorithm(net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm);
+  public abstract net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonOptions withGrayscale();
+  public abstract net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonOptions withRegion(int, int, int, int);
+}
+Compiled from "TestScreenshotOptions.java"
+public interface net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotOptions extends net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotCommonOptions<net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotOptions> {
+  public static net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotOptions of(java.lang.String);
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.api.client.gametest.v1.screenshot.package-info {
+}
+Compiled from "TestWorldBuilder.java"
+public interface net.fabricmc.fabric.api.client.gametest.v1.world.TestWorldBuilder {
+  public abstract net.fabricmc.fabric.api.client.gametest.v1.world.TestWorldBuilder setUseConsistentSettings(boolean);
+  public abstract net.fabricmc.fabric.api.client.gametest.v1.world.TestWorldBuilder adjustSettings(java.util.function.Consumer<net.minecraft.client.gui.screens.worldselection.WorldCreationUiState>);
+  public abstract net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext create();
+  public default net.fabricmc.fabric.api.client.gametest.v1.context.TestDedicatedServerContext createServer();
+  public abstract net.fabricmc.fabric.api.client.gametest.v1.context.TestDedicatedServerContext createServer(java.util.Properties);
+}
+Compiled from "TestWorldSave.java"
+public interface net.fabricmc.fabric.api.client.gametest.v1.world.TestWorldSave {
+  public abstract java.nio.file.Path getSaveDirectory();
+  public abstract net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext open();
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.api.client.gametest.v1.world.package-info {
+}
+Compiled from "FabricClientGameTestImpl.java"
+public class net.fabricmc.fabric.impl.client.gametest.FabricClientGameTestImpl implements net.fabricmc.api.ClientModInitializer {
+  public static final java.lang.String MOD_ID;
+  public net.fabricmc.fabric.impl.client.gametest.FabricClientGameTestImpl();
+  public void onInitializeClient();
+  private static void lambda$onInitializeClient$1(net.fabricmc.fabric.impl.client.gametest.util.GameTestSyncPayload, net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking$Context);
+  private static void lambda$onInitializeClient$0(net.fabricmc.fabric.impl.client.gametest.util.GameTestSyncPayload, net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking$Context);
+}
+Compiled from "FabricClientGameTestRunner.java"
+public class net.fabricmc.fabric.impl.client.gametest.FabricClientGameTestRunner {
+  private static final java.lang.String ENTRYPOINT_KEY;
+  public static net.fabricmc.loader.api.entrypoint.EntrypointContainer<net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest> currentlyRunningGameTest;
+  public net.fabricmc.fabric.impl.client.gametest.FabricClientGameTestRunner();
+  public static void start();
+  private static java.util.List<net.fabricmc.loader.api.entrypoint.EntrypointContainer<net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest>> getTestToRun();
+  private static void setupInitialGameTestState(net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext);
+  private static void setupAndCheckFinalGameTestState(net.fabricmc.fabric.impl.client.gametest.context.ClientGameTestContextImpl);
+  private static void lambda$setupAndCheckFinalGameTestState$3(net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  private static java.lang.Integer lambda$setupAndCheckFinalGameTestState$2(net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  private static java.lang.Integer lambda$setupAndCheckFinalGameTestState$1(net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  private static void lambda$setupAndCheckFinalGameTestState$0(net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  private static void lambda$getTestToRun$1(java.lang.String, java.lang.String);
+  private static boolean lambda$getTestToRun$0(java.lang.String);
+  private static void lambda$start$0(java.util.List);
+  static {};
+}
+Compiled from "TestInputImpl.java"
+public final class net.fabricmc.fabric.impl.client.gametest.TestInputImpl implements net.fabricmc.fabric.api.client.gametest.v1.TestInput {
+  private static final java.util.Set<com.mojang.blaze3d.platform.InputConstants$Key> KEYS_DOWN;
+  private static final boolean IS_MACOS;
+  private final net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext context;
+  public net.fabricmc.fabric.impl.client.gametest.TestInputImpl(net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext);
+  public static boolean isKeyDown(int);
+  public void clearKeysDown();
+  public void holdKey(net.minecraft.client.KeyMapping);
+  public void holdKey(java.util.function.Function<net.minecraft.client.Options, net.minecraft.client.KeyMapping>);
+  public void holdKey(com.mojang.blaze3d.platform.InputConstants$Key);
+  public void holdKey(int);
+  public void holdMouse(int);
+  public void holdControl();
+  public void holdShift();
+  public void holdAlt();
+  public void releaseKey(net.minecraft.client.KeyMapping);
+  public void releaseKey(java.util.function.Function<net.minecraft.client.Options, net.minecraft.client.KeyMapping>);
+  public void releaseKey(com.mojang.blaze3d.platform.InputConstants$Key);
+  public void releaseKey(int);
+  public void releaseMouse(int);
+  public void releaseControl();
+  public void releaseShift();
+  public void releaseAlt();
+  private static void pressOrReleaseKey(net.minecraft.client.Minecraft, com.mojang.blaze3d.platform.InputConstants$Key, int);
+  public void pressKey(net.minecraft.client.KeyMapping);
+  public void pressKey(java.util.function.Function<net.minecraft.client.Options, net.minecraft.client.KeyMapping>);
+  public void pressKey(com.mojang.blaze3d.platform.InputConstants$Key);
+  public void pressKey(int);
+  public void pressMouse(int);
+  public void holdKeyFor(net.minecraft.client.KeyMapping, int);
+  public void holdKeyFor(java.util.function.Function<net.minecraft.client.Options, net.minecraft.client.KeyMapping>, int);
+  public void holdKeyFor(com.mojang.blaze3d.platform.InputConstants$Key, int);
+  public void holdKeyFor(int, int);
+  public void holdMouseFor(int, int);
+  public void lookAt(float, float);
+  public void lookAt(net.minecraft.core.BlockPos);
+  public void typeChar(int);
+  public void typeChars(java.lang.String);
+  public void scroll(double);
+  public void scroll(double, double);
+  public void setCursorPos(double, double);
+  public void moveCursor(double, double);
+  public void resizeWindow(int, int);
+  private static com.mojang.blaze3d.platform.InputConstants$Key getBoundKey(net.minecraft.client.KeyMapping, java.lang.String);
+  private static void lambda$resizeWindow$0(int, int, net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  private static void lambda$moveCursor$0(double, double, net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  private static void lambda$setCursorPos$0(double, double, net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  private static void lambda$scroll$0(double, double, net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  private static void lambda$typeChars$0(java.lang.String, net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  private static void lambda$typeChars$1(net.minecraft.client.Minecraft, int);
+  private static void lambda$typeChar$0(int, net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  private static void lambda$lookAt$1(net.minecraft.core.BlockPos, net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  private static void lambda$lookAt$0(float, float, net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  private static net.minecraft.client.KeyMapping lambda$holdKeyFor$0(java.util.function.Function, net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  private static net.minecraft.client.KeyMapping lambda$pressKey$0(java.util.function.Function, net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  private static void lambda$releaseKey$1(com.mojang.blaze3d.platform.InputConstants$Key, net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  private static net.minecraft.client.KeyMapping lambda$releaseKey$0(java.util.function.Function, net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  private static void lambda$holdKey$1(com.mojang.blaze3d.platform.InputConstants$Key, net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  private static net.minecraft.client.KeyMapping lambda$holdKey$0(java.util.function.Function, net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  static {};
+}
+Compiled from "TestSystemProperties.java"
+public final class net.fabricmc.fabric.impl.client.gametest.TestSystemProperties {
+  public static final boolean ENABLED;
+  public static final java.lang.String TEST_MOD_RESOURCES_PATH;
+  public static final boolean DISABLE_JOIN_ASYNC_STACK_TRACES;
+  public static final java.lang.String MOD_ID_FILTER_PROPERTY;
+  private net.fabricmc.fabric.impl.client.gametest.TestSystemProperties();
+  static {};
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.impl.client.gametest.package-info {
+}
+Compiled from "ClientGameTestContextImpl.java"
+public final class net.fabricmc.fabric.impl.client.gametest.context.ClientGameTestContextImpl implements net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext {
+  private static final org.slf4j.Logger LOGGER;
+  private final net.fabricmc.fabric.impl.client.gametest.TestInputImpl input;
+  private static int screenshotCounter;
+  private static final java.util.Map<java.lang.String, java.lang.Object> DEFAULT_GAME_OPTIONS;
+  public net.fabricmc.fabric.impl.client.gametest.context.ClientGameTestContextImpl();
+  public static void initGameOptions(net.minecraft.client.Options);
+  public void waitTick();
+  public void waitTicks(int);
+  public int waitFor(java.util.function.Predicate<net.minecraft.client.Minecraft>);
+  public int waitFor(java.util.function.Predicate<net.minecraft.client.Minecraft>, int);
+  public int waitForScreen(java.lang.Class<? extends net.minecraft.client.gui.screens.Screen>);
+  public void setScreen(java.util.function.Supplier<net.minecraft.client.gui.screens.Screen>);
+  public void clickScreenButton(java.lang.String);
+  public boolean tryClickScreenButton(java.lang.String);
+  private static boolean tryClickScreenButtonImpl(net.minecraft.client.gui.screens.Screen, java.lang.String);
+  private static boolean pressMatchingButton(net.minecraft.client.gui.components.AbstractWidget, java.lang.String);
+  public java.nio.file.Path takeScreenshot(net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotOptions);
+  public void assertScreenshotEquals(net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonOptions);
+  public org.joml.Vector2i assertScreenshotContains(net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonOptions);
+  private org.joml.Vector2i doAssertScreenshotContains(net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonOptions, java.util.function.BiPredicate<net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage<?>, net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage<?>>);
+  private <T> T doTakeScreenshot(net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotCommonOptionsImpl<?>, java.util.function.Function<com.mojang.blaze3d.platform.NativeImage, T>);
+  private static java.nio.file.Path saveScreenshot(com.mojang.blaze3d.platform.NativeImage, java.lang.String, net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotCommonOptionsImpl<?>);
+  private static void onTemplateImageDoesntExist(com.mojang.blaze3d.platform.NativeImage, net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotComparisonOptionsImpl);
+  public net.fabricmc.fabric.impl.client.gametest.TestInputImpl getInput();
+  public net.fabricmc.fabric.api.client.gametest.v1.world.TestWorldBuilder worldBuilder();
+  public void restoreDefaultGameOptions();
+  public <E extends java.lang.Throwable> void runOnClient(org.apache.commons.lang3.function.FailableConsumer<net.minecraft.client.Minecraft, E>) throws E;
+  public <T, E extends java.lang.Throwable> T computeOnClient(org.apache.commons.lang3.function.FailableFunction<net.minecraft.client.Minecraft, T, E>) throws E;
+  public net.fabricmc.fabric.api.client.gametest.v1.TestInput getInput();
+  private static void lambda$computeOnClient$0(org.apache.commons.lang3.mutable.MutableObject, org.apache.commons.lang3.function.FailableFunction) throws java.lang.Throwable;
+  private static void lambda$runOnClient$0(org.apache.commons.lang3.function.FailableConsumer) throws java.lang.Throwable;
+  private void lambda$restoreDefaultGameOptions$0(net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  private static java.nio.file.Path lambda$saveScreenshot$0();
+  private static java.lang.Object lambda$doTakeScreenshot$3(org.joml.Vector2i, net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  private static java.util.concurrent.CompletableFuture lambda$doTakeScreenshot$1(net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotCommonOptionsImpl, java.util.function.Function, net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  private static void lambda$doTakeScreenshot$2(java.util.concurrent.CompletableFuture, java.util.function.Function, com.mojang.blaze3d.platform.NativeImage);
+  private static org.joml.Vector2i lambda$doTakeScreenshot$0(net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotCommonOptionsImpl, net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  private static org.joml.Vector2i lambda$doAssertScreenshotContains$0(net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotComparisonOptionsImpl, java.util.function.BiPredicate, com.mojang.blaze3d.platform.NativeImage);
+  private static java.lang.String lambda$doAssertScreenshotContains$1(java.lang.String, java.lang.Object);
+  private static boolean lambda$assertScreenshotContains$0(net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage, net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage);
+  private static boolean lambda$assertScreenshotEquals$0(net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage, net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage);
+  private static java.nio.file.Path lambda$takeScreenshot$0(net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotOptionsImpl, com.mojang.blaze3d.platform.NativeImage);
+  private static void lambda$tryClickScreenButtonImpl$0(org.apache.commons.lang3.mutable.MutableBoolean, java.lang.String, net.minecraft.client.gui.components.AbstractWidget);
+  private static java.lang.Boolean lambda$tryClickScreenButton$0(java.lang.String, net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  private static void lambda$clickScreenButton$0(java.lang.String, net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  private static java.lang.String lambda$clickScreenButton$1(net.minecraft.client.gui.screens.Screen);
+  private static void lambda$setScreen$0(java.util.function.Supplier, net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  private static boolean lambda$waitForScreen$1(java.lang.Class, net.minecraft.client.Minecraft);
+  private static boolean lambda$waitForScreen$0(net.minecraft.client.Minecraft);
+  static {};
+}
+Compiled from "TestDedicatedServerConnectionImpl.java"
+public class net.fabricmc.fabric.impl.client.gametest.context.TestDedicatedServerConnectionImpl extends net.fabricmc.fabric.impl.client.gametest.context.TestServerConnectionImpl implements net.fabricmc.fabric.api.client.gametest.v1.context.TestDedicatedServerConnection {
+  public net.fabricmc.fabric.impl.client.gametest.context.TestDedicatedServerConnectionImpl(net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext, net.fabricmc.fabric.impl.client.gametest.context.TestServerContextImpl);
+  public void close();
+  private static boolean lambda$close$1(net.minecraft.client.Minecraft);
+  private static void lambda$close$0(net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+}
+Compiled from "TestDedicatedServerContextImpl.java"
+public class net.fabricmc.fabric.impl.client.gametest.context.TestDedicatedServerContextImpl extends net.fabricmc.fabric.impl.client.gametest.context.TestServerContextImpl implements net.fabricmc.fabric.api.client.gametest.v1.context.TestDedicatedServerContext {
+  private final net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext context;
+  public net.fabricmc.fabric.impl.client.gametest.context.TestDedicatedServerContextImpl(net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext, net.minecraft.server.dedicated.DedicatedServer);
+  public net.fabricmc.fabric.api.client.gametest.v1.context.TestDedicatedServerConnection connect();
+  private java.lang.String getConnectionAddress();
+  public void close();
+  private boolean lambda$close$0(net.minecraft.client.Minecraft);
+  private void lambda$connect$0(net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+}
+Compiled from "TestServerConnectionImpl.java"
+public class net.fabricmc.fabric.impl.client.gametest.context.TestServerConnectionImpl implements net.fabricmc.fabric.api.client.gametest.v1.context.TestServerConnection {
+  protected final net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext context;
+  private final net.fabricmc.fabric.impl.client.gametest.context.TestServerContextImpl serverContext;
+  public net.fabricmc.fabric.impl.client.gametest.context.TestServerConnectionImpl(net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext, net.fabricmc.fabric.impl.client.gametest.context.TestServerContextImpl);
+  public int waitForChunksDownload(int);
+  public int waitForChunksRender(boolean, int);
+  private static boolean areChunksLoaded(net.minecraft.client.Minecraft);
+  private static boolean areChunksRendered(net.minecraft.client.Minecraft);
+  public void waitForClientboundPackets();
+  public void waitForServerboundPackets();
+  public void waitForClientboundEntityUpdates(net.minecraft.world.entity.EntityType<?>, net.minecraft.world.entity.EntityType<?>...);
+  public net.minecraft.client.player.LocalPlayer getClientPlayer();
+  public net.minecraft.client.multiplayer.ClientLevel getClientLevel();
+  public net.minecraft.server.level.ServerPlayer getServerPlayer();
+  public net.minecraft.server.level.ServerLevel getServerLevel();
+  private static boolean lambda$waitForServerboundPackets$1(net.minecraft.server.MinecraftServer);
+  private static void lambda$waitForServerboundPackets$0(net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  private static boolean lambda$waitForClientboundPackets$1(net.minecraft.client.Minecraft);
+  private void lambda$waitForClientboundPackets$0(net.minecraft.server.MinecraftServer) throws java.lang.RuntimeException;
+  private static boolean lambda$waitForChunksRender$0(boolean, net.minecraft.client.Minecraft);
+}
+Compiled from "TestServerContextImpl.java"
+public class net.fabricmc.fabric.impl.client.gametest.context.TestServerContextImpl implements net.fabricmc.fabric.api.client.gametest.v1.context.TestServerContext {
+  protected final net.minecraft.server.MinecraftServer server;
+  public net.fabricmc.fabric.impl.client.gametest.context.TestServerContextImpl(net.minecraft.server.MinecraftServer);
+  public void runCommand(java.lang.String);
+  public <E extends java.lang.Throwable> void runOnServer(org.apache.commons.lang3.function.FailableConsumer<net.minecraft.server.MinecraftServer, E>) throws E;
+  public <T, E extends java.lang.Throwable> T computeOnServer(org.apache.commons.lang3.function.FailableFunction<net.minecraft.server.MinecraftServer, T, E>) throws E;
+  public int waitFor(java.util.function.Predicate<net.minecraft.server.MinecraftServer>);
+  public int waitFor(java.util.function.Predicate<net.minecraft.server.MinecraftServer>, int);
+  private void lambda$computeOnServer$0(org.apache.commons.lang3.mutable.MutableObject, org.apache.commons.lang3.function.FailableFunction) throws java.lang.Throwable;
+  private void lambda$runOnServer$0(org.apache.commons.lang3.function.FailableConsumer) throws java.lang.Throwable;
+  private static void lambda$runCommand$0(java.lang.String, net.minecraft.server.MinecraftServer) throws java.lang.RuntimeException;
+}
+Compiled from "TestSingleplayerContextImpl.java"
+public class net.fabricmc.fabric.impl.client.gametest.context.TestSingleplayerContextImpl implements net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext {
+  private final net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext context;
+  private final net.fabricmc.fabric.api.client.gametest.v1.world.TestWorldSave worldSave;
+  private final net.fabricmc.fabric.impl.client.gametest.context.TestServerContextImpl server;
+  private final net.fabricmc.fabric.api.client.gametest.v1.context.TestServerConnection connection;
+  public net.fabricmc.fabric.impl.client.gametest.context.TestSingleplayerContextImpl(net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext, net.fabricmc.fabric.api.client.gametest.v1.world.TestWorldSave, net.minecraft.server.MinecraftServer);
+  public net.fabricmc.fabric.api.client.gametest.v1.world.TestWorldSave getWorldSave();
+  public net.fabricmc.fabric.api.client.gametest.v1.context.TestServerConnection getConnection();
+  public net.fabricmc.fabric.api.client.gametest.v1.context.TestServerContext getServer();
+  public void close();
+  private static boolean lambda$close$1(net.minecraft.client.Minecraft);
+  private static void lambda$close$0(net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.impl.client.gametest.context.package-info {
+}
+Compiled from "NativeImageHooks.java"
+public interface net.fabricmc.fabric.impl.client.gametest.screenshot.NativeImageHooks {
+  public abstract byte[] fabric_copyPixelsLuminance();
+  public abstract int[] fabric_copyPixelsRgb();
+  public abstract boolean fabric_isFullyOpaque();
+}
+Compiled from "TestScreenshotCommonOptionsImpl.java"
+public abstract class net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotCommonOptionsImpl<SELF extends net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotCommonOptions<SELF>> implements net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotCommonOptions<SELF> {
+  public boolean counterPrefix;
+  public float deltaTicks;
+  public org.joml.Vector2i size;
+  public java.nio.file.Path destinationDir;
+  public net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotCommonOptionsImpl();
+  public SELF disableCounterPrefix();
+  public SELF withDeltaTicks(float);
+  public SELF withSize(int, int);
+  public SELF withDestinationDir(java.nio.file.Path);
+  private SELF getThis();
+}
+Compiled from "TestScreenshotComparisonAlgorithms.java"
+public final class net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotComparisonAlgorithms$Exact extends java.lang.Enum<net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotComparisonAlgorithms$Exact> implements net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm {
+  public static final net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotComparisonAlgorithms$Exact INSTANCE;
+  private static final net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotComparisonAlgorithms$Exact[] $VALUES;
+  public static net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotComparisonAlgorithms$Exact[] values();
+  public static net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotComparisonAlgorithms$Exact valueOf(java.lang.String);
+  private net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotComparisonAlgorithms$Exact();
+  public org.joml.Vector2i findColor(net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage<int[]>, net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage<int[]>);
+  public org.joml.Vector2i findGrayscale(net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage<byte[]>, net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage<byte[]>);
+  private static net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotComparisonAlgorithms$Exact[] $values();
+  private static boolean lambda$findGrayscale$0(int, int, byte[], int, byte[], int, int);
+  private static boolean lambda$findColor$0(int, int, int[], int, int[], int, int);
+  static {};
+}
+Compiled from "TestScreenshotComparisonAlgorithms.java"
+public final class net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotComparisonAlgorithms$MeanSquaredDifference extends java.lang.Record implements net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm {
+  private final float maxMeanSquaredDifference;
+  public static final net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotComparisonAlgorithms$MeanSquaredDifference DEFAULT;
+  public net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotComparisonAlgorithms$MeanSquaredDifference(float);
+  public org.joml.Vector2i findColor(net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage<int[]>, net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage<int[]>);
+  public org.joml.Vector2i findGrayscale(net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage<byte[]>, net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage<byte[]>);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public float maxMeanSquaredDifference();
+  private static boolean lambda$findGrayscale$0(int, int, byte[], int, byte[], long, int, int);
+  private static boolean lambda$findColor$0(int, int, int[], int, int[], long, int, int);
+  static {};
+}
+Compiled from "TestScreenshotComparisonAlgorithms.java"
+interface net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotComparisonAlgorithms$PositionPredicate {
+  public abstract boolean isAt(int, int);
+}
+Compiled from "TestScreenshotComparisonAlgorithms.java"
+public final class net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotComparisonAlgorithms$RawImageImpl<DATA> extends java.lang.Record implements net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage<DATA> {
+  private final int width;
+  private final int height;
+  private final DATA data;
+  public net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotComparisonAlgorithms$RawImageImpl(int, int, DATA);
+  public static net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage<int[]> toColor(net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage<byte[]>);
+  public static net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage<byte[]> fromGrayscaleNativeImage(com.mojang.blaze3d.platform.NativeImage);
+  public static net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage<int[]> fromColorNativeImage(com.mojang.blaze3d.platform.NativeImage);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public int width();
+  public int height();
+  public DATA data();
+}
+Compiled from "TestScreenshotComparisonAlgorithms.java"
+public class net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotComparisonAlgorithms {
+  public net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotComparisonAlgorithms();
+  private static org.joml.Vector2i find(net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage<?>, net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage<?>, net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotComparisonAlgorithms$PositionPredicate);
+  private static org.joml.Vector2i lambda$find$0(net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage, net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage, net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotComparisonAlgorithms$PositionPredicate, int);
+}
+Compiled from "TestScreenshotComparisonOptionsImpl.java"
+public final class net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotComparisonOptionsImpl extends net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotCommonOptionsImpl<net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonOptions> implements net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonOptions {
+  private final com.mojang.datafixers.util.Either<java.lang.String, com.mojang.blaze3d.platform.NativeImage> templateImage;
+  public java.lang.String savedFileName;
+  public net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm algorithm;
+  public boolean grayscale;
+  public net.minecraft.client.renderer.Rect2i region;
+  public net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotComparisonOptionsImpl(java.lang.String);
+  public net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotComparisonOptionsImpl(com.mojang.blaze3d.platform.NativeImage);
+  public net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonOptions save();
+  public net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonOptions saveWithFileName(java.lang.String);
+  public net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonOptions withAlgorithm(net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm);
+  public net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonOptions withGrayscale();
+  public net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonOptions withRegion(int, int, int, int);
+  public java.util.Optional<java.lang.String> getTemplateImagePath();
+  public java.lang.String getTemplateImagePathOrThrow();
+  public net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage<byte[]> getGrayscaleTemplateImage();
+  public net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage<int[]> getColorTemplateImage();
+  private static com.mojang.blaze3d.platform.NativeImage loadNativeImage(java.lang.String);
+  private static void assertNoTransparency(com.mojang.blaze3d.platform.NativeImage);
+  private static net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage lambda$getColorTemplateImage$1(com.mojang.blaze3d.platform.NativeImage);
+  private static net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage lambda$getColorTemplateImage$0(java.lang.String);
+  private static net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage lambda$getGrayscaleTemplateImage$1(com.mojang.blaze3d.platform.NativeImage);
+  private static net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotComparisonAlgorithm$RawImage lambda$getGrayscaleTemplateImage$0(java.lang.String);
+}
+Compiled from "TestScreenshotOptionsImpl.java"
+public final class net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotOptionsImpl extends net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotCommonOptionsImpl<net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotOptions> implements net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotOptions {
+  public final java.lang.String name;
+  public net.fabricmc.fabric.impl.client.gametest.screenshot.TestScreenshotOptionsImpl(java.lang.String);
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.impl.client.gametest.screenshot.package-info {
+}
+Compiled from "ThreadingImpl.java"
+public final class net.fabricmc.fabric.impl.client.gametest.threading.ThreadingImpl {
+  private static final org.slf4j.Logger LOGGER;
+  private static final java.lang.String THREAD_IMPL_CLASS_NAME;
+  private static final java.lang.String TASK_ON_THIS_THREAD_METHOD_NAME;
+  private static final java.lang.String TASK_ON_OTHER_THREAD_METHOD_NAME;
+  public static final int PHASE_TICK;
+  public static final int PHASE_TEST;
+  private static final int PHASE_MASK;
+  public static final java.util.concurrent.Phaser PHASER;
+  private static volatile boolean enablePhases;
+  public static volatile boolean isClientRunning;
+  public static volatile boolean clientCanAcceptTasks;
+  public static final java.util.concurrent.Semaphore CLIENT_SEMAPHORE;
+  public static volatile boolean isServerRunning;
+  public static volatile boolean serverCanAcceptTasks;
+  public static final java.util.concurrent.Semaphore SERVER_SEMAPHORE;
+  public static java.lang.Thread testThread;
+  public static final java.util.concurrent.Semaphore TEST_SEMAPHORE;
+  public static java.lang.Throwable testFailureException;
+  public static java.lang.Runnable taskToRun;
+  private static volatile boolean gameCrashed;
+  public static volatile boolean networkSyncReceived;
+  public static net.minecraft.client.Minecraft unsafeClientInstance;
+  private net.fabricmc.fabric.impl.client.gametest.threading.ThreadingImpl();
+  public static void enterPhase(int);
+  public static int getCurrentPhase();
+  private static int getNextPhase();
+  public static boolean isGameCrashed();
+  public static void setGameCrashed();
+  public static void runTestThread(java.lang.Runnable);
+  private static void deregisterTestThread();
+  public static void checkOnGametestThread(java.lang.String);
+  public static void checkOnClientThread(java.lang.String);
+  public static void checkOnGametestOrClientThread(java.lang.String);
+  public static void checkOnServerThread(java.lang.String, net.minecraft.server.MinecraftServer);
+  public static void checkOnGametestOrServerThread(java.lang.String, net.minecraft.server.MinecraftServer);
+  public static <E extends java.lang.Throwable> void runOnClient(org.apache.commons.lang3.function.FailableRunnable<E>) throws E;
+  public static <E extends java.lang.Throwable> void runOnServer(org.apache.commons.lang3.function.FailableRunnable<E>) throws E;
+  private static <E extends java.lang.Throwable> void runTaskOnOtherThread(org.apache.commons.lang3.function.FailableRunnable<E>, java.util.concurrent.Semaphore) throws E;
+  private static <E extends java.lang.Throwable> void runTaskOnThisThread(org.apache.commons.lang3.function.FailableRunnable<E>, org.apache.commons.lang3.mutable.MutableObject<E>);
+  private static void joinAsyncStackTrace(java.lang.Throwable);
+  public static void runTick();
+  private static void lambda$runTaskOnOtherThread$0(org.apache.commons.lang3.function.FailableRunnable, org.apache.commons.lang3.mutable.MutableObject);
+  private static void lambda$runTestThread$0(java.lang.Runnable);
+  private static void lambda$runTestThread$1() throws java.lang.RuntimeException;
+  static {};
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.impl.client.gametest.threading.package-info {
+}
+Compiled from "ClientGameTestImpl.java"
+public final class net.fabricmc.fabric.impl.client.gametest.util.ClientGameTestImpl {
+  public static final org.slf4j.Logger LOGGER;
+  private net.fabricmc.fabric.impl.client.gametest.util.ClientGameTestImpl();
+  public static void waitForWorldLoad(net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext);
+  private static boolean isExperimentalWarningScreen(net.minecraft.client.gui.screens.Screen);
+  private static boolean isWorldLoadingFinished(net.minecraft.client.Minecraft);
+  private static java.lang.Boolean lambda$waitForWorldLoad$1(net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  private static java.lang.Boolean lambda$waitForWorldLoad$0(net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  static {};
+}
+Compiled from "DedicatedServerImplUtil.java"
+public final class net.fabricmc.fabric.impl.client.gametest.util.DedicatedServerImplUtil {
+  private static final org.slf4j.Logger LOGGER;
+  private static final java.util.Properties DEFAULT_SERVER_PROPERTIES;
+  public static java.nio.file.Path saveLevelDataTo;
+  public static java.util.concurrent.CompletableFuture<net.minecraft.server.dedicated.DedicatedServer> serverFuture;
+  private net.fabricmc.fabric.impl.client.gametest.util.DedicatedServerImplUtil();
+  public static net.minecraft.server.dedicated.DedicatedServer start(net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext, java.util.Properties);
+  private static void setupServer(java.util.Properties);
+  private static boolean lambda$start$1(net.minecraft.client.Minecraft);
+  private static void lambda$start$0();
+  private static void lambda$static$0(java.util.Properties);
+  static {};
+}
+Compiled from "GameTestSyncPayload.java"
+public final class net.fabricmc.fabric.impl.client.gametest.util.GameTestSyncPayload extends java.lang.Enum<net.fabricmc.fabric.impl.client.gametest.util.GameTestSyncPayload> implements net.minecraft.network.protocol.common.custom.CustomPacketPayload {
+  public static final net.fabricmc.fabric.impl.client.gametest.util.GameTestSyncPayload INSTANCE;
+  public static final net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<net.fabricmc.fabric.impl.client.gametest.util.GameTestSyncPayload> TYPE;
+  public static final net.minecraft.network.codec.StreamCodec<io.netty.buffer.ByteBuf, net.fabricmc.fabric.impl.client.gametest.util.GameTestSyncPayload> CODEC;
+  private static final net.fabricmc.fabric.impl.client.gametest.util.GameTestSyncPayload[] $VALUES;
+  public static net.fabricmc.fabric.impl.client.gametest.util.GameTestSyncPayload[] values();
+  public static net.fabricmc.fabric.impl.client.gametest.util.GameTestSyncPayload valueOf(java.lang.String);
+  private net.fabricmc.fabric.impl.client.gametest.util.GameTestSyncPayload();
+  public net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<? extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> type();
+  private static net.fabricmc.fabric.impl.client.gametest.util.GameTestSyncPayload[] $values();
+  static {};
+}
+Compiled from "WindowHooks.java"
+public interface net.fabricmc.fabric.impl.client.gametest.util.WindowHooks {
+  public abstract int fabric_getRealWidth();
+  public abstract int fabric_getRealHeight();
+  public abstract int fabric_getRealFramebufferWidth();
+  public abstract int fabric_getRealFramebufferHeight();
+  public abstract void fabric_resetSize();
+  public abstract void fabric_resize(int, int);
+  public abstract void fabric_focus();
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.impl.client.gametest.util.package-info {
+}
+Compiled from "TestWorldBuilderImpl.java"
+public class net.fabricmc.fabric.impl.client.gametest.world.TestWorldBuilderImpl implements net.fabricmc.fabric.api.client.gametest.v1.world.TestWorldBuilder {
+  private static final org.slf4j.Logger LOGGER;
+  private final net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext context;
+  private boolean useConsistentSettings;
+  private java.util.function.Consumer<net.minecraft.client.gui.screens.worldselection.WorldCreationUiState> settingsAdjustor;
+  public net.fabricmc.fabric.impl.client.gametest.world.TestWorldBuilderImpl(net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext);
+  public net.fabricmc.fabric.api.client.gametest.v1.world.TestWorldBuilder setUseConsistentSettings(boolean);
+  public net.fabricmc.fabric.api.client.gametest.v1.world.TestWorldBuilder adjustSettings(java.util.function.Consumer<net.minecraft.client.gui.screens.worldselection.WorldCreationUiState>);
+  public net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext create();
+  public net.fabricmc.fabric.api.client.gametest.v1.context.TestDedicatedServerContext createServer(java.util.Properties);
+  private java.nio.file.Path navigateCreateWorldScreen();
+  private static void setConsistentSettings(net.minecraft.client.gui.screens.worldselection.WorldCreationUiState);
+  private java.nio.file.Path lambda$navigateCreateWorldScreen$0(net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  private static void lambda$navigateCreateWorldScreen$1(net.minecraft.client.Minecraft, net.minecraft.client.gui.screens.Screen);
+  private static void lambda$new$0(net.minecraft.client.gui.screens.worldselection.WorldCreationUiState);
+  static {};
+}
+Compiled from "TestWorldSaveImpl.java"
+public final class net.fabricmc.fabric.impl.client.gametest.world.TestWorldSaveImpl implements net.fabricmc.fabric.api.client.gametest.v1.world.TestWorldSave {
+  private final net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext context;
+  private final java.nio.file.Path saveDirectory;
+  public net.fabricmc.fabric.impl.client.gametest.world.TestWorldSaveImpl(net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext, java.nio.file.Path);
+  public java.nio.file.Path getSaveDirectory();
+  public net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext open();
+  private void lambda$open$0(net.minecraft.client.Minecraft) throws java.lang.RuntimeException;
+  private static void lambda$open$1();
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.impl.client.gametest.world.package-info {
+}
+Compiled from "ClientChunkCacheAccessor.java"
+public interface net.fabricmc.fabric.mixin.client.gametest.ClientChunkCacheAccessor {
+  public abstract net.minecraft.client.multiplayer.ClientChunkCache$Storage getStorage();
+}
+Compiled from "ClientChunkCacheStorageAccessor.java"
+public interface net.fabricmc.fabric.mixin.client.gametest.ClientChunkCacheStorageAccessor {
+  public abstract int getViewCenterX();
+  public abstract int getViewCenterZ();
+}
+Compiled from "ClientLevelAccessor.java"
+public interface net.fabricmc.fabric.mixin.client.gametest.ClientLevelAccessor {
+  public abstract java.util.Deque<java.lang.Runnable> getLightUpdateQueue();
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.mixin.client.gametest.package-info {
+}
+Compiled from "CycleButtonAccessor.java"
+public interface net.fabricmc.fabric.mixin.client.gametest.gui.CycleButtonAccessor {
+  public abstract net.minecraft.network.chat.Component getName();
+}
+Compiled from "ScreenAccessor.java"
+public interface net.fabricmc.fabric.mixin.client.gametest.gui.ScreenAccessor {
+  public abstract java.util.List<net.minecraft.client.gui.components.Renderable> getRenderables();
+}
+Compiled from "ScreenMixin.java"
+public class net.fabricmc.fabric.mixin.client.gametest.gui.ScreenMixin {
+  public net.fabricmc.fabric.mixin.client.gametest.gui.ScreenMixin();
+  private void disableRotatingPanoramaForClientGameTests(org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.mixin.client.gametest.gui.package-info {
+}
+Compiled from "GlCommandEncoderMixin.java"
+public class net.fabricmc.fabric.mixin.client.gametest.input.GlCommandEncoderMixin {
+  public net.fabricmc.fabric.mixin.client.gametest.input.GlCommandEncoderMixin();
+  private void blitFrameBuffer(com.mojang.blaze3d.opengl.DirectStateAccess, int, int, int, int, int, int, int, int, int, int, int, int, com.llamalad7.mixinextras.injector.wrapoperation.Operation<java.lang.Void>, com.mojang.blaze3d.textures.GpuTextureView);
+}
+Compiled from "InputConstantsMixin.java"
+public class net.fabricmc.fabric.mixin.client.gametest.input.InputConstantsMixin {
+  public net.fabricmc.fabric.mixin.client.gametest.input.InputConstantsMixin();
+  private static void useGameTestInputForKeyDown(com.mojang.blaze3d.platform.Window, int, org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<java.lang.Boolean>);
+  private static void dontAttachCallbacks(org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private static void disableCursorGrabbing(org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+}
+Compiled from "KeyMappingAccessor.java"
+public interface net.fabricmc.fabric.mixin.client.gametest.input.KeyMappingAccessor {
+  public abstract com.mojang.blaze3d.platform.InputConstants$Key getKey();
+}
+Compiled from "KeyboardHandlerAccessor.java"
+public interface net.fabricmc.fabric.mixin.client.gametest.input.KeyboardHandlerAccessor {
+  public abstract void invokeKeyPress(long, int, net.minecraft.client.input.KeyEvent);
+  public abstract void invokeCharTyped(long, net.minecraft.client.input.CharacterEvent);
+}
+Compiled from "MonitorManagerMixin.java"
+public class net.fabricmc.fabric.mixin.client.gametest.input.MonitorManagerMixin {
+  public net.fabricmc.fabric.mixin.client.gametest.input.MonitorManagerMixin();
+  private int getRealWidth(int, com.mojang.blaze3d.platform.Window);
+  private int getRealHeight(int, com.mojang.blaze3d.platform.Window);
+}
+Compiled from "MouseHandlerAccessor.java"
+public interface net.fabricmc.fabric.mixin.client.gametest.input.MouseHandlerAccessor {
+  public abstract void invokeOnButton(long, net.minecraft.client.input.MouseButtonInfo, int);
+  public abstract void invokeOnScroll(long, double, double);
+  public abstract void invokeOnMove(long, double, double);
+}
+Compiled from "VulkanGpuSurfaceMixin.java"
+public class net.fabricmc.fabric.mixin.client.gametest.input.VulkanGpuSurfaceMixin {
+  public net.fabricmc.fabric.mixin.client.gametest.input.VulkanGpuSurfaceMixin();
+  private org.lwjgl.vulkan.VkImageBlit$Buffer blitFrameBuffer(org.lwjgl.vulkan.VkImageBlit$Buffer, org.lwjgl.vulkan.VkOffset3D$Buffer, com.llamalad7.mixinextras.injector.wrapoperation.Operation<org.lwjgl.vulkan.VkImageBlit$Buffer>, com.mojang.blaze3d.textures.GpuTextureView);
+}
+Compiled from "WindowMixin.java"
+public abstract class net.fabricmc.fabric.mixin.client.gametest.input.WindowMixin implements net.fabricmc.fabric.impl.client.gametest.util.WindowHooks {
+  private int x;
+  private int y;
+  private int windowedX;
+  private int windowedY;
+  private int width;
+  private int height;
+  private int windowedWidth;
+  private int windowedHeight;
+  private int framebufferWidth;
+  private int framebufferHeight;
+  private boolean fullscreen;
+  private com.mojang.blaze3d.platform.WindowEventHandler eventHandler;
+  private com.mojang.blaze3d.platform.MonitorManager monitorManager;
+  private java.util.Optional<com.mojang.blaze3d.platform.VideoMode> preferredFullscreenVideoMode;
+  private boolean focused;
+  private int defaultWidth;
+  private int defaultHeight;
+  private int realWidth;
+  private int realHeight;
+  private int realFramebufferWidth;
+  private int realFramebufferHeight;
+  public net.fabricmc.fabric.mixin.client.gametest.input.WindowMixin();
+  protected abstract void setMode();
+  private void onInit(com.mojang.blaze3d.platform.WindowEventHandler, com.mojang.blaze3d.platform.DisplayData, java.lang.String, boolean, java.lang.String, com.mojang.blaze3d.platform.MonitorManager, com.mojang.blaze3d.systems.GpuBackend, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private void cancelEvents(org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private void cancelResize(long, int, int, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private void cancelFramebufferResize(long, int, int, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private void wrapSetMode(com.llamalad7.mixinextras.injector.wrapoperation.Operation<java.lang.Void>);
+  private void setWindowedSize(int, int, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  public int fabric_getRealWidth();
+  public int fabric_getRealHeight();
+  public int fabric_getRealFramebufferWidth();
+  public int fabric_getRealFramebufferHeight();
+  public void fabric_resetSize();
+  public void fabric_resize(int, int);
+  public void fabric_focus();
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.mixin.client.gametest.input.package-info {
+}
+Compiled from "DedicatedServerMixin.java"
+public abstract class net.fabricmc.fabric.mixin.client.gametest.lifecycle.DedicatedServerMixin {
+  public net.fabricmc.fabric.mixin.client.gametest.lifecycle.DedicatedServerMixin();
+  private void captureServerInstance(org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<java.lang.Boolean>);
+  private void dontStopExecutors(com.llamalad7.mixinextras.injector.wrapoperation.Operation<java.lang.Void>);
+}
+Compiled from "MinecraftMixin.java"
+public class net.fabricmc.fabric.mixin.client.gametest.lifecycle.MinecraftMixin {
+  private boolean startedClientGametests;
+  public net.minecraft.client.gui.Gui gui;
+  public net.fabricmc.fabric.mixin.client.gametest.lifecycle.MinecraftMixin();
+  private void onTick(org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+}
+Compiled from "OptionsAccessor.java"
+public interface net.fabricmc.fabric.mixin.client.gametest.lifecycle.OptionsAccessor {
+  public abstract void invokeProcessOptions(net.minecraft.client.Options$FieldAccess);
+}
+Compiled from "OptionsMixin.java"
+public class net.fabricmc.fabric.mixin.client.gametest.lifecycle.OptionsMixin {
+  public net.fabricmc.fabric.mixin.client.gametest.lifecycle.OptionsMixin();
+  private void onCreateGameOptions(org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.mixin.client.gametest.lifecycle.package-info {
+}
+Compiled from "DeltaTrackerDefaultValueAccessor.java"
+public interface net.fabricmc.fabric.mixin.client.gametest.screenshot.DeltaTrackerDefaultValueAccessor {
+  public static net.minecraft.client.DeltaTracker$DefaultValue create(float);
+}
+Compiled from "NativeImageMixin.java"
+public abstract class net.fabricmc.fabric.mixin.client.gametest.screenshot.NativeImageMixin implements net.fabricmc.fabric.impl.client.gametest.screenshot.NativeImageHooks {
+  private long pixels;
+  private com.mojang.blaze3d.platform.NativeImage$Format format;
+  public net.fabricmc.fabric.mixin.client.gametest.screenshot.NativeImageMixin();
+  protected abstract void checkAllocated();
+  public abstract int getWidth();
+  public abstract int getHeight();
+  public abstract int[] getPixelsABGR();
+  public byte[] fabric_copyPixelsLuminance();
+  public int[] fabric_copyPixelsRgb();
+  public boolean fabric_isFullyOpaque();
+  private static byte toGrayscale(int, int, int);
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.mixin.client.gametest.screenshot.package-info {
+}
+Compiled from "MainMixin.java"
+public class net.fabricmc.fabric.mixin.client.gametest.threading.MainMixin {
+  public net.fabricmc.fabric.mixin.client.gametest.threading.MainMixin();
+  private static boolean dontStartAnotherTimerHack();
+}
+Compiled from "MinecraftMixin.java"
+public class net.fabricmc.fabric.mixin.client.gametest.threading.MinecraftMixin {
+  private java.lang.Runnable deferredTask;
+  public net.fabricmc.fabric.mixin.client.gametest.threading.MinecraftMixin();
+  private void onRun(com.llamalad7.mixinextras.injector.wrapoperation.Operation<java.lang.Void>) throws java.lang.Throwable;
+  private void deregisterAfterCrash(org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private int captureTicksPerFrame(int, com.llamalad7.mixinextras.sugar.ref.LocalIntRef);
+  private void postRunTasksHook(org.spongepowered.asm.mixin.injection.callback.CallbackInfo, com.llamalad7.mixinextras.sugar.ref.LocalIntRef);
+  private void deferStartIntegratedServer(net.minecraft.world.level.storage.LevelStorageSource$LevelStorageAccess, net.minecraft.server.packs.repository.PackRepository, net.minecraft.server.WorldStem, java.util.Optional<net.minecraft.world.level.gamerules.GameRules>, boolean, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private void onStartIntegratedServerBusyWait(org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private void deferDisconnect(net.minecraft.client.gui.screens.Screen, boolean, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private void onDisconnectBusyWait(org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private void postRunTasks();
+  private static void checkThreadOnGetInstance(org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<net.minecraft.client.Minecraft>);
+  private static void deregisterClient();
+  private static void lambda$deferDisconnect$0(net.minecraft.client.gui.screens.Screen, boolean);
+  private static void lambda$deferStartIntegratedServer$0(net.minecraft.world.level.storage.LevelStorageSource$LevelStorageAccess, net.minecraft.server.packs.repository.PackRepository, net.minecraft.server.WorldStem, java.util.Optional, boolean);
+}
+Compiled from "MinecraftServerMixin.java"
+public class net.fabricmc.fabric.mixin.client.gametest.threading.MinecraftServerMixin {
+  public net.fabricmc.fabric.mixin.client.gametest.threading.MinecraftServerMixin();
+  private void onRunServer(com.llamalad7.mixinextras.injector.wrapoperation.Operation<java.lang.Void>);
+  protected void onCrash(org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private void postRunTasks(org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private void deregisterServer();
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.mixin.client.gametest.threading.package-info {
+}
+Compiled from "CreateWorldScreenMixin.java"
+public class net.fabricmc.fabric.mixin.client.gametest.world.CreateWorldScreenMixin {
+  public net.fabricmc.fabric.mixin.client.gametest.world.CreateWorldScreenMixin();
+  private void createLevelDataForServers(org.spongepowered.asm.mixin.injection.callback.CallbackInfo, net.minecraft.core.LayeredRegistryAccess<net.minecraft.server.RegistryLayer>, net.minecraft.world.level.storage.PrimaryLevelData, net.minecraft.world.level.levelgen.WorldGenSettings, net.minecraft.world.level.gamerules.GameRules);
+}
+Compiled from "GameRulesAccessor.java"
+public interface net.fabricmc.fabric.mixin.client.gametest.world.GameRulesAccessor {
+  public abstract net.minecraft.world.level.gamerules.GameRuleMap getRules();
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.mixin.client.gametest.world.package-info {
+}
+Compiled from "ClientGameTestMixinConfigPlugin.java"
+public class net.fabricmc.fabric.impl.client.gametest.ClientGameTestMixinConfigPlugin implements org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin {
+  static final boolean ENABLED;
+  public net.fabricmc.fabric.impl.client.gametest.ClientGameTestMixinConfigPlugin();
+  public void onLoad(java.lang.String);
+  public java.lang.String getRefMapperConfig();
+  public boolean shouldApplyMixin(java.lang.String, java.lang.String);
+  public void acceptTargets(java.util.Set<java.lang.String>, java.util.Set<java.lang.String>);
+  public java.util.List<java.lang.String> getMixins();
+  public void preApply(java.lang.String, org.objectweb.asm.tree.ClassNode, java.lang.String, org.spongepowered.asm.mixin.extensibility.IMixinInfo);
+  public void postApply(java.lang.String, org.objectweb.asm.tree.ClassNode, java.lang.String, org.spongepowered.asm.mixin.extensibility.IMixinInfo);
+  static {};
+}

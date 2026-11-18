@@ -1,0 +1,9 @@
+net/fabricmc/fabric/api/client/keymapping/v1/KeyMappingHelper
+net/fabricmc/fabric/api/client/keymapping/v1/package-info
+net/fabricmc/fabric/impl/client/keymapping/CategoryComparator
+net/fabricmc/fabric/impl/client/keymapping/KeyMappingRegistryImpl
+net/fabricmc/fabric/impl/client/keymapping/package-info
+net/fabricmc/fabric/mixin/client/keymapping/KeyMappingAccessor
+net/fabricmc/fabric/mixin/client/keymapping/KeyMappingCategoryMixin
+net/fabricmc/fabric/mixin/client/keymapping/OptionsMixin
+net/fabricmc/fabric/mixin/client/keymapping/package-info

@@ -1,0 +1,164 @@
+Compiled from "ArgumentTypeRegistry.java"
+public final class net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry {
+  public static <A extends com.mojang.brigadier.arguments.ArgumentType<?>, T extends net.minecraft.commands.synchronization.ArgumentTypeInfo$Template<A>> void registerArgumentType(net.minecraft.resources.Identifier, java.lang.Class<? extends A>, net.minecraft.commands.synchronization.ArgumentTypeInfo<A, T>);
+  private net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry();
+}
+Compiled from "CommandRegistrationCallback.java"
+public interface net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback {
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback> EVENT;
+  public abstract void register(com.mojang.brigadier.CommandDispatcher<net.minecraft.commands.CommandSourceStack>, net.minecraft.commands.CommandBuildContext, net.minecraft.commands.Commands$CommandSelection);
+  private static net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback lambda$static$0(net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback[]);
+  private static void lambda$static$1(net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback[], com.mojang.brigadier.CommandDispatcher, net.minecraft.commands.CommandBuildContext, net.minecraft.commands.Commands$CommandSelection);
+  static {};
+}
+Compiled from "EntitySelectorOptionRegistry.java"
+public final class net.fabricmc.fabric.api.command.v2.EntitySelectorOptionRegistry {
+  private net.fabricmc.fabric.api.command.v2.EntitySelectorOptionRegistry();
+  public static void register(net.minecraft.resources.Identifier, net.minecraft.network.chat.Component, net.minecraft.commands.arguments.selector.options.EntitySelectorOptions$Modifier, java.util.function.Predicate<net.minecraft.commands.arguments.selector.EntitySelectorParser>);
+  public static void registerNonRepeatable(net.minecraft.resources.Identifier, net.minecraft.network.chat.Component, net.minecraft.commands.arguments.selector.options.EntitySelectorOptions$Modifier);
+  private static boolean lambda$registerNonRepeatable$1(net.minecraft.resources.Identifier, net.minecraft.commands.arguments.selector.EntitySelectorParser);
+  private static void lambda$registerNonRepeatable$0(net.minecraft.commands.arguments.selector.options.EntitySelectorOptions$Modifier, net.minecraft.resources.Identifier, net.minecraft.commands.arguments.selector.EntitySelectorParser) throws com.mojang.brigadier.exceptions.CommandSyntaxException;
+}
+Compiled from "FabricEntitySelectorParser.java"
+public interface net.fabricmc.fabric.api.command.v2.FabricEntitySelectorParser {
+  public default void setCustomFlag(net.minecraft.resources.Identifier, boolean);
+  public default boolean getCustomFlag(net.minecraft.resources.Identifier);
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.api.command.v2.package-info {
+}
+Compiled from "ArgumentTypeInfosAccessor.java"
+public interface net.fabricmc.fabric.mixin.command.ArgumentTypeInfosAccessor {
+  public static java.util.Map<java.lang.Class<?>, net.minecraft.commands.synchronization.ArgumentTypeInfo<?, ?>> fabric_getClassMap();
+}
+Compiled from "CommandsMixin.java"
+public abstract class net.fabricmc.fabric.mixin.command.CommandsMixin {
+  private com.mojang.brigadier.CommandDispatcher<net.minecraft.commands.CommandSourceStack> dispatcher;
+  public net.fabricmc.fabric.mixin.command.CommandsMixin();
+  private void fabric_addCommands(net.minecraft.commands.Commands$CommandSelection, net.minecraft.commands.CommandBuildContext, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+}
+Compiled from "EntitySelectorOptionsAccessor.java"
+public interface net.fabricmc.fabric.mixin.command.EntitySelectorOptionsAccessor {
+  public static void callPutOption(java.lang.String, net.minecraft.commands.arguments.selector.options.EntitySelectorOptions$Modifier, java.util.function.Predicate<net.minecraft.commands.arguments.selector.EntitySelectorParser>, net.minecraft.network.chat.Component);
+}
+Compiled from "EntitySelectorParserMixin.java"
+public class net.fabricmc.fabric.mixin.command.EntitySelectorParserMixin implements net.fabricmc.fabric.api.command.v2.FabricEntitySelectorParser {
+  private final java.util.Set<net.minecraft.resources.Identifier> flags;
+  public net.fabricmc.fabric.mixin.command.EntitySelectorParserMixin();
+  public void setCustomFlag(net.minecraft.resources.Identifier, boolean);
+  public boolean getCustomFlag(net.minecraft.resources.Identifier);
+}
+Compiled from "HelpCommandAccessor.java"
+public interface net.fabricmc.fabric.mixin.command.HelpCommandAccessor {
+  public static com.mojang.brigadier.exceptions.SimpleCommandExceptionType getFailedException();
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.mixin.command.package-info {
+}
+Compiled from "ClientCommandRegistrationCallback.java"
+public interface net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback {
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback> EVENT;
+  public abstract void register(com.mojang.brigadier.CommandDispatcher<net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource>, net.minecraft.commands.CommandBuildContext);
+  private static net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback lambda$static$0(net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback[]);
+  private static void lambda$static$1(net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback[], com.mojang.brigadier.CommandDispatcher, net.minecraft.commands.CommandBuildContext);
+  static {};
+}
+Compiled from "ClientCommands.java"
+public final class net.fabricmc.fabric.api.client.command.v2.ClientCommands {
+  private net.fabricmc.fabric.api.client.command.v2.ClientCommands();
+  public static com.mojang.brigadier.CommandDispatcher<net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource> getActiveDispatcher();
+  public static void refreshCommandCompletions();
+  public static com.mojang.brigadier.builder.LiteralArgumentBuilder<net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource> literal(java.lang.String);
+  public static <T> com.mojang.brigadier.builder.RequiredArgumentBuilder<net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource, T> argument(java.lang.String, com.mojang.brigadier.arguments.ArgumentType<T>);
+}
+Compiled from "FabricClientCommandSource.java"
+public interface net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource extends net.minecraft.commands.SharedSuggestionProvider {
+  public abstract void sendFeedback(net.minecraft.network.chat.Component);
+  public abstract void sendError(net.minecraft.network.chat.Component);
+  public abstract net.minecraft.client.Minecraft getClient();
+  public abstract net.minecraft.client.player.LocalPlayer getPlayer();
+  public default net.minecraft.world.entity.Entity getEntity();
+  public default net.minecraft.world.phys.Vec3 getPosition();
+  public default net.minecraft.world.phys.Vec2 getRotation();
+  public abstract net.minecraft.client.multiplayer.ClientLevel getLevel();
+  public default java.lang.Object getMeta(java.lang.String);
+  public abstract boolean attended();
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.api.client.command.v2.package-info {
+}
+Compiled from "ClientCommandInternals.java"
+public interface net.fabricmc.fabric.impl.command.client.ClientCommandInternals$LastReceivedCommandsPacketAccessor {
+  public abstract net.minecraft.network.protocol.game.ClientboundCommandsPacket fabric_api$getLastReceivedCommandsPacket();
+}
+Compiled from "ClientCommandInternals.java"
+public final class net.fabricmc.fabric.impl.command.client.ClientCommandInternals {
+  private static final org.slf4j.Logger LOGGER;
+  private static final java.lang.String API_COMMAND_NAME;
+  private static final java.lang.String SHORT_API_COMMAND_NAME;
+  private static com.mojang.brigadier.CommandDispatcher<net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource> activeDispatcher;
+  public net.fabricmc.fabric.impl.command.client.ClientCommandInternals();
+  public static void setActiveDispatcher(com.mojang.brigadier.CommandDispatcher<net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource>);
+  public static com.mojang.brigadier.CommandDispatcher<net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource> getActiveDispatcher();
+  public static boolean executeCommand(java.lang.String, net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource, net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource);
+  private static boolean requiresConfirmation(java.lang.String, net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource, net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource);
+  private static void openSendConfirmationWindow(java.lang.String, java.lang.String, java.lang.Runnable);
+  private static boolean isIgnoredException(com.mojang.brigadier.exceptions.CommandExceptionType);
+  private static net.minecraft.network.chat.Component getErrorMessage(com.mojang.brigadier.exceptions.CommandSyntaxException);
+  public static void finalizeInit();
+  private static int executeRootHelp(com.mojang.brigadier.context.CommandContext<net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource>);
+  private static int executeArgumentHelp(com.mojang.brigadier.context.CommandContext<net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource>) throws com.mojang.brigadier.exceptions.CommandSyntaxException;
+  private static int executeHelp(com.mojang.brigadier.tree.CommandNode<net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource>, com.mojang.brigadier.context.CommandContext<net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource>);
+  public static void addCommands(com.mojang.brigadier.CommandDispatcher<net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource>, net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource);
+  private static void copyChildren(com.mojang.brigadier.tree.CommandNode<net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource>, com.mojang.brigadier.tree.CommandNode<net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource>, net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource, java.util.Map<com.mojang.brigadier.tree.CommandNode<net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource>, com.mojang.brigadier.tree.CommandNode<net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource>>);
+  private static int lambda$copyChildren$1(com.mojang.brigadier.context.CommandContext) throws com.mojang.brigadier.exceptions.CommandSyntaxException;
+  private static boolean lambda$copyChildren$0(net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource);
+  private static void lambda$finalizeInit$0(com.mojang.brigadier.tree.CommandNode, com.mojang.brigadier.tree.CommandNode, com.mojang.brigadier.tree.CommandNode, java.util.Collection);
+  private static void lambda$openSendConfirmationWindow$0(java.lang.Runnable, net.minecraft.client.Minecraft, net.minecraft.client.gui.screens.Screen, boolean);
+  private static void lambda$executeCommand$0(java.lang.String, net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource);
+  static {};
+}
+Compiled from "ClientSuggestionProviderExtensions.java"
+public interface net.fabricmc.fabric.impl.command.client.ClientSuggestionProviderExtensions {
+  public abstract void fabric_markAttended();
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.impl.command.client.package-info {
+}
+Compiled from "ClientPacketListenerAccessor.java"
+public interface net.fabricmc.fabric.mixin.command.client.ClientPacketListenerAccessor {
+  public static boolean invokeIsValidCommand(com.mojang.brigadier.ParseResults<?>);
+}
+Compiled from "ClientPacketListenerMixin.java"
+abstract class net.fabricmc.fabric.mixin.command.client.ClientPacketListenerMixin implements net.fabricmc.fabric.impl.command.client.ClientCommandInternals$LastReceivedCommandsPacketAccessor {
+  private com.mojang.brigadier.CommandDispatcher<net.minecraft.commands.SharedSuggestionProvider> commands;
+  private net.minecraft.client.multiplayer.ClientSuggestionProvider suggestionsProvider;
+  private net.minecraft.client.multiplayer.ClientSuggestionProvider restrictedSuggestionsProvider;
+  private net.minecraft.world.flag.FeatureFlagSet enabledFeatures;
+  private net.minecraft.core.RegistryAccess$Frozen registryAccess;
+  private net.minecraft.network.protocol.game.ClientboundCommandsPacket lastReceivedCommandsPacket;
+  net.fabricmc.fabric.mixin.command.client.ClientPacketListenerMixin();
+  private void init(net.minecraft.client.Minecraft, net.minecraft.network.Connection, net.minecraft.client.multiplayer.CommonListenerCookie, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private void onGameJoin(net.minecraft.network.protocol.game.ClientboundLoginPacket, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private void onOnCommandTree(net.minecraft.network.protocol.game.ClientboundCommandsPacket, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private void setLastReceivedCommandsPacket(net.minecraft.network.protocol.game.ClientboundCommandsPacket, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private void onSendCommand(java.lang.String, net.minecraft.client.gui.screens.Screen, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private void onSendCommand(java.lang.String, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  public net.minecraft.network.protocol.game.ClientboundCommandsPacket fabric_api$getLastReceivedCommandsPacket();
+}
+Compiled from "ClientSuggestionProviderMixin.java"
+abstract class net.fabricmc.fabric.mixin.command.client.ClientSuggestionProviderMixin implements net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource,net.fabricmc.fabric.impl.command.client.ClientSuggestionProviderExtensions {
+  private net.minecraft.client.Minecraft minecraft;
+  private boolean attended;
+  net.fabricmc.fabric.mixin.command.client.ClientSuggestionProviderMixin();
+  public void sendFeedback(net.minecraft.network.chat.Component);
+  public void sendError(net.minecraft.network.chat.Component);
+  public net.minecraft.client.Minecraft getClient();
+  public net.minecraft.client.player.LocalPlayer getPlayer();
+  public net.minecraft.client.multiplayer.ClientLevel getLevel();
+  public boolean attended();
+  public void fabric_markAttended();
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.mixin.command.client.package-info {
+}

@@ -1,0 +1,17 @@
+/home/runner/.gradle/caches/fabric-loom/26.2/minecraft-client-only.jar
+/home/runner/.gradle/caches/fabric-loom/26.2/minecraft-client.jar
+/home/runner/.gradle/caches/fabric-loom/26.2/minecraft-common.jar
+/home/runner/.gradle/caches/fabric-loom/minecraftMaven/net/minecraft/minecraft-clientonly-deobf/26.2/minecraft-clientonly-deobf-26.2.jar
+/home/runner/.gradle/caches/fabric-loom/minecraftMaven/net/minecraft/minecraft-common-deobf/26.2/minecraft-common-deobf-26.2.jar
+/home/runner/work/my-voice-mod/my-voice-mod/.gradle/loom-cache/minecraftMaven/net/minecraft/minecraft-clientOnly-a8e9c7b123/26.2/minecraft-clientOnly-a8e9c7b123-26.2.jar
+/home/runner/work/my-voice-mod/my-voice-mod/.gradle/loom-cache/minecraftMaven/net/minecraft/minecraft-common-a8e9c7b123/26.2/minecraft-common-a8e9c7b123-26.2.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.fabricmc.fabric-api/fabric-gametest-api-v1/4.0.22+4a7fa0819e/3fb91749fe4f238518d2980fdc18454016949190/fabric-gametest-api-v1-4.0.22+4a7fa0819e.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.fabricmc.fabric-api/fabric-key-mapping-api-v1/2.0.5+e2bdee789e/c86dc688a7e9caa7edca9973dc6abfe37c652135/fabric-key-mapping-api-v1-2.0.5+e2bdee789e.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.fabricmc.fabric-api/fabric-events-interaction-v0/5.2.8+515ac5339e/98650380bb4e65a3deb6254e7c10a171eb907477/fabric-events-interaction-v0-5.2.8+515ac5339e.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.fabricmc.fabric-api/fabric-command-api-v2/3.1.0+00cb03469e/b144d197307c39c1bc516c274d9460f0116131a3/fabric-command-api-v2-3.1.0+00cb03469e.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.fabricmc.fabric-api/fabric-client-gametest-api-v1/6.0.2+0f4f1dca9e/f54e52e7af5a41fdcf6715f87d09282b2dc9b0f2/fabric-client-gametest-api-v1-6.0.2+0f4f1dca9e.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.fabricmc.fabric-api/fabric-networking-api-v1/6.3.4+2989c6a09e/608860809ec66fd65ca764c4157e96030f330537/fabric-networking-api-v1-6.3.4+2989c6a09e.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.fabricmc.fabric-api/fabric-lifecycle-events-v1/4.1.4+29b6eb019e/54a508470dcea81513e39001b5c0bf9fae0f1d5/fabric-lifecycle-events-v1-4.1.4+29b6eb019e.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.fabricmc.fabric-api/fabric-api-base/2.0.4+ece063239e/e766f3698b7bab8b1e13683040f8648fab511ca3/fabric-api-base-2.0.4+ece063239e.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.fabricmc.fabric-api/fabric-rendering-v1/25.3.3+515ac5339e/b970a6d778b9867d6ea13d5437193f1e86a19c55/fabric-rendering-v1-25.3.3+515ac5339e.jar
+/home/runner/.gradle/caches/modules-2/files-2.1/net.fabricmc.fabric-api/fabric-message-api-v1/7.0.8+bb2ed3f79e/106dc9ed22970076aaa39cd257b69705d136dd05/fabric-message-api-v1-7.0.8+bb2ed3f79e.jar

@@ -1,0 +1,1478 @@
+Compiled from "ClientboundConfigurationChannelEvents.java"
+public interface net.fabricmc.fabric.api.networking.v1.ClientboundConfigurationChannelEvents$Register {
+  public abstract void onChannelRegister(net.minecraft.server.network.ServerConfigurationPacketListenerImpl, net.fabricmc.fabric.api.networking.v1.PacketSender, net.minecraft.server.MinecraftServer, java.util.List<net.minecraft.resources.Identifier>);
+}
+Compiled from "ClientboundConfigurationChannelEvents.java"
+public interface net.fabricmc.fabric.api.networking.v1.ClientboundConfigurationChannelEvents$Unregister {
+  public abstract void onChannelUnregister(net.minecraft.server.network.ServerConfigurationPacketListenerImpl, net.fabricmc.fabric.api.networking.v1.PacketSender, net.minecraft.server.MinecraftServer, java.util.List<net.minecraft.resources.Identifier>);
+}
+Compiled from "ClientboundConfigurationChannelEvents.java"
+public final class net.fabricmc.fabric.api.networking.v1.ClientboundConfigurationChannelEvents {
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.networking.v1.ClientboundConfigurationChannelEvents$Register> REGISTER;
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.networking.v1.ClientboundConfigurationChannelEvents$Unregister> UNREGISTER;
+  private net.fabricmc.fabric.api.networking.v1.ClientboundConfigurationChannelEvents();
+  private static net.fabricmc.fabric.api.networking.v1.ClientboundConfigurationChannelEvents$Unregister lambda$static$2(net.fabricmc.fabric.api.networking.v1.ClientboundConfigurationChannelEvents$Unregister[]);
+  private static void lambda$static$3(net.fabricmc.fabric.api.networking.v1.ClientboundConfigurationChannelEvents$Unregister[], net.minecraft.server.network.ServerConfigurationPacketListenerImpl, net.fabricmc.fabric.api.networking.v1.PacketSender, net.minecraft.server.MinecraftServer, java.util.List);
+  private static net.fabricmc.fabric.api.networking.v1.ClientboundConfigurationChannelEvents$Register lambda$static$0(net.fabricmc.fabric.api.networking.v1.ClientboundConfigurationChannelEvents$Register[]);
+  private static void lambda$static$1(net.fabricmc.fabric.api.networking.v1.ClientboundConfigurationChannelEvents$Register[], net.minecraft.server.network.ServerConfigurationPacketListenerImpl, net.fabricmc.fabric.api.networking.v1.PacketSender, net.minecraft.server.MinecraftServer, java.util.List);
+  static {};
+}
+Compiled from "ClientboundPlayChannelEvents.java"
+public interface net.fabricmc.fabric.api.networking.v1.ClientboundPlayChannelEvents$Register {
+  public abstract void onChannelRegister(net.minecraft.server.network.ServerGamePacketListenerImpl, net.fabricmc.fabric.api.networking.v1.PacketSender, net.minecraft.server.MinecraftServer, java.util.List<net.minecraft.resources.Identifier>);
+}
+Compiled from "ClientboundPlayChannelEvents.java"
+public interface net.fabricmc.fabric.api.networking.v1.ClientboundPlayChannelEvents$Unregister {
+  public abstract void onChannelUnregister(net.minecraft.server.network.ServerGamePacketListenerImpl, net.fabricmc.fabric.api.networking.v1.PacketSender, net.minecraft.server.MinecraftServer, java.util.List<net.minecraft.resources.Identifier>);
+}
+Compiled from "ClientboundPlayChannelEvents.java"
+public final class net.fabricmc.fabric.api.networking.v1.ClientboundPlayChannelEvents {
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.networking.v1.ClientboundPlayChannelEvents$Register> REGISTER;
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.networking.v1.ClientboundPlayChannelEvents$Unregister> UNREGISTER;
+  private net.fabricmc.fabric.api.networking.v1.ClientboundPlayChannelEvents();
+  private static net.fabricmc.fabric.api.networking.v1.ClientboundPlayChannelEvents$Unregister lambda$static$2(net.fabricmc.fabric.api.networking.v1.ClientboundPlayChannelEvents$Unregister[]);
+  private static void lambda$static$3(net.fabricmc.fabric.api.networking.v1.ClientboundPlayChannelEvents$Unregister[], net.minecraft.server.network.ServerGamePacketListenerImpl, net.fabricmc.fabric.api.networking.v1.PacketSender, net.minecraft.server.MinecraftServer, java.util.List);
+  private static net.fabricmc.fabric.api.networking.v1.ClientboundPlayChannelEvents$Register lambda$static$0(net.fabricmc.fabric.api.networking.v1.ClientboundPlayChannelEvents$Register[]);
+  private static void lambda$static$1(net.fabricmc.fabric.api.networking.v1.ClientboundPlayChannelEvents$Register[], net.minecraft.server.network.ServerGamePacketListenerImpl, net.fabricmc.fabric.api.networking.v1.PacketSender, net.minecraft.server.MinecraftServer, java.util.List);
+  static {};
+}
+Compiled from "EntityTrackingEvents.java"
+public interface net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents$StartTracking {
+  public abstract void onStartTracking(net.minecraft.world.entity.Entity, net.minecraft.server.level.ServerPlayer);
+}
+Compiled from "EntityTrackingEvents.java"
+public interface net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents$StopTracking {
+  public abstract void onStopTracking(net.minecraft.world.entity.Entity, net.minecraft.server.level.ServerPlayer);
+}
+Compiled from "EntityTrackingEvents.java"
+public final class net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents {
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents$StartTracking> START_TRACKING;
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents$StopTracking> STOP_TRACKING;
+  private net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents();
+  private static net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents$StopTracking lambda$static$2(net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents$StopTracking[]);
+  private static void lambda$static$3(net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents$StopTracking[], net.minecraft.world.entity.Entity, net.minecraft.server.level.ServerPlayer);
+  private static net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents$StartTracking lambda$static$0(net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents$StartTracking[]);
+  private static void lambda$static$1(net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents$StartTracking[], net.minecraft.world.entity.Entity, net.minecraft.server.level.ServerPlayer);
+  static {};
+}
+Compiled from "FabricServerConfigurationPacketListenerImpl.java"
+public interface net.fabricmc.fabric.api.networking.v1.FabricServerConfigurationPacketListenerImpl {
+  public default void addTask(net.minecraft.server.network.ConfigurationTask);
+  public default void completeTask(net.minecraft.server.network.ConfigurationTask$Type);
+}
+Compiled from "FriendlyByteBufs.java"
+public final class net.fabricmc.fabric.api.networking.v1.FriendlyByteBufs {
+  private static final net.minecraft.network.FriendlyByteBuf EMPTY_FRIENDLY_BYTE_BUF;
+  public static net.minecraft.network.FriendlyByteBuf empty();
+  public static net.minecraft.network.FriendlyByteBuf create();
+  public static net.minecraft.network.FriendlyByteBuf readBytes(io.netty.buffer.ByteBuf, int);
+  public static net.minecraft.network.FriendlyByteBuf readSlice(io.netty.buffer.ByteBuf, int);
+  public static net.minecraft.network.FriendlyByteBuf readRetainedSlice(io.netty.buffer.ByteBuf, int);
+  public static net.minecraft.network.FriendlyByteBuf copy(io.netty.buffer.ByteBuf);
+  public static net.minecraft.network.FriendlyByteBuf copy(io.netty.buffer.ByteBuf, int, int);
+  public static net.minecraft.network.FriendlyByteBuf slice(io.netty.buffer.ByteBuf);
+  public static net.minecraft.network.FriendlyByteBuf retainedSlice(io.netty.buffer.ByteBuf);
+  public static net.minecraft.network.FriendlyByteBuf slice(io.netty.buffer.ByteBuf, int, int);
+  public static net.minecraft.network.FriendlyByteBuf retainedSlice(io.netty.buffer.ByteBuf, int, int);
+  public static net.minecraft.network.FriendlyByteBuf duplicate(io.netty.buffer.ByteBuf);
+  public static net.minecraft.network.FriendlyByteBuf retainedDuplicate(io.netty.buffer.ByteBuf);
+  private net.fabricmc.fabric.api.networking.v1.FriendlyByteBufs();
+  static {};
+}
+Compiled from "LoginPacketSender.java"
+public interface net.fabricmc.fabric.api.networking.v1.LoginPacketSender extends net.fabricmc.fabric.api.networking.v1.PacketSender {
+  public abstract net.minecraft.network.protocol.Packet<?> createPacket(net.minecraft.resources.Identifier, net.minecraft.network.FriendlyByteBuf);
+  public default void sendPacket(net.minecraft.resources.Identifier, net.minecraft.network.FriendlyByteBuf);
+  public default void sendPacket(net.minecraft.resources.Identifier, net.minecraft.network.FriendlyByteBuf, io.netty.channel.ChannelFutureListener);
+}
+Compiled from "PacketSender.java"
+public interface net.fabricmc.fabric.api.networking.v1.PacketSender {
+  public abstract net.minecraft.network.protocol.Packet<?> createPacket(net.minecraft.network.protocol.common.custom.CustomPacketPayload);
+  public default void sendPacket(net.minecraft.network.protocol.Packet<?>);
+  public default void sendPacket(net.minecraft.network.protocol.common.custom.CustomPacketPayload);
+  public abstract void sendPacket(net.minecraft.network.protocol.Packet<?>, io.netty.channel.ChannelFutureListener);
+  public default void sendPacket(net.minecraft.network.protocol.common.custom.CustomPacketPayload, io.netty.channel.ChannelFutureListener);
+  public abstract void disconnect(net.minecraft.network.chat.Component);
+}
+Compiled from "PayloadTypeRegistry.java"
+public interface net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry<B extends net.minecraft.network.FriendlyByteBuf> {
+  public abstract <T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> net.minecraft.network.protocol.common.custom.CustomPacketPayload$TypeAndCodec<? super B, T> register(net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<T>, net.minecraft.network.codec.StreamCodec<? super B, T>);
+  public abstract <T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> net.minecraft.network.protocol.common.custom.CustomPacketPayload$TypeAndCodec<? super B, T> registerLarge(net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<T>, net.minecraft.network.codec.StreamCodec<? super B, T>, int);
+  public abstract <T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> net.minecraft.network.protocol.common.custom.CustomPacketPayload$TypeAndCodec<? super B, T> registerLarge(net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<T>, net.minecraft.network.codec.StreamCodec<? super B, T>, java.util.function.IntSupplier);
+  public static net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry<net.minecraft.network.FriendlyByteBuf> serverboundConfiguration();
+  public static net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry<net.minecraft.network.FriendlyByteBuf> clientboundConfiguration();
+  public static net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry<net.minecraft.network.RegistryFriendlyByteBuf> serverboundPlay();
+  public static net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry<net.minecraft.network.RegistryFriendlyByteBuf> clientboundPlay();
+}
+Compiled from "PlayerLookup.java"
+public final class net.fabricmc.fabric.api.networking.v1.PlayerLookup {
+  public static java.util.Collection<net.minecraft.server.level.ServerPlayer> all(net.minecraft.server.MinecraftServer);
+  public static java.util.Collection<net.minecraft.server.level.ServerPlayer> level(net.minecraft.server.level.ServerLevel);
+  public static java.util.Collection<net.minecraft.server.level.ServerPlayer> tracking(net.minecraft.server.level.ServerLevel, net.minecraft.world.level.ChunkPos);
+  public static java.util.Collection<net.minecraft.server.level.ServerPlayer> tracking(net.minecraft.world.entity.Entity);
+  public static java.util.Collection<net.minecraft.server.level.ServerPlayer> tracking(net.minecraft.world.level.block.entity.BlockEntity);
+  public static java.util.Collection<net.minecraft.server.level.ServerPlayer> tracking(net.minecraft.server.level.ServerLevel, net.minecraft.core.BlockPos);
+  public static java.util.Collection<net.minecraft.server.level.ServerPlayer> around(net.minecraft.server.level.ServerLevel, net.minecraft.world.phys.Vec3, double);
+  public static java.util.Collection<net.minecraft.server.level.ServerPlayer> around(net.minecraft.server.level.ServerLevel, net.minecraft.core.Vec3i, double);
+  private net.fabricmc.fabric.api.networking.v1.PlayerLookup();
+  private static boolean lambda$around$1(net.minecraft.core.Vec3i, double, net.minecraft.server.level.ServerPlayer);
+  private static boolean lambda$around$0(net.minecraft.world.phys.Vec3, double, net.minecraft.server.level.ServerPlayer);
+}
+Compiled from "ServerConfigurationConnectionEvents.java"
+public interface net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents$Configure {
+  public abstract void onSendConfiguration(net.minecraft.server.network.ServerConfigurationPacketListenerImpl, net.minecraft.server.MinecraftServer);
+}
+Compiled from "ServerConfigurationConnectionEvents.java"
+public interface net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents$Disconnect {
+  public abstract void onConfigureDisconnect(net.minecraft.server.network.ServerConfigurationPacketListenerImpl, net.minecraft.server.MinecraftServer);
+}
+Compiled from "ServerConfigurationConnectionEvents.java"
+public final class net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents {
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents$Configure> BEFORE_CONFIGURE;
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents$Configure> CONFIGURE;
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents$Disconnect> DISCONNECT;
+  private net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents();
+  private static net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents$Disconnect lambda$static$4(net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents$Disconnect[]);
+  private static void lambda$static$5(net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents$Disconnect[], net.minecraft.server.network.ServerConfigurationPacketListenerImpl, net.minecraft.server.MinecraftServer);
+  private static net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents$Configure lambda$static$2(net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents$Configure[]);
+  private static void lambda$static$3(net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents$Configure[], net.minecraft.server.network.ServerConfigurationPacketListenerImpl, net.minecraft.server.MinecraftServer);
+  private static net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents$Configure lambda$static$0(net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents$Configure[]);
+  private static void lambda$static$1(net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents$Configure[], net.minecraft.server.network.ServerConfigurationPacketListenerImpl, net.minecraft.server.MinecraftServer);
+  static {};
+}
+Compiled from "ServerConfigurationNetworking.java"
+public interface net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking$ConfigurationPacketHandler<T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> {
+  public abstract void receive(T, net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking$Context);
+}
+Compiled from "ServerConfigurationNetworking.java"
+public interface net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking$Context {
+  public abstract net.minecraft.server.MinecraftServer server();
+  public abstract net.minecraft.server.network.ServerConfigurationPacketListenerImpl packetListener();
+  public abstract net.fabricmc.fabric.api.networking.v1.PacketSender responseSender();
+  public default net.fabricmc.fabric.api.networking.v1.context.PacketContext packetContext();
+}
+Compiled from "ServerConfigurationNetworking.java"
+public final class net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking {
+  public static <T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> boolean registerGlobalReceiver(net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<T>, net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking$ConfigurationPacketHandler<T>);
+  public static net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking$ConfigurationPacketHandler<?> unregisterGlobalReceiver(net.minecraft.resources.Identifier);
+  public static java.util.Set<net.minecraft.resources.Identifier> getGlobalReceivers();
+  public static <T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> boolean registerReceiver(net.minecraft.server.network.ServerConfigurationPacketListenerImpl, net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<T>, net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking$ConfigurationPacketHandler<T>);
+  public static net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking$ConfigurationPacketHandler<?> unregisterReceiver(net.minecraft.server.network.ServerConfigurationPacketListenerImpl, net.minecraft.resources.Identifier);
+  public static java.util.Set<net.minecraft.resources.Identifier> getReceived(net.minecraft.server.network.ServerConfigurationPacketListenerImpl);
+  public static java.util.Set<net.minecraft.resources.Identifier> getSendable(net.minecraft.server.network.ServerConfigurationPacketListenerImpl);
+  public static boolean canSend(net.minecraft.server.network.ServerConfigurationPacketListenerImpl, net.minecraft.resources.Identifier);
+  public static boolean canSend(net.minecraft.server.network.ServerConfigurationPacketListenerImpl, net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<?>);
+  public static net.minecraft.network.protocol.Packet<net.minecraft.network.protocol.common.ClientCommonPacketListener> createClientboundPacket(net.minecraft.network.protocol.common.custom.CustomPacketPayload);
+  public static net.fabricmc.fabric.api.networking.v1.PacketSender getSender(net.minecraft.server.network.ServerConfigurationPacketListenerImpl);
+  public static void send(net.minecraft.server.network.ServerConfigurationPacketListenerImpl, net.minecraft.network.protocol.common.custom.CustomPacketPayload);
+  public static net.minecraft.server.MinecraftServer getServer(net.minecraft.server.network.ServerConfigurationPacketListenerImpl);
+  public static boolean isReconfiguring(net.minecraft.server.network.ServerConfigurationPacketListenerImpl);
+  private net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking();
+}
+Compiled from "ServerLoginConnectionEvents.java"
+public interface net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents$Disconnect {
+  public abstract void onLoginDisconnect(net.minecraft.server.network.ServerLoginPacketListenerImpl, net.minecraft.server.MinecraftServer);
+}
+Compiled from "ServerLoginConnectionEvents.java"
+public interface net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents$Init {
+  public abstract void onLoginInit(net.minecraft.server.network.ServerLoginPacketListenerImpl, net.minecraft.server.MinecraftServer);
+}
+Compiled from "ServerLoginConnectionEvents.java"
+public interface net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents$QueryStart {
+  public abstract void onLoginStart(net.minecraft.server.network.ServerLoginPacketListenerImpl, net.minecraft.server.MinecraftServer, net.fabricmc.fabric.api.networking.v1.LoginPacketSender, net.fabricmc.fabric.api.networking.v1.ServerLoginNetworking$LoginSynchronizer);
+}
+Compiled from "ServerLoginConnectionEvents.java"
+public final class net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents {
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents$Init> INIT;
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents$QueryStart> QUERY_START;
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents$Disconnect> DISCONNECT;
+  private net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents();
+  private static net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents$Disconnect lambda$static$4(net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents$Disconnect[]);
+  private static void lambda$static$5(net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents$Disconnect[], net.minecraft.server.network.ServerLoginPacketListenerImpl, net.minecraft.server.MinecraftServer);
+  private static net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents$QueryStart lambda$static$2(net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents$QueryStart[]);
+  private static void lambda$static$3(net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents$QueryStart[], net.minecraft.server.network.ServerLoginPacketListenerImpl, net.minecraft.server.MinecraftServer, net.fabricmc.fabric.api.networking.v1.LoginPacketSender, net.fabricmc.fabric.api.networking.v1.ServerLoginNetworking$LoginSynchronizer);
+  private static net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents$Init lambda$static$0(net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents$Init[]);
+  private static void lambda$static$1(net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents$Init[], net.minecraft.server.network.ServerLoginPacketListenerImpl, net.minecraft.server.MinecraftServer);
+  static {};
+}
+Compiled from "ServerLoginNetworking.java"
+public interface net.fabricmc.fabric.api.networking.v1.ServerLoginNetworking$LoginQueryResponseHandler {
+  public abstract void receive(net.minecraft.server.MinecraftServer, net.minecraft.server.network.ServerLoginPacketListenerImpl, boolean, net.minecraft.network.FriendlyByteBuf, net.fabricmc.fabric.api.networking.v1.ServerLoginNetworking$LoginSynchronizer, net.fabricmc.fabric.api.networking.v1.PacketSender);
+}
+Compiled from "ServerLoginNetworking.java"
+public interface net.fabricmc.fabric.api.networking.v1.ServerLoginNetworking$LoginSynchronizer {
+  public abstract void waitFor(java.util.concurrent.Future<?>);
+}
+Compiled from "ServerLoginNetworking.java"
+public final class net.fabricmc.fabric.api.networking.v1.ServerLoginNetworking {
+  public static boolean registerGlobalReceiver(net.minecraft.resources.Identifier, net.fabricmc.fabric.api.networking.v1.ServerLoginNetworking$LoginQueryResponseHandler);
+  public static net.fabricmc.fabric.api.networking.v1.ServerLoginNetworking$LoginQueryResponseHandler unregisterGlobalReceiver(net.minecraft.resources.Identifier);
+  public static java.util.Set<net.minecraft.resources.Identifier> getGlobalReceivers();
+  public static boolean registerReceiver(net.minecraft.server.network.ServerLoginPacketListenerImpl, net.minecraft.resources.Identifier, net.fabricmc.fabric.api.networking.v1.ServerLoginNetworking$LoginQueryResponseHandler);
+  public static net.fabricmc.fabric.api.networking.v1.ServerLoginNetworking$LoginQueryResponseHandler unregisterReceiver(net.minecraft.server.network.ServerLoginPacketListenerImpl, net.minecraft.resources.Identifier);
+  public static net.minecraft.server.MinecraftServer getServer(net.minecraft.server.network.ServerLoginPacketListenerImpl);
+  public static net.fabricmc.fabric.api.networking.v1.LoginPacketSender getSender(net.minecraft.server.network.ServerLoginPacketListenerImpl);
+  private net.fabricmc.fabric.api.networking.v1.ServerLoginNetworking();
+}
+Compiled from "ServerPlayConnectionEvents.java"
+public interface net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents$Disconnect {
+  public abstract void onPlayDisconnect(net.minecraft.server.network.ServerGamePacketListenerImpl, net.minecraft.server.MinecraftServer);
+}
+Compiled from "ServerPlayConnectionEvents.java"
+public interface net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents$Init {
+  public abstract void onPlayInit(net.minecraft.server.network.ServerGamePacketListenerImpl, net.minecraft.server.MinecraftServer);
+}
+Compiled from "ServerPlayConnectionEvents.java"
+public interface net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents$Join {
+  public abstract void onPlayReady(net.minecraft.server.network.ServerGamePacketListenerImpl, net.fabricmc.fabric.api.networking.v1.PacketSender, net.minecraft.server.MinecraftServer);
+}
+Compiled from "ServerPlayConnectionEvents.java"
+public final class net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents {
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents$Init> INIT;
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents$Join> JOIN;
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents$Disconnect> DISCONNECT;
+  private net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents();
+  private static net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents$Disconnect lambda$static$4(net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents$Disconnect[]);
+  private static void lambda$static$5(net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents$Disconnect[], net.minecraft.server.network.ServerGamePacketListenerImpl, net.minecraft.server.MinecraftServer);
+  private static net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents$Join lambda$static$2(net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents$Join[]);
+  private static void lambda$static$3(net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents$Join[], net.minecraft.server.network.ServerGamePacketListenerImpl, net.fabricmc.fabric.api.networking.v1.PacketSender, net.minecraft.server.MinecraftServer);
+  private static net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents$Init lambda$static$0(net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents$Init[]);
+  private static void lambda$static$1(net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents$Init[], net.minecraft.server.network.ServerGamePacketListenerImpl, net.minecraft.server.MinecraftServer);
+  static {};
+}
+Compiled from "ServerPlayNetworking.java"
+public interface net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking$Context {
+  public abstract net.minecraft.server.MinecraftServer server();
+  public abstract net.minecraft.server.level.ServerPlayer player();
+  public abstract net.fabricmc.fabric.api.networking.v1.PacketSender responseSender();
+  public default net.fabricmc.fabric.api.networking.v1.context.PacketContext packetContext();
+}
+Compiled from "ServerPlayNetworking.java"
+public interface net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking$PlayPayloadHandler<T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> {
+  public abstract void receive(T, net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking$Context);
+}
+Compiled from "ServerPlayNetworking.java"
+public final class net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking {
+  public static <T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> boolean registerGlobalReceiver(net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<T>, net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking$PlayPayloadHandler<T>);
+  public static net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking$PlayPayloadHandler<?> unregisterGlobalReceiver(net.minecraft.resources.Identifier);
+  public static java.util.Set<net.minecraft.resources.Identifier> getGlobalReceivers();
+  public static <T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> boolean registerReceiver(net.minecraft.server.network.ServerGamePacketListenerImpl, net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<T>, net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking$PlayPayloadHandler<T>);
+  public static net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking$PlayPayloadHandler<?> unregisterReceiver(net.minecraft.server.network.ServerGamePacketListenerImpl, net.minecraft.resources.Identifier);
+  public static java.util.Set<net.minecraft.resources.Identifier> getReceived(net.minecraft.server.level.ServerPlayer);
+  public static java.util.Set<net.minecraft.resources.Identifier> getReceived(net.minecraft.server.network.ServerGamePacketListenerImpl);
+  public static java.util.Set<net.minecraft.resources.Identifier> getSendable(net.minecraft.server.level.ServerPlayer);
+  public static java.util.Set<net.minecraft.resources.Identifier> getSendable(net.minecraft.server.network.ServerGamePacketListenerImpl);
+  public static boolean canSend(net.minecraft.server.level.ServerPlayer, net.minecraft.resources.Identifier);
+  public static boolean canSend(net.minecraft.server.level.ServerPlayer, net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<?>);
+  public static boolean canSend(net.minecraft.server.network.ServerGamePacketListenerImpl, net.minecraft.resources.Identifier);
+  public static boolean canSend(net.minecraft.server.network.ServerGamePacketListenerImpl, net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<?>);
+  public static <T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> net.minecraft.network.protocol.Packet<net.minecraft.network.protocol.common.ClientCommonPacketListener> createClientboundPacket(T);
+  public static net.fabricmc.fabric.api.networking.v1.PacketSender getSender(net.minecraft.server.level.ServerPlayer);
+  public static net.fabricmc.fabric.api.networking.v1.PacketSender getSender(net.minecraft.server.network.ServerGamePacketListenerImpl);
+  public static void send(net.minecraft.server.level.ServerPlayer, net.minecraft.network.protocol.common.custom.CustomPacketPayload);
+  public static void reconfigure(net.minecraft.server.level.ServerPlayer);
+  public static void reconfigure(net.minecraft.server.network.ServerGamePacketListenerImpl);
+  private net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking();
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.api.networking.v1.package-info {
+}
+Compiled from "PacketContext.java"
+public interface net.fabricmc.fabric.api.networking.v1.context.PacketContext$Key<T> extends net.fabricmc.fabric.api.networking.v1.context.PacketContext$ReadKey<T> {
+}
+Compiled from "PacketContext.java"
+public interface net.fabricmc.fabric.api.networking.v1.context.PacketContext$ReadKey<T> {
+}
+Compiled from "PacketContext.java"
+public interface net.fabricmc.fabric.api.networking.v1.context.PacketContext {
+  public static final net.fabricmc.fabric.api.networking.v1.context.PacketContext$ReadKey<net.minecraft.server.MinecraftServer> SERVER_INSTANCE;
+  public static final net.fabricmc.fabric.api.networking.v1.context.PacketContext$ReadKey<net.minecraft.core.RegistryAccess> REGISTRY_ACCESS;
+  public static final net.fabricmc.fabric.api.networking.v1.context.PacketContext$ReadKey<com.mojang.authlib.GameProfile> GAME_PROFILE;
+  public static final net.fabricmc.fabric.api.networking.v1.context.PacketContext$ReadKey<net.minecraft.network.Connection> CONNECTION;
+  public abstract <T> T get(net.fabricmc.fabric.api.networking.v1.context.PacketContext$ReadKey<T>);
+  public default <T> T orElseThrow(net.fabricmc.fabric.api.networking.v1.context.PacketContext$ReadKey<T>);
+  public default <T> T orElse(net.fabricmc.fabric.api.networking.v1.context.PacketContext$ReadKey<T>, T);
+  public abstract <T> void set(net.fabricmc.fabric.api.networking.v1.context.PacketContext$Key<T>, T);
+  public static net.fabricmc.fabric.api.networking.v1.context.PacketContext get();
+  public static net.fabricmc.fabric.api.networking.v1.context.PacketContext orElseThrow();
+  public static void runWithContext(net.fabricmc.fabric.api.networking.v1.context.PacketContextProvider, java.lang.Runnable);
+  public static <T> T supplyWithContext(net.fabricmc.fabric.api.networking.v1.context.PacketContextProvider, java.util.function.Supplier<T>);
+  public static void runWithoutContext(java.lang.Runnable);
+  public static <T> T supplyWithoutContext(java.util.function.Supplier<T>);
+  public static <T> net.fabricmc.fabric.api.networking.v1.context.PacketContext$Key<T> key(net.minecraft.resources.Identifier);
+  private static java.lang.RuntimeException lambda$orElseThrow$1();
+  private static java.lang.String lambda$orElseThrow$0(net.fabricmc.fabric.api.networking.v1.context.PacketContext$ReadKey);
+  static {};
+}
+Compiled from "PacketContextProvider.java"
+public interface net.fabricmc.fabric.api.networking.v1.context.PacketContextProvider {
+  public default net.fabricmc.fabric.api.networking.v1.context.PacketContext getPacketContext();
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.api.networking.v1.context.package-info {
+}
+Compiled from "AbstractChanneledNetworkAddon.java"
+public abstract class net.fabricmc.fabric.impl.networking.AbstractChanneledNetworkAddon<H> extends net.fabricmc.fabric.impl.networking.AbstractNetworkAddon<H> implements net.fabricmc.fabric.api.networking.v1.PacketSender, net.fabricmc.fabric.impl.networking.CommonPacketHandler {
+  private static final int MAX_CHANNELS;
+  private static final int MAX_CHANNEL_NAME_LENGTH;
+  protected final net.minecraft.network.Connection connection;
+  protected final net.fabricmc.fabric.impl.networking.GlobalReceiverRegistry<H> receiver;
+  protected final java.util.Set<net.minecraft.resources.Identifier> sendableChannels;
+  protected int commonVersion;
+  protected net.fabricmc.fabric.impl.networking.AbstractChanneledNetworkAddon(net.fabricmc.fabric.impl.networking.GlobalReceiverRegistry<H>, net.minecraft.network.Connection, java.lang.String);
+  protected void registerPendingChannels(net.fabricmc.fabric.impl.networking.ChannelInfoHolder, net.minecraft.network.ConnectionProtocol);
+  public boolean handle(net.minecraft.network.protocol.common.custom.CustomPacketPayload);
+  protected abstract boolean isOnReceiveThread();
+  protected abstract void receive(H, net.minecraft.network.protocol.common.custom.CustomPacketPayload);
+  protected void sendInitialChannelRegistrationPacket();
+  protected net.fabricmc.fabric.impl.networking.RegistrationPayload createRegistrationPayload(net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<net.fabricmc.fabric.impl.networking.RegistrationPayload>, java.util.Collection<net.minecraft.resources.Identifier>);
+  protected void receiveRegistration(boolean, net.fabricmc.fabric.impl.networking.RegistrationPayload);
+  void register(java.util.List<net.minecraft.resources.Identifier>);
+  private void registerChannel(net.minecraft.resources.Identifier);
+  void unregister(java.util.List<net.minecraft.resources.Identifier>);
+  public void sendPacket(net.minecraft.network.protocol.Packet<?>, io.netty.channel.ChannelFutureListener);
+  public void disconnect(net.minecraft.network.chat.Component);
+  protected abstract void schedule(java.lang.Runnable);
+  protected abstract void invokeRegisterEvent(java.util.List<net.minecraft.resources.Identifier>);
+  protected abstract void invokeUnregisterEvent(java.util.List<net.minecraft.resources.Identifier>);
+  public java.util.Set<net.minecraft.resources.Identifier> getSendableChannels();
+  public void onCommonVersionPacket(int);
+  public void onCommonRegisterPacket(net.fabricmc.fabric.impl.networking.CommonRegisterPayload);
+  public net.fabricmc.fabric.impl.networking.CommonRegisterPayload createRegisterPayload();
+  public int getNegotiatedVersion();
+  private java.lang.String getProtocol();
+  private void lambda$unregister$0(java.util.List);
+  private void lambda$register$0(java.util.List);
+  static {};
+}
+Compiled from "AbstractNetworkAddon.java"
+public abstract class net.fabricmc.fabric.impl.networking.AbstractNetworkAddon<H> {
+  protected final net.fabricmc.fabric.impl.networking.GlobalReceiverRegistry<H> receiver;
+  protected final org.slf4j.Logger logger;
+  private final java.util.concurrent.locks.ReadWriteLock lock;
+  private final java.util.Map<net.minecraft.resources.Identifier, H> handlers;
+  private final java.util.concurrent.atomic.AtomicBoolean disconnected;
+  protected net.fabricmc.fabric.impl.networking.AbstractNetworkAddon(net.fabricmc.fabric.impl.networking.GlobalReceiverRegistry<H>, java.lang.String);
+  public final void lateInit();
+  protected abstract void invokeInitEvent();
+  public final void endSession();
+  public H getHandler(net.minecraft.resources.Identifier);
+  private void assertNotReserved(net.minecraft.resources.Identifier);
+  public void registerChannels(java.util.Map<net.minecraft.resources.Identifier, H>);
+  public boolean registerChannel(net.minecraft.resources.Identifier, H);
+  public H unregisterChannel(net.minecraft.resources.Identifier);
+  public java.util.Set<net.minecraft.resources.Identifier> getReceivableChannels();
+  protected abstract void handleRegistration(net.minecraft.resources.Identifier);
+  protected abstract void handleUnregistration(net.minecraft.resources.Identifier);
+  public final void handleDisconnect();
+  protected abstract void invokeDisconnectEvent();
+  protected abstract boolean isReservedChannel(net.minecraft.resources.Identifier);
+}
+Compiled from "ChannelInfoHolder.java"
+public interface net.fabricmc.fabric.impl.networking.ChannelInfoHolder {
+  public abstract java.util.Collection<net.minecraft.resources.Identifier> fabric_getPendingChannelsNames(net.minecraft.network.ConnectionProtocol);
+}
+Compiled from "CommonPacketHandler.java"
+public interface net.fabricmc.fabric.impl.networking.CommonPacketHandler {
+  public abstract void onCommonVersionPacket(int);
+  public abstract void onCommonRegisterPacket(net.fabricmc.fabric.impl.networking.CommonRegisterPayload);
+  public abstract net.fabricmc.fabric.impl.networking.CommonRegisterPayload createRegisterPayload();
+  public abstract int getNegotiatedVersion();
+}
+Compiled from "CommonPacketsImpl.java"
+final class net.fabricmc.fabric.impl.networking.CommonPacketsImpl$CommonRegisterConfigurationTask extends java.lang.Record implements net.minecraft.server.network.ConfigurationTask {
+  private final net.fabricmc.fabric.impl.networking.server.ServerConfigurationNetworkAddon addon;
+  public static final net.minecraft.server.network.ConfigurationTask$Type KEY;
+  private net.fabricmc.fabric.impl.networking.CommonPacketsImpl$CommonRegisterConfigurationTask(net.fabricmc.fabric.impl.networking.server.ServerConfigurationNetworkAddon);
+  public void start(java.util.function.Consumer<net.minecraft.network.protocol.Packet<?>>);
+  public net.minecraft.server.network.ConfigurationTask$Type type();
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public net.fabricmc.fabric.impl.networking.server.ServerConfigurationNetworkAddon addon();
+  static {};
+}
+Compiled from "CommonPacketsImpl.java"
+final class net.fabricmc.fabric.impl.networking.CommonPacketsImpl$CommonVersionConfigurationTask extends java.lang.Record implements net.minecraft.server.network.ConfigurationTask {
+  private final net.fabricmc.fabric.impl.networking.server.ServerConfigurationNetworkAddon addon;
+  public static final net.minecraft.server.network.ConfigurationTask$Type KEY;
+  private net.fabricmc.fabric.impl.networking.CommonPacketsImpl$CommonVersionConfigurationTask(net.fabricmc.fabric.impl.networking.server.ServerConfigurationNetworkAddon);
+  public void start(java.util.function.Consumer<net.minecraft.network.protocol.Packet<?>>);
+  public net.minecraft.server.network.ConfigurationTask$Type type();
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public net.fabricmc.fabric.impl.networking.server.ServerConfigurationNetworkAddon addon();
+  static {};
+}
+Compiled from "CommonPacketsImpl.java"
+public class net.fabricmc.fabric.impl.networking.CommonPacketsImpl {
+  public static final int PACKET_VERSION_1;
+  public static final int[] SUPPORTED_COMMON_PACKET_VERSIONS;
+  public net.fabricmc.fabric.impl.networking.CommonPacketsImpl();
+  public static void init();
+  private static int getNegotiatedVersion(net.fabricmc.fabric.impl.networking.CommonVersionPayload);
+  public static int getHighestCommonVersion(int[], int[]);
+  private static void lambda$init$2(net.minecraft.server.network.ServerConfigurationPacketListenerImpl, net.minecraft.server.MinecraftServer);
+  private static void lambda$init$1(net.fabricmc.fabric.impl.networking.CommonRegisterPayload, net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking$Context);
+  private static void lambda$init$0(net.fabricmc.fabric.impl.networking.CommonVersionPayload, net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking$Context);
+  static {};
+}
+Compiled from "CommonRegisterPayload.java"
+public final class net.fabricmc.fabric.impl.networking.CommonRegisterPayload extends java.lang.Record implements net.minecraft.network.protocol.common.custom.CustomPacketPayload {
+  private final int version;
+  private final java.lang.String protocol;
+  private final java.util.Set<net.minecraft.resources.Identifier> channels;
+  public static final net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<net.fabricmc.fabric.impl.networking.CommonRegisterPayload> TYPE;
+  public static final net.minecraft.network.codec.StreamCodec<net.minecraft.network.FriendlyByteBuf, net.fabricmc.fabric.impl.networking.CommonRegisterPayload> CODEC;
+  public static final java.lang.String PLAY_PROTOCOL;
+  public static final java.lang.String CONFIGURATION_PROTOCOL;
+  private net.fabricmc.fabric.impl.networking.CommonRegisterPayload(net.minecraft.network.FriendlyByteBuf);
+  public net.fabricmc.fabric.impl.networking.CommonRegisterPayload(int, java.lang.String, java.util.Set<net.minecraft.resources.Identifier>);
+  public void write(net.minecraft.network.FriendlyByteBuf);
+  public net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<net.fabricmc.fabric.impl.networking.CommonRegisterPayload> type();
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public int version();
+  public java.lang.String protocol();
+  public java.util.Set<net.minecraft.resources.Identifier> channels();
+  static {};
+}
+Compiled from "CommonVersionPayload.java"
+public final class net.fabricmc.fabric.impl.networking.CommonVersionPayload extends java.lang.Record implements net.minecraft.network.protocol.common.custom.CustomPacketPayload {
+  private final int[] versions;
+  public static final net.minecraft.network.codec.StreamCodec<net.minecraft.network.FriendlyByteBuf, net.fabricmc.fabric.impl.networking.CommonVersionPayload> CODEC;
+  public static final net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<net.fabricmc.fabric.impl.networking.CommonVersionPayload> TYPE;
+  private net.fabricmc.fabric.impl.networking.CommonVersionPayload(net.minecraft.network.FriendlyByteBuf);
+  public net.fabricmc.fabric.impl.networking.CommonVersionPayload(int[]);
+  public void write(net.minecraft.network.FriendlyByteBuf);
+  public net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<? extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> type();
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public int[] versions();
+  static {};
+}
+Compiled from "CustomPayloadTypeProvider.java"
+public interface net.fabricmc.fabric.impl.networking.CustomPayloadTypeProvider<B extends net.minecraft.network.FriendlyByteBuf> {
+  public abstract net.minecraft.network.protocol.common.custom.CustomPacketPayload$TypeAndCodec<B, ? extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> get(B, net.minecraft.resources.Identifier);
+}
+Compiled from "FabricCustomPayloadStreamCodec.java"
+public interface net.fabricmc.fabric.impl.networking.FabricCustomPayloadStreamCodec<B extends net.minecraft.network.FriendlyByteBuf> {
+  public abstract void fabric_setCustomPayloadTypeProvider(net.fabricmc.fabric.impl.networking.CustomPayloadTypeProvider<B>);
+}
+Compiled from "FabricRegistryFriendlyByteBuf.java"
+public interface net.fabricmc.fabric.impl.networking.FabricRegistryFriendlyByteBuf {
+  public abstract void fabric_setSendableConfigurationChannels(java.util.Set<net.minecraft.resources.Identifier>);
+  public abstract java.util.Set<net.minecraft.resources.Identifier> fabric_getSendableConfigurationChannels();
+}
+Compiled from "GenericPayloadAccessor.java"
+public interface net.fabricmc.fabric.impl.networking.GenericPayloadAccessor {
+  public abstract net.minecraft.network.protocol.common.custom.CustomPacketPayload fabric_payload();
+}
+Compiled from "GlobalReceiverRegistry.java"
+public final class net.fabricmc.fabric.impl.networking.GlobalReceiverRegistry<H> {
+  public static final int DEFAULT_CHANNEL_NAME_MAX_LENGTH;
+  private static final org.slf4j.Logger LOGGER;
+  private final net.minecraft.network.protocol.PacketFlow flow;
+  private final net.minecraft.network.ConnectionProtocol protocol;
+  private final net.fabricmc.fabric.impl.networking.PayloadTypeRegistryImpl<?> payloadTypeRegistry;
+  private final java.util.concurrent.locks.ReadWriteLock lock;
+  private final java.util.Map<net.minecraft.resources.Identifier, H> handlers;
+  private final java.util.Set<net.fabricmc.fabric.impl.networking.AbstractNetworkAddon<H>> trackedAddons;
+  public net.fabricmc.fabric.impl.networking.GlobalReceiverRegistry(net.minecraft.network.protocol.PacketFlow, net.minecraft.network.ConnectionProtocol, net.fabricmc.fabric.impl.networking.PayloadTypeRegistryImpl<?>);
+  public H getHandler(net.minecraft.resources.Identifier);
+  public boolean registerGlobalReceiver(net.minecraft.resources.Identifier, H);
+  public H unregisterGlobalReceiver(net.minecraft.resources.Identifier);
+  public java.util.Map<net.minecraft.resources.Identifier, H> getHandlers();
+  public java.util.Set<net.minecraft.resources.Identifier> getChannels();
+  public void startSession(net.fabricmc.fabric.impl.networking.AbstractNetworkAddon<H>);
+  public void endSession(net.fabricmc.fabric.impl.networking.AbstractNetworkAddon<H>);
+  private void logTrackedAddonSize();
+  private void handleRegistration(net.minecraft.resources.Identifier, H);
+  private void handleUnregistration(net.minecraft.resources.Identifier);
+  public void assertPayloadType(net.minecraft.resources.Identifier);
+  public net.minecraft.network.ConnectionProtocol getProtocol();
+  static {};
+}
+Compiled from "NetworkingImpl.java"
+public final class net.fabricmc.fabric.impl.networking.NetworkingImpl {
+  public static final java.lang.String MOD_ID;
+  public static final org.slf4j.Logger LOGGER;
+  public static final net.minecraft.resources.Identifier REGISTER_CHANNEL;
+  public static final net.minecraft.resources.Identifier UNREGISTER_CHANNEL;
+  public net.fabricmc.fabric.impl.networking.NetworkingImpl();
+  public static boolean isReservedCommonChannel(net.minecraft.resources.Identifier);
+  public static void init();
+  private static <T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> void registerGeneric(net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<T>, net.minecraft.network.codec.StreamCodec<? super net.minecraft.network.FriendlyByteBuf, T>);
+  static {};
+}
+Compiled from "PacketCallbackListener.java"
+public interface net.fabricmc.fabric.impl.networking.PacketCallbackListener {
+  public abstract void sent(net.minecraft.network.protocol.Packet<?>);
+}
+Compiled from "PacketListenerExtensions.java"
+public interface net.fabricmc.fabric.impl.networking.PacketListenerExtensions {
+  public abstract net.fabricmc.fabric.impl.networking.AbstractNetworkAddon<?> getAddon();
+}
+Compiled from "PayloadTypeRegistryImpl.java"
+public class net.fabricmc.fabric.impl.networking.PayloadTypeRegistryImpl<B extends net.minecraft.network.FriendlyByteBuf> implements net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry<B> {
+  public static final net.fabricmc.fabric.impl.networking.PayloadTypeRegistryImpl<net.minecraft.network.FriendlyByteBuf> SERVERBOUND_CONFIGURATION;
+  public static final net.fabricmc.fabric.impl.networking.PayloadTypeRegistryImpl<net.minecraft.network.FriendlyByteBuf> CLIENTBOUND_CONFIGURATION;
+  public static final net.fabricmc.fabric.impl.networking.PayloadTypeRegistryImpl<net.minecraft.network.RegistryFriendlyByteBuf> SERVERBOUND_PLAY;
+  public static final net.fabricmc.fabric.impl.networking.PayloadTypeRegistryImpl<net.minecraft.network.RegistryFriendlyByteBuf> CLIENTBOUND_PLAY;
+  private final java.util.Map<net.minecraft.resources.Identifier, net.minecraft.network.protocol.common.custom.CustomPacketPayload$TypeAndCodec<B, ? extends net.minecraft.network.protocol.common.custom.CustomPacketPayload>> packetTypes;
+  private final it.unimi.dsi.fastutil.objects.Object2IntMap<net.minecraft.resources.Identifier> maxPacketSizes;
+  private final it.unimi.dsi.fastutil.objects.Object2ObjectMap<net.minecraft.resources.Identifier, java.util.function.IntSupplier> pendingMaxPacketSizes;
+  private final net.minecraft.network.ConnectionProtocol protocol;
+  private final net.minecraft.network.protocol.PacketFlow flow;
+  private final int minimalSplittableSize;
+  private net.fabricmc.fabric.impl.networking.PayloadTypeRegistryImpl(net.minecraft.network.ConnectionProtocol, net.minecraft.network.protocol.PacketFlow);
+  public static net.fabricmc.fabric.impl.networking.PayloadTypeRegistryImpl<?> get(net.minecraft.network.ProtocolInfo<?>);
+  public <T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> net.minecraft.network.protocol.common.custom.CustomPacketPayload$TypeAndCodec<? super B, T> register(net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<T>, net.minecraft.network.codec.StreamCodec<? super B, T>);
+  public <T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> net.minecraft.network.protocol.common.custom.CustomPacketPayload$TypeAndCodec<? super B, T> registerLarge(net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<T>, net.minecraft.network.codec.StreamCodec<? super B, T>, int);
+  public <T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> net.minecraft.network.protocol.common.custom.CustomPacketPayload$TypeAndCodec<? super B, T> registerLarge(net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<T>, net.minecraft.network.codec.StreamCodec<? super B, T>, java.util.function.IntSupplier);
+  private void padAndSetMaxPacketSize(net.minecraft.resources.Identifier, int);
+  public net.minecraft.network.protocol.common.custom.CustomPacketPayload$TypeAndCodec<B, ? extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> get(net.minecraft.resources.Identifier);
+  public <T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> net.minecraft.network.protocol.common.custom.CustomPacketPayload$TypeAndCodec<B, T> get(net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<T>);
+  public int getMaxPacketSizeForSplitting(net.minecraft.resources.Identifier);
+  public net.minecraft.network.ConnectionProtocol getProtocol();
+  public net.minecraft.network.protocol.PacketFlow getFlow();
+  static {};
+}
+Compiled from "RegistrationPayload.java"
+public final class net.fabricmc.fabric.impl.networking.RegistrationPayload extends java.lang.Record implements net.minecraft.network.protocol.common.custom.CustomPacketPayload {
+  private final net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<net.fabricmc.fabric.impl.networking.RegistrationPayload> type;
+  private final java.util.List<net.minecraft.resources.Identifier> channels;
+  public static final net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<net.fabricmc.fabric.impl.networking.RegistrationPayload> REGISTER;
+  public static final net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<net.fabricmc.fabric.impl.networking.RegistrationPayload> UNREGISTER;
+  public static final net.minecraft.network.codec.StreamCodec<net.minecraft.network.FriendlyByteBuf, net.fabricmc.fabric.impl.networking.RegistrationPayload> REGISTER_CODEC;
+  public static final net.minecraft.network.codec.StreamCodec<net.minecraft.network.FriendlyByteBuf, net.fabricmc.fabric.impl.networking.RegistrationPayload> UNREGISTER_CODEC;
+  private net.fabricmc.fabric.impl.networking.RegistrationPayload(net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<net.fabricmc.fabric.impl.networking.RegistrationPayload>, net.minecraft.network.FriendlyByteBuf);
+  public net.fabricmc.fabric.impl.networking.RegistrationPayload(net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<net.fabricmc.fabric.impl.networking.RegistrationPayload>, java.util.List<net.minecraft.resources.Identifier>);
+  private void write(net.minecraft.network.FriendlyByteBuf);
+  private static java.util.List<net.minecraft.resources.Identifier> read(net.minecraft.network.FriendlyByteBuf);
+  private static void addId(java.util.List<net.minecraft.resources.Identifier>, java.lang.StringBuilder);
+  private static net.minecraft.network.codec.StreamCodec<net.minecraft.network.FriendlyByteBuf, net.fabricmc.fabric.impl.networking.RegistrationPayload> codec(net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<net.fabricmc.fabric.impl.networking.RegistrationPayload>);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<net.fabricmc.fabric.impl.networking.RegistrationPayload> type();
+  public java.util.List<net.minecraft.resources.Identifier> channels();
+  private static net.fabricmc.fabric.impl.networking.RegistrationPayload lambda$codec$0(net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type, net.minecraft.network.FriendlyByteBuf);
+  static {};
+}
+Compiled from "UntrackedPacketListener.java"
+public interface net.fabricmc.fabric.impl.networking.UntrackedPacketListener {
+}
+Compiled from "VanillaPacketTypes.java"
+public final class net.fabricmc.fabric.impl.networking.VanillaPacketTypes extends java.lang.Record {
+  private final net.minecraft.network.protocol.PacketType<?>[] types;
+  public static final net.fabricmc.fabric.impl.networking.VanillaPacketTypes PLAY_S2C;
+  public static final net.fabricmc.fabric.impl.networking.VanillaPacketTypes PLAY_C2S;
+  public static final net.fabricmc.fabric.impl.networking.VanillaPacketTypes CONFIGURATION_S2C;
+  public static final net.fabricmc.fabric.impl.networking.VanillaPacketTypes CONFIGURATION_C2S;
+  public net.fabricmc.fabric.impl.networking.VanillaPacketTypes(net.minecraft.network.protocol.PacketType<?>[]);
+  public net.minecraft.network.protocol.PacketType<?> get(int);
+  private static net.fabricmc.fabric.impl.networking.VanillaPacketTypes of(net.minecraft.network.ProtocolInfo$DetailsProvider);
+  public static net.fabricmc.fabric.impl.networking.VanillaPacketTypes get(net.minecraft.network.ProtocolInfo<?>);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public net.minecraft.network.protocol.PacketType<?>[] types();
+  private static net.minecraft.network.protocol.PacketType[] lambda$of$1(int);
+  private static void lambda$of$0(java.util.ArrayList, net.minecraft.network.protocol.PacketType, int);
+  static {};
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.impl.networking.package-info {
+}
+Compiled from "PacketContextImpl.java"
+public final class net.fabricmc.fabric.impl.networking.context.PacketContextImpl$KeyImpl<T> implements net.fabricmc.fabric.api.networking.v1.context.PacketContext$Key<T> {
+  private final net.minecraft.resources.Identifier key;
+  public net.fabricmc.fabric.impl.networking.context.PacketContextImpl$KeyImpl(net.minecraft.resources.Identifier);
+  public java.lang.String toString();
+  public net.minecraft.resources.Identifier key();
+}
+Compiled from "PacketContextImpl.java"
+public final class net.fabricmc.fabric.impl.networking.context.PacketContextImpl implements net.fabricmc.fabric.api.networking.v1.context.PacketContext {
+  public static final java.lang.ScopedValue<net.fabricmc.fabric.api.networking.v1.context.PacketContext> VALUE;
+  public static final net.fabricmc.fabric.api.networking.v1.context.PacketContext$Key<net.minecraft.server.MinecraftServer> SERVER_INSTANCE;
+  public static final net.fabricmc.fabric.api.networking.v1.context.PacketContext$Key<net.minecraft.core.RegistryAccess> REGISTRY_ACCESS;
+  public static final net.fabricmc.fabric.api.networking.v1.context.PacketContext$Key<com.mojang.authlib.GameProfile> GAME_PROFILE;
+  public static final net.fabricmc.fabric.api.networking.v1.context.PacketContext$Key<net.minecraft.network.Connection> CONNECTION;
+  private final java.util.concurrent.locks.ReadWriteLock lock;
+  private final java.util.Map<net.fabricmc.fabric.api.networking.v1.context.PacketContext$Key<?>, java.lang.Object> contextMap;
+  public net.fabricmc.fabric.impl.networking.context.PacketContextImpl(net.minecraft.network.Connection);
+  public <T> T get(net.fabricmc.fabric.api.networking.v1.context.PacketContext$ReadKey<T>);
+  public <T> void set(net.fabricmc.fabric.api.networking.v1.context.PacketContext$Key<T>, T);
+  private static <T> net.fabricmc.fabric.api.networking.v1.context.PacketContext$Key<T> fabricKey(java.lang.String);
+  static {};
+}
+Compiled from "PacketContextSetter.java"
+public interface net.fabricmc.fabric.impl.networking.context.PacketContextSetter {
+  public abstract void fabric_setPacketContext(net.fabricmc.fabric.api.networking.v1.context.PacketContext);
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.impl.networking.context.package-info {
+}
+Compiled from "FriendlyByteBufLoginQueryRequestPayload.java"
+public final class net.fabricmc.fabric.impl.networking.payload.FriendlyByteBufLoginQueryRequestPayload extends java.lang.Record implements net.minecraft.network.protocol.login.custom.CustomQueryPayload {
+  private final net.minecraft.resources.Identifier id;
+  private final net.minecraft.network.FriendlyByteBuf data;
+  public net.fabricmc.fabric.impl.networking.payload.FriendlyByteBufLoginQueryRequestPayload(net.minecraft.resources.Identifier, net.minecraft.network.FriendlyByteBuf);
+  public void write(net.minecraft.network.FriendlyByteBuf);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public net.minecraft.resources.Identifier id();
+  public net.minecraft.network.FriendlyByteBuf data();
+}
+Compiled from "FriendlyByteBufLoginQueryResponse.java"
+public final class net.fabricmc.fabric.impl.networking.payload.FriendlyByteBufLoginQueryResponse extends java.lang.Record implements net.minecraft.network.protocol.login.custom.CustomQueryAnswerPayload {
+  private final net.minecraft.network.FriendlyByteBuf data;
+  public net.fabricmc.fabric.impl.networking.payload.FriendlyByteBufLoginQueryResponse(net.minecraft.network.FriendlyByteBuf);
+  public void write(net.minecraft.network.FriendlyByteBuf);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public net.minecraft.network.FriendlyByteBuf data();
+}
+Compiled from "PayloadHelper.java"
+public class net.fabricmc.fabric.impl.networking.payload.PayloadHelper {
+  public net.fabricmc.fabric.impl.networking.payload.PayloadHelper();
+  public static void write(net.minecraft.network.FriendlyByteBuf, net.minecraft.network.FriendlyByteBuf);
+  public static net.minecraft.network.FriendlyByteBuf read(net.minecraft.network.FriendlyByteBuf, int);
+  private static void assertSize(net.minecraft.network.FriendlyByteBuf, int);
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.impl.networking.payload.package-info {
+}
+Compiled from "QueryIdFactory.java"
+interface net.fabricmc.fabric.impl.networking.server.QueryIdFactory {
+  public static net.fabricmc.fabric.impl.networking.server.QueryIdFactory create();
+  public abstract int nextId();
+}
+Compiled from "ServerConfigurationNetworkAddon.java"
+final class net.fabricmc.fabric.impl.networking.server.ServerConfigurationNetworkAddon$ContextImpl extends java.lang.Record implements net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking$Context {
+  private final net.minecraft.server.MinecraftServer server;
+  private final net.minecraft.server.network.ServerConfigurationPacketListenerImpl packetListener;
+  private final net.fabricmc.fabric.api.networking.v1.PacketSender responseSender;
+  private net.fabricmc.fabric.impl.networking.server.ServerConfigurationNetworkAddon$ContextImpl(net.minecraft.server.MinecraftServer, net.minecraft.server.network.ServerConfigurationPacketListenerImpl, net.fabricmc.fabric.api.networking.v1.PacketSender);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public net.minecraft.server.MinecraftServer server();
+  public net.minecraft.server.network.ServerConfigurationPacketListenerImpl packetListener();
+  public net.fabricmc.fabric.api.networking.v1.PacketSender responseSender();
+}
+Compiled from "ServerConfigurationNetworkAddon.java"
+final class net.fabricmc.fabric.impl.networking.server.ServerConfigurationNetworkAddon$RegisterState extends java.lang.Enum<net.fabricmc.fabric.impl.networking.server.ServerConfigurationNetworkAddon$RegisterState> {
+  public static final net.fabricmc.fabric.impl.networking.server.ServerConfigurationNetworkAddon$RegisterState NOT_SENT;
+  public static final net.fabricmc.fabric.impl.networking.server.ServerConfigurationNetworkAddon$RegisterState SENT;
+  public static final net.fabricmc.fabric.impl.networking.server.ServerConfigurationNetworkAddon$RegisterState RECEIVED;
+  public static final net.fabricmc.fabric.impl.networking.server.ServerConfigurationNetworkAddon$RegisterState NOT_RECEIVED;
+  private static final net.fabricmc.fabric.impl.networking.server.ServerConfigurationNetworkAddon$RegisterState[] $VALUES;
+  public static net.fabricmc.fabric.impl.networking.server.ServerConfigurationNetworkAddon$RegisterState[] values();
+  public static net.fabricmc.fabric.impl.networking.server.ServerConfigurationNetworkAddon$RegisterState valueOf(java.lang.String);
+  private net.fabricmc.fabric.impl.networking.server.ServerConfigurationNetworkAddon$RegisterState();
+  private static net.fabricmc.fabric.impl.networking.server.ServerConfigurationNetworkAddon$RegisterState[] $values();
+  static {};
+}
+Compiled from "ServerConfigurationNetworkAddon.java"
+public final class net.fabricmc.fabric.impl.networking.server.ServerConfigurationNetworkAddon extends net.fabricmc.fabric.impl.networking.AbstractChanneledNetworkAddon<net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking$ConfigurationPacketHandler<?>> {
+  private final net.minecraft.server.network.ServerConfigurationPacketListenerImpl listener;
+  private final net.minecraft.server.MinecraftServer server;
+  private final net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking$Context context;
+  private net.fabricmc.fabric.impl.networking.server.ServerConfigurationNetworkAddon$RegisterState registerState;
+  private java.lang.String clientBrand;
+  private boolean isReconfiguring;
+  public net.fabricmc.fabric.impl.networking.server.ServerConfigurationNetworkAddon(net.minecraft.server.network.ServerConfigurationPacketListenerImpl, net.minecraft.server.MinecraftServer);
+  public boolean handle(net.minecraft.network.protocol.common.custom.CustomPacketPayload);
+  protected boolean isOnReceiveThread();
+  protected void invokeInitEvent();
+  public void preConfiguration();
+  public void configuration();
+  public boolean startConfiguration();
+  protected void receiveRegistration(boolean, net.fabricmc.fabric.impl.networking.RegistrationPayload);
+  public void onPong(int);
+  protected void receive(net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking$ConfigurationPacketHandler<?>, net.minecraft.network.protocol.common.custom.CustomPacketPayload);
+  protected void schedule(java.lang.Runnable);
+  public net.minecraft.network.protocol.Packet<?> createPacket(net.minecraft.network.protocol.common.custom.CustomPacketPayload);
+  protected void invokeRegisterEvent(java.util.List<net.minecraft.resources.Identifier>);
+  protected void invokeUnregisterEvent(java.util.List<net.minecraft.resources.Identifier>);
+  protected void handleRegistration(net.minecraft.resources.Identifier);
+  protected void handleUnregistration(net.minecraft.resources.Identifier);
+  protected void invokeDisconnectEvent();
+  protected boolean isReservedChannel(net.minecraft.resources.Identifier);
+  public void sendPacket(net.minecraft.network.protocol.Packet<?>, io.netty.channel.ChannelFutureListener);
+  public java.lang.String getClientBrand();
+  public boolean isReconfiguring();
+  public void setReconfiguring();
+  public net.fabricmc.fabric.impl.networking.ChannelInfoHolder getChannelInfoHolder();
+  protected void receive(java.lang.Object, net.minecraft.network.protocol.common.custom.CustomPacketPayload);
+}
+Compiled from "ServerLoginNetworkAddon.java"
+public final class net.fabricmc.fabric.impl.networking.server.ServerLoginNetworkAddon extends net.fabricmc.fabric.impl.networking.AbstractNetworkAddon<net.fabricmc.fabric.api.networking.v1.ServerLoginNetworking$LoginQueryResponseHandler> implements net.fabricmc.fabric.api.networking.v1.LoginPacketSender {
+  private final net.minecraft.network.Connection connection;
+  private final net.minecraft.server.network.ServerLoginPacketListenerImpl listener;
+  private final net.minecraft.server.MinecraftServer server;
+  private final net.fabricmc.fabric.impl.networking.server.QueryIdFactory queryIdFactory;
+  private final java.util.Collection<java.util.concurrent.Future<?>> waits;
+  private final java.util.Map<java.lang.Integer, net.minecraft.resources.Identifier> channels;
+  private boolean firstQueryTick;
+  public net.fabricmc.fabric.impl.networking.server.ServerLoginNetworkAddon(net.minecraft.server.network.ServerLoginPacketListenerImpl);
+  protected void invokeInitEvent();
+  public boolean queryTick();
+  private void sendCompressionPacket();
+  public boolean handle(net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket);
+  private boolean handle(int, net.minecraft.network.FriendlyByteBuf);
+  public net.minecraft.network.protocol.Packet<?> createPacket(net.minecraft.network.protocol.common.custom.CustomPacketPayload);
+  public net.minecraft.network.protocol.Packet<?> createPacket(net.minecraft.resources.Identifier, net.minecraft.network.FriendlyByteBuf);
+  public void sendPacket(net.minecraft.network.protocol.Packet<?>, io.netty.channel.ChannelFutureListener);
+  public void disconnect(net.minecraft.network.chat.Component);
+  public void registerOutgoingPacket(net.minecraft.network.protocol.login.ClientboundCustomQueryPacket);
+  protected void handleRegistration(net.minecraft.resources.Identifier);
+  protected void handleUnregistration(net.minecraft.resources.Identifier);
+  protected void invokeDisconnectEvent();
+  protected boolean isReservedChannel(net.minecraft.resources.Identifier);
+  private void lambda$sendCompressionPacket$0();
+  private static boolean lambda$queryTick$0(java.util.concurrent.atomic.AtomicReference, java.util.concurrent.Future);
+  private static java.lang.Throwable lambda$queryTick$1(java.lang.Throwable, java.lang.Throwable);
+}
+Compiled from "ServerNetworkingImpl.java"
+public final class net.fabricmc.fabric.impl.networking.server.ServerNetworkingImpl {
+  public static final net.fabricmc.fabric.impl.networking.GlobalReceiverRegistry<net.fabricmc.fabric.api.networking.v1.ServerLoginNetworking$LoginQueryResponseHandler> LOGIN;
+  public static final net.fabricmc.fabric.impl.networking.GlobalReceiverRegistry<net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking$ConfigurationPacketHandler<?>> CONFIGURATION;
+  public static final net.fabricmc.fabric.impl.networking.GlobalReceiverRegistry<net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking$PlayPayloadHandler<?>> PLAY;
+  public net.fabricmc.fabric.impl.networking.server.ServerNetworkingImpl();
+  public static net.fabricmc.fabric.impl.networking.server.ServerPlayNetworkAddon getAddon(net.minecraft.server.network.ServerGamePacketListenerImpl);
+  public static net.fabricmc.fabric.impl.networking.server.ServerLoginNetworkAddon getAddon(net.minecraft.server.network.ServerLoginPacketListenerImpl);
+  public static net.fabricmc.fabric.impl.networking.server.ServerConfigurationNetworkAddon getAddon(net.minecraft.server.network.ServerConfigurationPacketListenerImpl);
+  public static net.minecraft.network.protocol.Packet<net.minecraft.network.protocol.common.ClientCommonPacketListener> createClientboundPacket(net.minecraft.network.protocol.common.custom.CustomPacketPayload);
+  static {};
+}
+Compiled from "ServerPlayNetworkAddon.java"
+final class net.fabricmc.fabric.impl.networking.server.ServerPlayNetworkAddon$ContextImpl extends java.lang.Record implements net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking$Context {
+  private final net.minecraft.server.MinecraftServer server;
+  private final net.minecraft.server.network.ServerGamePacketListenerImpl listener;
+  private final net.fabricmc.fabric.api.networking.v1.PacketSender responseSender;
+  private net.fabricmc.fabric.impl.networking.server.ServerPlayNetworkAddon$ContextImpl(net.minecraft.server.MinecraftServer, net.minecraft.server.network.ServerGamePacketListenerImpl, net.fabricmc.fabric.api.networking.v1.PacketSender);
+  public net.minecraft.server.level.ServerPlayer player();
+  public net.fabricmc.fabric.api.networking.v1.context.PacketContext packetContext();
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public net.minecraft.server.MinecraftServer server();
+  public net.minecraft.server.network.ServerGamePacketListenerImpl listener();
+  public net.fabricmc.fabric.api.networking.v1.PacketSender responseSender();
+}
+Compiled from "ServerPlayNetworkAddon.java"
+public final class net.fabricmc.fabric.impl.networking.server.ServerPlayNetworkAddon extends net.fabricmc.fabric.impl.networking.AbstractChanneledNetworkAddon<net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking$PlayPayloadHandler<?>> {
+  private final net.minecraft.server.network.ServerGamePacketListenerImpl listener;
+  private final net.minecraft.server.MinecraftServer server;
+  private final net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking$Context context;
+  private boolean sentInitialRegisterPacket;
+  private boolean requestedReconfigure;
+  public net.fabricmc.fabric.impl.networking.server.ServerPlayNetworkAddon(net.minecraft.server.network.ServerGamePacketListenerImpl, net.minecraft.network.Connection, net.minecraft.server.MinecraftServer);
+  protected void invokeInitEvent();
+  public void onClientReady();
+  protected boolean isOnReceiveThread();
+  protected void receive(net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking$PlayPayloadHandler<?>, net.minecraft.network.protocol.common.custom.CustomPacketPayload);
+  protected void schedule(java.lang.Runnable);
+  public net.minecraft.network.protocol.Packet<?> createPacket(net.minecraft.network.protocol.common.custom.CustomPacketPayload);
+  protected void invokeRegisterEvent(java.util.List<net.minecraft.resources.Identifier>);
+  protected void invokeUnregisterEvent(java.util.List<net.minecraft.resources.Identifier>);
+  protected void handleRegistration(net.minecraft.resources.Identifier);
+  protected void handleUnregistration(net.minecraft.resources.Identifier);
+  protected void invokeDisconnectEvent();
+  protected boolean isReservedChannel(net.minecraft.resources.Identifier);
+  public void reconfigure();
+  public boolean requestedReconfigure();
+  protected void receive(java.lang.Object, net.minecraft.network.protocol.common.custom.CustomPacketPayload);
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.impl.networking.server.package-info {
+}
+Compiled from "FabricPacketMerger.java"
+class net.fabricmc.fabric.impl.networking.splitter.FabricPacketMerger$Merger {
+  private final net.fabricmc.fabric.mixin.networking.accessor.PacketDecoderAccessor packetDecoder;
+  private final net.minecraft.resources.Identifier packetId;
+  private final int finalSize;
+  private final io.netty.buffer.ByteBuf byteBuf;
+  net.fabricmc.fabric.impl.networking.splitter.FabricPacketMerger$Merger(net.minecraft.network.PacketDecoder<?>, net.minecraft.resources.Identifier, int);
+  boolean add(io.netty.channel.ChannelHandlerContext, net.fabricmc.fabric.impl.networking.splitter.FabricSplitPacketPayload, java.util.List<java.lang.Object>) throws java.lang.Exception;
+}
+Compiled from "FabricPacketMerger.java"
+public class net.fabricmc.fabric.impl.networking.splitter.FabricPacketMerger extends io.netty.handler.codec.MessageToMessageDecoder<net.minecraft.network.protocol.Packet<?>> {
+  private final net.minecraft.network.PacketDecoder<?> packetDecoder;
+  private final net.fabricmc.fabric.impl.networking.PayloadTypeRegistryImpl<?> payloadTypeRegistry;
+  private final net.fabricmc.fabric.impl.networking.VanillaPacketTypes vanillaPacketTypes;
+  private net.fabricmc.fabric.impl.networking.splitter.FabricPacketMerger$Merger packetMerger;
+  public net.fabricmc.fabric.impl.networking.splitter.FabricPacketMerger(net.minecraft.network.PacketDecoder<?>, net.fabricmc.fabric.impl.networking.PayloadTypeRegistryImpl<?>, net.fabricmc.fabric.impl.networking.VanillaPacketTypes);
+  protected void decode(io.netty.channel.ChannelHandlerContext, net.minecraft.network.protocol.Packet<?>, java.util.List<java.lang.Object>) throws java.lang.Exception;
+  private static void ensureNotTransitioning(net.minecraft.network.protocol.Packet<?>);
+  protected void decode(io.netty.channel.ChannelHandlerContext, java.lang.Object, java.util.List) throws java.lang.Exception;
+}
+Compiled from "FabricPacketSplitter.java"
+public class net.fabricmc.fabric.impl.networking.splitter.FabricPacketSplitter extends io.netty.handler.codec.MessageToMessageEncoder<net.minecraft.network.protocol.Packet<?>> {
+  public static final int SAFE_S2C_SPLIT_SIZE;
+  public static final int SAFE_C2S_SPLIT_SIZE;
+  private final net.minecraft.network.PacketEncoder<?> encoder;
+  private final net.fabricmc.fabric.impl.networking.PayloadTypeRegistryImpl<?> payloadTypeRegistry;
+  public net.fabricmc.fabric.impl.networking.splitter.FabricPacketSplitter(net.minecraft.network.PacketEncoder<?>, net.fabricmc.fabric.impl.networking.PayloadTypeRegistryImpl<?>);
+  protected void encode(io.netty.channel.ChannelHandlerContext, net.minecraft.network.protocol.Packet<?>, java.util.List<java.lang.Object>) throws java.lang.Exception;
+  public static void genericPacketSplitter(net.minecraft.resources.Identifier, io.netty.channel.ChannelHandlerContext, net.minecraft.network.PacketEncoder<?>, net.minecraft.network.protocol.Packet<?>, java.util.function.Function<net.minecraft.network.protocol.common.custom.CustomPacketPayload, net.minecraft.network.protocol.Packet<?>>, java.util.function.Consumer<net.minecraft.network.protocol.Packet<?>>, int, int) throws java.lang.Exception;
+  protected void encode(io.netty.channel.ChannelHandlerContext, java.lang.Object, java.util.List) throws java.lang.Exception;
+}
+Compiled from "FabricSplitPacketPayload.java"
+public final class net.fabricmc.fabric.impl.networking.splitter.FabricSplitPacketPayload extends java.lang.Record implements net.minecraft.network.protocol.common.custom.CustomPacketPayload {
+  private final io.netty.buffer.ByteBuf byteBuf;
+  public static final net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<net.fabricmc.fabric.impl.networking.splitter.FabricSplitPacketPayload> TYPE;
+  public static final net.minecraft.network.codec.StreamCodec<io.netty.buffer.ByteBuf, net.fabricmc.fabric.impl.networking.splitter.FabricSplitPacketPayload> CODEC;
+  public net.fabricmc.fabric.impl.networking.splitter.FabricSplitPacketPayload(io.netty.buffer.ByteBuf);
+  private static net.fabricmc.fabric.impl.networking.splitter.FabricSplitPacketPayload read(io.netty.buffer.ByteBuf);
+  private static void write(io.netty.buffer.ByteBuf, net.fabricmc.fabric.impl.networking.splitter.FabricSplitPacketPayload);
+  public net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<? extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> type();
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public io.netty.buffer.ByteBuf byteBuf();
+  static {};
+}
+Compiled from "PassthroughPacket.java"
+public final class net.fabricmc.fabric.impl.networking.splitter.PassthroughPacket extends java.lang.Record implements net.minecraft.network.protocol.Packet<net.minecraft.network.PacketListener> {
+  private final io.netty.buffer.ByteBuf buf;
+  private static final net.minecraft.network.protocol.PacketType<? extends net.minecraft.network.protocol.Packet<net.minecraft.network.PacketListener>> FAKE_TYPE;
+  public net.fabricmc.fabric.impl.networking.splitter.PassthroughPacket(io.netty.buffer.ByteBuf);
+  public net.minecraft.network.protocol.PacketType<? extends net.minecraft.network.protocol.Packet<net.minecraft.network.PacketListener>> type();
+  public void handle(net.minecraft.network.PacketListener);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public io.netty.buffer.ByteBuf buf();
+  static {};
+}
+Compiled from "SplittablePacket.java"
+public interface net.fabricmc.fabric.impl.networking.splitter.SplittablePacket {
+  public abstract void fabric_split(net.fabricmc.fabric.impl.networking.PayloadTypeRegistryImpl<?>, io.netty.channel.ChannelHandlerContext, net.minecraft.network.PacketEncoder<?>, net.minecraft.network.protocol.Packet<?>, java.util.function.Consumer<net.minecraft.network.protocol.Packet<?>>) throws java.lang.Exception;
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.impl.networking.splitter.package-info {
+}
+Compiled from "BundlePacketMixin.java"
+public class net.fabricmc.fabric.mixin.networking.BundlePacketMixin {
+  public net.fabricmc.fabric.mixin.networking.BundlePacketMixin();
+  private static java.lang.Iterable<? extends net.minecraft.network.protocol.Packet<?>> flattenBundlePackets(java.lang.Iterable<? extends net.minecraft.network.protocol.Packet<?>>);
+  private static void iterateBundle(java.lang.Iterable<? extends net.minecraft.network.protocol.Packet<?>>, java.util.List<net.minecraft.network.protocol.Packet<?>>);
+}
+Compiled from "ClientboundCustomPayloadPacketMixin.java"
+public class net.fabricmc.fabric.mixin.networking.ClientboundCustomPayloadPacketMixin implements net.fabricmc.fabric.impl.networking.splitter.SplittablePacket,net.fabricmc.fabric.impl.networking.GenericPayloadAccessor {
+  private net.minecraft.network.protocol.common.custom.CustomPacketPayload payload;
+  public net.fabricmc.fabric.mixin.networking.ClientboundCustomPayloadPacketMixin();
+  private static net.minecraft.network.codec.StreamCodec<net.minecraft.network.RegistryFriendlyByteBuf, net.minecraft.network.protocol.common.custom.CustomPacketPayload> wrapPlayCodec(net.minecraft.network.protocol.common.custom.CustomPacketPayload$FallbackProvider<net.minecraft.network.RegistryFriendlyByteBuf>, java.util.List<net.minecraft.network.protocol.common.custom.CustomPacketPayload$TypeAndCodec<net.minecraft.network.RegistryFriendlyByteBuf, ?>>, com.llamalad7.mixinextras.injector.wrapoperation.Operation<net.minecraft.network.codec.StreamCodec<net.minecraft.network.RegistryFriendlyByteBuf, net.minecraft.network.protocol.common.custom.CustomPacketPayload>>);
+  private static net.minecraft.network.codec.StreamCodec<net.minecraft.network.FriendlyByteBuf, net.minecraft.network.protocol.common.custom.CustomPacketPayload> wrapConfigCodec(net.minecraft.network.protocol.common.custom.CustomPacketPayload$FallbackProvider<net.minecraft.network.FriendlyByteBuf>, java.util.List<net.minecraft.network.protocol.common.custom.CustomPacketPayload$TypeAndCodec<net.minecraft.network.FriendlyByteBuf, ?>>, com.llamalad7.mixinextras.injector.wrapoperation.Operation<net.minecraft.network.codec.StreamCodec<net.minecraft.network.FriendlyByteBuf, net.minecraft.network.protocol.common.custom.CustomPacketPayload>>);
+  public void fabric_split(net.fabricmc.fabric.impl.networking.PayloadTypeRegistryImpl<?>, io.netty.channel.ChannelHandlerContext, net.minecraft.network.PacketEncoder<?>, net.minecraft.network.protocol.Packet<?>, java.util.function.Consumer<net.minecraft.network.protocol.Packet<?>>) throws java.lang.Exception;
+  public net.minecraft.network.protocol.common.custom.CustomPacketPayload fabric_payload();
+  private static net.minecraft.network.protocol.common.custom.CustomPacketPayload$TypeAndCodec lambda$wrapConfigCodec$0(net.minecraft.network.FriendlyByteBuf, net.minecraft.resources.Identifier);
+  private static net.minecraft.network.protocol.common.custom.CustomPacketPayload$TypeAndCodec lambda$wrapPlayCodec$0(net.minecraft.network.RegistryFriendlyByteBuf, net.minecraft.resources.Identifier);
+}
+Compiled from "ClientboundCustomQueryPacketMixin.java"
+public class net.fabricmc.fabric.mixin.networking.ClientboundCustomQueryPacketMixin {
+  private static int MAX_PAYLOAD_SIZE;
+  public net.fabricmc.fabric.mixin.networking.ClientboundCustomQueryPacketMixin();
+  private static void readPayload(net.minecraft.resources.Identifier, net.minecraft.network.FriendlyByteBuf, org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<net.minecraft.network.protocol.login.custom.CustomQueryPayload>);
+}
+Compiled from "CommandsMixin.java"
+public class net.fabricmc.fabric.mixin.networking.CommandsMixin {
+  private com.mojang.brigadier.CommandDispatcher<net.minecraft.commands.CommandSourceStack> dispatcher;
+  public net.fabricmc.fabric.mixin.networking.CommandsMixin();
+  private void init(net.minecraft.commands.Commands$CommandSelection, net.minecraft.commands.CommandBuildContext, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+}
+Compiled from "ConnectionMixin.java"
+abstract class net.fabricmc.fabric.mixin.networking.ConnectionMixin implements net.fabricmc.fabric.impl.networking.ChannelInfoHolder,net.fabricmc.fabric.api.networking.v1.context.PacketContextProvider {
+  private net.minecraft.network.PacketListener packetListener;
+  private java.util.Map<net.minecraft.network.ConnectionProtocol, java.util.Collection<net.minecraft.resources.Identifier>> playChannels;
+  private final net.fabricmc.fabric.impl.networking.context.PacketContextImpl packetContext;
+  net.fabricmc.fabric.mixin.networking.ConnectionMixin();
+  private void initAddedFields(net.minecraft.network.protocol.PacketFlow, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private void checkPacket(net.minecraft.network.protocol.Packet<?>, io.netty.channel.ChannelFutureListener, boolean, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private void unwatchAddon(net.minecraft.network.ProtocolInfo<?>, net.minecraft.network.PacketListener, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private void disconnectAddon(io.netty.channel.ChannelHandlerContext, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private void disconnectAddon(org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private java.lang.Object injectFabricPacketSlitterHandlerInbound(java.lang.Object, net.minecraft.network.ProtocolInfo<?>);
+  private java.lang.Object injectFabricPacketSlitterHandlerOutbound(java.lang.Object, net.minecraft.network.ProtocolInfo<?>);
+  public java.util.Collection<net.minecraft.resources.Identifier> fabric_getPendingChannelsNames(net.minecraft.network.ConnectionProtocol);
+  public net.fabricmc.fabric.api.networking.v1.context.PacketContext getPacketContext();
+  private static java.util.Collection lambda$fabric_getPendingChannelsNames$0(net.minecraft.network.ConnectionProtocol);
+  private static void lambda$injectFabricPacketSlitterHandlerOutbound$1(net.fabricmc.fabric.impl.networking.PayloadTypeRegistryImpl, io.netty.channel.ChannelHandlerContext);
+  private void lambda$injectFabricPacketSlitterHandlerOutbound$0(io.netty.channel.ChannelHandlerContext);
+  private static void lambda$injectFabricPacketSlitterHandlerInbound$1(net.fabricmc.fabric.impl.networking.PayloadTypeRegistryImpl, net.minecraft.network.ProtocolInfo, io.netty.channel.ChannelHandlerContext);
+  private void lambda$injectFabricPacketSlitterHandlerInbound$0(io.netty.channel.ChannelHandlerContext);
+}
+Compiled from "CustomPayloadStreamCodecMixin.java"
+public abstract class net.fabricmc.fabric.mixin.networking.CustomPayloadStreamCodecMixin<B extends net.minecraft.network.FriendlyByteBuf> implements net.minecraft.network.codec.StreamCodec<B, net.minecraft.network.protocol.common.custom.CustomPacketPayload>, net.fabricmc.fabric.impl.networking.FabricCustomPayloadStreamCodec<B> {
+  private net.fabricmc.fabric.impl.networking.CustomPayloadTypeProvider<B> customPayloadTypeProvider;
+  public net.fabricmc.fabric.mixin.networking.CustomPayloadStreamCodecMixin();
+  public void fabric_setCustomPayloadTypeProvider(net.fabricmc.fabric.impl.networking.CustomPayloadTypeProvider<B>);
+  private net.minecraft.network.codec.StreamCodec<B, ? extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> wrapGetCodec(net.minecraft.network.codec.StreamCodec<B, net.minecraft.network.protocol.common.custom.CustomPacketPayload>, net.minecraft.resources.Identifier, com.llamalad7.mixinextras.injector.wrapoperation.Operation<net.minecraft.network.codec.StreamCodec<B, net.minecraft.network.protocol.common.custom.CustomPacketPayload>>, B);
+}
+Compiled from "DebugConfigCommandMixin.java"
+public class net.fabricmc.fabric.mixin.networking.DebugConfigCommandMixin {
+  public net.fabricmc.fabric.mixin.networking.DebugConfigCommandMixin();
+  private static void sendConfigurations(net.minecraft.server.network.ServerConfigurationPacketListenerImpl);
+}
+Compiled from "FriendlyByteBufMixin.java"
+public class net.fabricmc.fabric.mixin.networking.FriendlyByteBufMixin {
+  public net.fabricmc.fabric.mixin.networking.FriendlyByteBufMixin();
+  private int limitInitialCapacity(int);
+}
+Compiled from "IdDispatchCodecMixin.java"
+public abstract class net.fabricmc.fabric.mixin.networking.IdDispatchCodecMixin<B extends io.netty.buffer.ByteBuf, V, T> implements net.minecraft.network.codec.StreamCodec<B, V> {
+  public net.fabricmc.fabric.mixin.networking.IdDispatchCodecMixin();
+  public void encode(B, V, org.spongepowered.asm.mixin.injection.callback.CallbackInfo, T, java.lang.Exception);
+  public void decode(B, org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<V>, com.llamalad7.mixinextras.sugar.ref.LocalRef<io.netty.buffer.ByteBuf>);
+  public void decode(B, org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<V>, net.minecraft.network.codec.IdDispatchCodec$Entry<B, V, T>, java.lang.Exception, com.llamalad7.mixinextras.sugar.ref.LocalRef<io.netty.buffer.ByteBuf>);
+}
+Compiled from "PacketDecoderMixin.java"
+public class net.fabricmc.fabric.mixin.networking.PacketDecoderMixin implements net.fabricmc.fabric.impl.networking.context.PacketContextSetter {
+  private net.fabricmc.fabric.api.networking.v1.context.PacketContext packetContext;
+  public net.fabricmc.fabric.mixin.networking.PacketDecoderMixin();
+  private void wrapWithContext(io.netty.channel.ChannelHandlerContext, io.netty.buffer.ByteBuf, java.util.List<java.lang.Object>, com.llamalad7.mixinextras.injector.wrapoperation.Operation<java.lang.Void>);
+  public void fabric_setPacketContext(net.fabricmc.fabric.api.networking.v1.context.PacketContext);
+  private static void lambda$wrapWithContext$0(com.llamalad7.mixinextras.injector.wrapoperation.Operation, io.netty.channel.ChannelHandlerContext, io.netty.buffer.ByteBuf, java.util.List);
+}
+Compiled from "PacketEncoderMixin.java"
+public class net.fabricmc.fabric.mixin.networking.PacketEncoderMixin implements net.fabricmc.fabric.impl.networking.context.PacketContextSetter {
+  private net.fabricmc.fabric.api.networking.v1.context.PacketContext packetContext;
+  public net.fabricmc.fabric.mixin.networking.PacketEncoderMixin();
+  private void handlePassthroughPacket(io.netty.channel.ChannelHandlerContext, net.minecraft.network.protocol.Packet<?>, io.netty.buffer.ByteBuf, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  public void fabric_setPacketContext(net.fabricmc.fabric.api.networking.v1.context.PacketContext);
+  private void wrapWithContext(io.netty.channel.ChannelHandlerContext, net.minecraft.network.protocol.Packet<?>, io.netty.buffer.ByteBuf, com.llamalad7.mixinextras.injector.wrapoperation.Operation<java.lang.Void>);
+  private static void lambda$wrapWithContext$0(com.llamalad7.mixinextras.injector.wrapoperation.Operation, io.netty.channel.ChannelHandlerContext, net.minecraft.network.protocol.Packet, io.netty.buffer.ByteBuf);
+}
+Compiled from "PlayerListMixin.java"
+abstract class net.fabricmc.fabric.mixin.networking.PlayerListMixin {
+  net.fabricmc.fabric.mixin.networking.PlayerListMixin();
+  private void handlePlayerConnection(net.minecraft.network.Connection, net.minecraft.server.level.ServerPlayer, net.minecraft.server.network.CommonListenerCookie, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+}
+Compiled from "RegistryFriendlyByteBufMixin.java"
+public class net.fabricmc.fabric.mixin.networking.RegistryFriendlyByteBufMixin implements net.fabricmc.fabric.impl.networking.FabricRegistryFriendlyByteBuf {
+  private java.util.Set<net.minecraft.resources.Identifier> sendableConfigurationChannels;
+  public net.fabricmc.fabric.mixin.networking.RegistryFriendlyByteBufMixin();
+  public void fabric_setSendableConfigurationChannels(java.util.Set<net.minecraft.resources.Identifier>);
+  public java.util.Set<net.minecraft.resources.Identifier> fabric_getSendableConfigurationChannels();
+}
+Compiled from "ServerCommonPacketListenerImplMixin.java"
+public abstract class net.fabricmc.fabric.mixin.networking.ServerCommonPacketListenerImplMixin implements net.fabricmc.fabric.impl.networking.PacketListenerExtensions,net.fabricmc.fabric.api.networking.v1.context.PacketContextProvider {
+  protected net.minecraft.server.MinecraftServer server;
+  protected net.minecraft.network.Connection connection;
+  public net.fabricmc.fabric.mixin.networking.ServerCommonPacketListenerImplMixin();
+  private void handleCustomPayloadReceivedAsync(net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private void onPlayPong(net.minecraft.network.protocol.common.ServerboundPongPacket, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  public net.fabricmc.fabric.api.networking.v1.context.PacketContext getPacketContext();
+}
+Compiled from "ServerConfigurationPacketListenerImplMixin.java"
+public abstract class net.fabricmc.fabric.mixin.networking.ServerConfigurationPacketListenerImplMixin extends net.minecraft.server.network.ServerCommonPacketListenerImpl implements net.fabricmc.fabric.impl.networking.PacketListenerExtensions,net.fabricmc.fabric.api.networking.v1.FabricServerConfigurationPacketListenerImpl {
+  private net.minecraft.server.network.ConfigurationTask currentTask;
+  private java.util.Queue<net.minecraft.server.network.ConfigurationTask> configurationTasks;
+  private net.fabricmc.fabric.impl.networking.server.ServerConfigurationNetworkAddon addon;
+  private boolean sentConfiguration;
+  private boolean earlyTaskExecution;
+  protected abstract void finishCurrentTask(net.minecraft.server.network.ConfigurationTask$Type);
+  public abstract boolean isAcceptingMessages();
+  public abstract void startConfiguration();
+  public net.fabricmc.fabric.mixin.networking.ServerConfigurationPacketListenerImplMixin(net.minecraft.server.MinecraftServer, net.minecraft.network.Connection, net.minecraft.server.network.CommonListenerCookie);
+  private void initAddon(org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private void onClientReady(org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private boolean pollEarlyTasks();
+  public net.fabricmc.fabric.impl.networking.server.ServerConfigurationNetworkAddon getAddon();
+  public void addTask(net.minecraft.server.network.ConfigurationTask);
+  public void completeTask(net.minecraft.server.network.ConfigurationTask$Type);
+  private java.util.function.Function<io.netty.buffer.ByteBuf, net.minecraft.network.RegistryFriendlyByteBuf> bindChannelInfo(net.minecraft.core.RegistryAccess, com.llamalad7.mixinextras.injector.wrapoperation.Operation<java.util.function.Function<io.netty.buffer.ByteBuf, net.minecraft.network.RegistryFriendlyByteBuf>>);
+  public net.fabricmc.fabric.impl.networking.AbstractNetworkAddon getAddon();
+  private net.minecraft.network.RegistryFriendlyByteBuf lambda$bindChannelInfo$0(net.minecraft.network.RegistryFriendlyByteBuf);
+}
+Compiled from "ServerEntityMixin.java"
+abstract class net.fabricmc.fabric.mixin.networking.ServerEntityMixin {
+  private net.minecraft.world.entity.Entity entity;
+  net.fabricmc.fabric.mixin.networking.ServerEntityMixin();
+  private void onStartTracking(net.minecraft.server.level.ServerPlayer, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private void onStopTracking(net.minecraft.server.level.ServerPlayer, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+}
+Compiled from "ServerGamePacketListenerImplMixin.java"
+abstract class net.fabricmc.fabric.mixin.networking.ServerGamePacketListenerImplMixin extends net.minecraft.server.network.ServerCommonPacketListenerImpl implements net.fabricmc.fabric.impl.networking.PacketListenerExtensions {
+  private net.fabricmc.fabric.impl.networking.server.ServerPlayNetworkAddon addon;
+  net.fabricmc.fabric.mixin.networking.ServerGamePacketListenerImplMixin(net.minecraft.server.MinecraftServer, net.minecraft.network.Connection, net.minecraft.server.network.CommonListenerCookie);
+  private void initAddon(org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private void handleCustomPayloadReceivedAsync(net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private <T extends net.minecraft.network.PacketListener> void onAcknowledgeReconfiguration(net.minecraft.network.Connection, net.minecraft.network.ProtocolInfo<T>, T, com.llamalad7.mixinextras.injector.wrapoperation.Operation<java.lang.Void>);
+  public net.fabricmc.fabric.impl.networking.server.ServerPlayNetworkAddon getAddon();
+  public net.fabricmc.fabric.impl.networking.AbstractNetworkAddon getAddon();
+}
+Compiled from "ServerHandshakePacketListenerImplMixin.java"
+abstract class net.fabricmc.fabric.mixin.networking.ServerHandshakePacketListenerImplMixin implements net.fabricmc.fabric.api.networking.v1.context.PacketContextProvider {
+  private net.minecraft.network.Connection connection;
+  net.fabricmc.fabric.mixin.networking.ServerHandshakePacketListenerImplMixin();
+  public net.fabricmc.fabric.api.networking.v1.context.PacketContext getPacketContext();
+}
+Compiled from "ServerLoginPacketListenerImplMixin.java"
+abstract class net.fabricmc.fabric.mixin.networking.ServerLoginPacketListenerImplMixin implements net.fabricmc.fabric.impl.networking.PacketListenerExtensions,net.fabricmc.fabric.impl.networking.PacketCallbackListener,net.fabricmc.fabric.api.networking.v1.context.PacketContextProvider {
+  private net.minecraft.network.Connection connection;
+  private net.fabricmc.fabric.impl.networking.server.ServerLoginNetworkAddon addon;
+  net.fabricmc.fabric.mixin.networking.ServerLoginPacketListenerImplMixin();
+  protected abstract void verifyLoginAndFinishConnectionSetup(com.mojang.authlib.GameProfile);
+  private void initAddon(net.minecraft.server.MinecraftServer, net.minecraft.network.Connection, boolean, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private void handlePlayerJoin(net.minecraft.server.network.ServerLoginPacketListenerImpl, com.mojang.authlib.GameProfile);
+  private void handleCustomPayloadReceivedAsync(net.minecraft.network.protocol.login.ServerboundCustomQueryAnswerPacket, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private int removeLateCompressionPacketSending(net.minecraft.server.MinecraftServer);
+  private void storeGameProfileContext(com.mojang.authlib.GameProfile, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  public void sent(net.minecraft.network.protocol.Packet<?>);
+  public net.fabricmc.fabric.impl.networking.server.ServerLoginNetworkAddon getAddon();
+  public net.fabricmc.fabric.api.networking.v1.context.PacketContext getPacketContext();
+  public net.fabricmc.fabric.impl.networking.AbstractNetworkAddon getAddon();
+}
+Compiled from "ServerPlayerMixin.java"
+public class net.fabricmc.fabric.mixin.networking.ServerPlayerMixin implements net.fabricmc.fabric.api.networking.v1.context.PacketContextProvider {
+  public net.minecraft.server.network.ServerGamePacketListenerImpl connection;
+  public net.fabricmc.fabric.mixin.networking.ServerPlayerMixin();
+  public net.fabricmc.fabric.api.networking.v1.context.PacketContext getPacketContext();
+}
+Compiled from "ServerboundCustomPayloadPacketMixin.java"
+public class net.fabricmc.fabric.mixin.networking.ServerboundCustomPayloadPacketMixin implements net.fabricmc.fabric.impl.networking.splitter.SplittablePacket,net.fabricmc.fabric.impl.networking.GenericPayloadAccessor {
+  private net.minecraft.network.protocol.common.custom.CustomPacketPayload payload;
+  public net.fabricmc.fabric.mixin.networking.ServerboundCustomPayloadPacketMixin();
+  private static net.minecraft.network.codec.StreamCodec<net.minecraft.network.FriendlyByteBuf, net.minecraft.network.protocol.common.custom.CustomPacketPayload> wrapCodec(net.minecraft.network.protocol.common.custom.CustomPacketPayload$FallbackProvider<net.minecraft.network.FriendlyByteBuf>, java.util.List<net.minecraft.network.protocol.common.custom.CustomPacketPayload$TypeAndCodec<net.minecraft.network.FriendlyByteBuf, ?>>, com.llamalad7.mixinextras.injector.wrapoperation.Operation<net.minecraft.network.codec.StreamCodec<net.minecraft.network.FriendlyByteBuf, net.minecraft.network.protocol.common.custom.CustomPacketPayload>>);
+  public void fabric_split(net.fabricmc.fabric.impl.networking.PayloadTypeRegistryImpl<?>, io.netty.channel.ChannelHandlerContext, net.minecraft.network.PacketEncoder<?>, net.minecraft.network.protocol.Packet<?>, java.util.function.Consumer<net.minecraft.network.protocol.Packet<?>>) throws java.lang.Exception;
+  public net.minecraft.network.protocol.common.custom.CustomPacketPayload fabric_payload();
+  private static net.minecraft.network.protocol.common.custom.CustomPacketPayload$TypeAndCodec lambda$wrapCodec$0(net.minecraft.network.FriendlyByteBuf, net.minecraft.resources.Identifier);
+}
+Compiled from "ServerboundCustomQueryAnswerPacketMixin.java"
+public class net.fabricmc.fabric.mixin.networking.ServerboundCustomQueryAnswerPacketMixin {
+  private static int MAX_PAYLOAD_SIZE;
+  public net.fabricmc.fabric.mixin.networking.ServerboundCustomQueryAnswerPacketMixin();
+  private static void readResponse(int, net.minecraft.network.FriendlyByteBuf, org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<net.minecraft.network.protocol.login.custom.CustomQueryAnswerPayload>);
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.mixin.networking.package-info {
+}
+Compiled from "ChunkMapAccessor.java"
+public interface net.fabricmc.fabric.mixin.networking.accessor.ChunkMapAccessor {
+  public abstract it.unimi.dsi.fastutil.ints.Int2ObjectMap<net.fabricmc.fabric.mixin.networking.accessor.EntityTrackerAccessor> getEntityMap();
+}
+Compiled from "EntityTrackerAccessor.java"
+public interface net.fabricmc.fabric.mixin.networking.accessor.EntityTrackerAccessor {
+  public abstract java.util.Set<net.minecraft.server.network.ServerPlayerConnection> getSeenBy();
+}
+Compiled from "PacketDecoderAccessor.java"
+public interface net.fabricmc.fabric.mixin.networking.accessor.PacketDecoderAccessor {
+  public abstract void fabric_decode(io.netty.channel.ChannelHandlerContext, io.netty.buffer.ByteBuf, java.util.List<java.lang.Object>) throws java.lang.Exception;
+}
+Compiled from "PacketEncoderAccessor.java"
+public interface net.fabricmc.fabric.mixin.networking.accessor.PacketEncoderAccessor {
+  public abstract void fabric_encode(io.netty.channel.ChannelHandlerContext, net.minecraft.network.protocol.Packet<?>, io.netty.buffer.ByteBuf) throws java.lang.Exception;
+}
+Compiled from "ServerCommonPacketListenerImplAccessor.java"
+public interface net.fabricmc.fabric.mixin.networking.accessor.ServerCommonPacketListenerImplAccessor {
+  public abstract net.minecraft.network.Connection getConnection();
+  public abstract net.minecraft.server.MinecraftServer getServer();
+}
+Compiled from "ServerLoginPacketListenerImplAccessor.java"
+public interface net.fabricmc.fabric.mixin.networking.accessor.ServerLoginPacketListenerImplAccessor {
+  public abstract net.minecraft.server.MinecraftServer getServer();
+  public abstract net.minecraft.network.Connection getConnection();
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.mixin.networking.accessor.package-info {
+}
+Compiled from "ClientConfigurationConnectionEvents.java"
+public interface net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents$Complete {
+  public abstract void onConfigurationComplete(net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl, net.minecraft.client.Minecraft);
+}
+Compiled from "ClientConfigurationConnectionEvents.java"
+public interface net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents$Disconnect {
+  public abstract void onConfigurationDisconnect(net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl, net.minecraft.client.Minecraft);
+}
+Compiled from "ClientConfigurationConnectionEvents.java"
+public interface net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents$Init {
+  public abstract void onConfigurationInit(net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl, net.minecraft.client.Minecraft);
+}
+Compiled from "ClientConfigurationConnectionEvents.java"
+public interface net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents$Ready {
+  public abstract void onConfigurationReady(net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl, net.minecraft.client.Minecraft);
+}
+Compiled from "ClientConfigurationConnectionEvents.java"
+public interface net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents$Start {
+  public abstract void onConfigurationStart(net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl, net.minecraft.client.Minecraft);
+}
+Compiled from "ClientConfigurationConnectionEvents.java"
+public final class net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents {
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents$Init> INIT;
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents$Start> START;
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents$Complete> COMPLETE;
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents$Disconnect> DISCONNECT;
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents$Ready> READY;
+  private net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents();
+  private static net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents$Ready lambda$static$8(net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents$Ready[]);
+  private static void lambda$static$9(net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents$Ready[], net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl, net.minecraft.client.Minecraft);
+  private static net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents$Disconnect lambda$static$6(net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents$Disconnect[]);
+  private static void lambda$static$7(net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents$Disconnect[], net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl, net.minecraft.client.Minecraft);
+  private static net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents$Complete lambda$static$4(net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents$Complete[]);
+  private static void lambda$static$5(net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents$Complete[], net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl, net.minecraft.client.Minecraft);
+  private static net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents$Start lambda$static$2(net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents$Start[]);
+  private static void lambda$static$3(net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents$Start[], net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl, net.minecraft.client.Minecraft);
+  private static net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents$Init lambda$static$0(net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents$Init[]);
+  private static void lambda$static$1(net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents$Init[], net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl, net.minecraft.client.Minecraft);
+  static {};
+}
+Compiled from "ClientConfigurationNetworking.java"
+public interface net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking$ConfigurationPayloadHandler<T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> {
+  public abstract void receive(T, net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking$Context);
+}
+Compiled from "ClientConfigurationNetworking.java"
+public interface net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking$Context {
+  public abstract net.minecraft.client.Minecraft client();
+  public abstract net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl packetListener();
+  public abstract net.fabricmc.fabric.api.networking.v1.PacketSender responseSender();
+  public default net.fabricmc.fabric.api.networking.v1.context.PacketContext packetContext();
+}
+Compiled from "ClientConfigurationNetworking.java"
+public final class net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking {
+  public static <T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> boolean registerGlobalReceiver(net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<T>, net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking$ConfigurationPayloadHandler<T>);
+  public static net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking$ConfigurationPayloadHandler<?> unregisterGlobalReceiver(net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<?>);
+  public static java.util.Set<net.minecraft.resources.Identifier> getGlobalReceivers();
+  public static <T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> boolean registerReceiver(net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<T>, net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking$ConfigurationPayloadHandler<T>);
+  public static net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking$ConfigurationPayloadHandler<?> unregisterReceiver(net.minecraft.resources.Identifier);
+  public static java.util.Set<net.minecraft.resources.Identifier> getReceived() throws java.lang.IllegalStateException;
+  public static java.util.Set<net.minecraft.resources.Identifier> getSendable() throws java.lang.IllegalStateException;
+  public static boolean canSend(net.minecraft.resources.Identifier) throws java.lang.IllegalArgumentException;
+  public static boolean canSend(net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<?>);
+  public static net.fabricmc.fabric.api.networking.v1.PacketSender getSender() throws java.lang.IllegalStateException;
+  public static void send(net.minecraft.network.protocol.common.custom.CustomPacketPayload);
+  private net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking();
+}
+Compiled from "ClientLoginConnectionEvents.java"
+public interface net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents$Disconnect {
+  public abstract void onLoginDisconnect(net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl, net.minecraft.client.Minecraft);
+}
+Compiled from "ClientLoginConnectionEvents.java"
+public interface net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents$Init {
+  public abstract void onLoginStart(net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl, net.minecraft.client.Minecraft);
+}
+Compiled from "ClientLoginConnectionEvents.java"
+public interface net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents$QueryStart {
+  public abstract void onLoginQueryStart(net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl, net.minecraft.client.Minecraft);
+}
+Compiled from "ClientLoginConnectionEvents.java"
+public final class net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents {
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents$Init> INIT;
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents$QueryStart> QUERY_START;
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents$Disconnect> DISCONNECT;
+  private net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents();
+  private static net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents$Disconnect lambda$static$4(net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents$Disconnect[]);
+  private static void lambda$static$5(net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents$Disconnect[], net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl, net.minecraft.client.Minecraft);
+  private static net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents$QueryStart lambda$static$2(net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents$QueryStart[]);
+  private static void lambda$static$3(net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents$QueryStart[], net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl, net.minecraft.client.Minecraft);
+  private static net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents$Init lambda$static$0(net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents$Init[]);
+  private static void lambda$static$1(net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents$Init[], net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl, net.minecraft.client.Minecraft);
+  static {};
+}
+Compiled from "ClientLoginNetworking.java"
+public interface net.fabricmc.fabric.api.client.networking.v1.ClientLoginNetworking$LoginQueryRequestHandler {
+  public abstract java.util.concurrent.CompletableFuture<net.minecraft.network.FriendlyByteBuf> receive(net.minecraft.client.Minecraft, net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl, net.minecraft.network.FriendlyByteBuf, java.util.function.Consumer<io.netty.channel.ChannelFutureListener>);
+}
+Compiled from "ClientLoginNetworking.java"
+public final class net.fabricmc.fabric.api.client.networking.v1.ClientLoginNetworking {
+  public static boolean registerGlobalReceiver(net.minecraft.resources.Identifier, net.fabricmc.fabric.api.client.networking.v1.ClientLoginNetworking$LoginQueryRequestHandler);
+  public static net.fabricmc.fabric.api.client.networking.v1.ClientLoginNetworking$LoginQueryRequestHandler unregisterGlobalReceiver(net.minecraft.resources.Identifier);
+  public static java.util.Set<net.minecraft.resources.Identifier> getGlobalReceivers();
+  public static boolean registerReceiver(net.minecraft.resources.Identifier, net.fabricmc.fabric.api.client.networking.v1.ClientLoginNetworking$LoginQueryRequestHandler) throws java.lang.IllegalStateException;
+  public static net.fabricmc.fabric.api.client.networking.v1.ClientLoginNetworking$LoginQueryRequestHandler unregisterReceiver(net.minecraft.resources.Identifier) throws java.lang.IllegalStateException;
+  private net.fabricmc.fabric.api.client.networking.v1.ClientLoginNetworking();
+}
+Compiled from "ClientPlayConnectionEvents.java"
+public interface net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents$Disconnect {
+  public abstract void onPlayDisconnect(net.minecraft.client.multiplayer.ClientPacketListener, net.minecraft.client.Minecraft);
+}
+Compiled from "ClientPlayConnectionEvents.java"
+public interface net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents$Init {
+  public abstract void onPlayInit(net.minecraft.client.multiplayer.ClientPacketListener, net.minecraft.client.Minecraft);
+}
+Compiled from "ClientPlayConnectionEvents.java"
+public interface net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents$Join {
+  public abstract void onPlayReady(net.minecraft.client.multiplayer.ClientPacketListener, net.fabricmc.fabric.api.networking.v1.PacketSender, net.minecraft.client.Minecraft);
+}
+Compiled from "ClientPlayConnectionEvents.java"
+public final class net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents {
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents$Init> INIT;
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents$Join> JOIN;
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents$Disconnect> DISCONNECT;
+  private net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents();
+  private static net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents$Disconnect lambda$static$4(net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents$Disconnect[]);
+  private static void lambda$static$5(net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents$Disconnect[], net.minecraft.client.multiplayer.ClientPacketListener, net.minecraft.client.Minecraft);
+  private static net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents$Join lambda$static$2(net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents$Join[]);
+  private static void lambda$static$3(net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents$Join[], net.minecraft.client.multiplayer.ClientPacketListener, net.fabricmc.fabric.api.networking.v1.PacketSender, net.minecraft.client.Minecraft);
+  private static net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents$Init lambda$static$0(net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents$Init[]);
+  private static void lambda$static$1(net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents$Init[], net.minecraft.client.multiplayer.ClientPacketListener, net.minecraft.client.Minecraft);
+  static {};
+}
+Compiled from "ClientPlayNetworking.java"
+public interface net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking$Context {
+  public abstract net.minecraft.client.Minecraft client();
+  public abstract net.minecraft.client.player.LocalPlayer player();
+  public abstract net.fabricmc.fabric.api.networking.v1.PacketSender responseSender();
+  public default net.fabricmc.fabric.api.networking.v1.context.PacketContext packetContext();
+}
+Compiled from "ClientPlayNetworking.java"
+public interface net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking$PlayPayloadHandler<T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> {
+  public abstract void receive(T, net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking$Context);
+}
+Compiled from "ClientPlayNetworking.java"
+public final class net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking {
+  public static <T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> boolean registerGlobalReceiver(net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<T>, net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking$PlayPayloadHandler<T>);
+  public static net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking$PlayPayloadHandler<?> unregisterGlobalReceiver(net.minecraft.resources.Identifier);
+  public static java.util.Set<net.minecraft.resources.Identifier> getGlobalReceivers();
+  public static <T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> boolean registerReceiver(net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<T>, net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking$PlayPayloadHandler<T>);
+  public static net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking$PlayPayloadHandler<?> unregisterReceiver(net.minecraft.resources.Identifier);
+  public static java.util.Set<net.minecraft.resources.Identifier> getReceived() throws java.lang.IllegalStateException;
+  public static java.util.Set<net.minecraft.resources.Identifier> getSendable() throws java.lang.IllegalStateException;
+  public static boolean canSend(net.minecraft.resources.Identifier) throws java.lang.IllegalArgumentException;
+  public static boolean canSend(net.minecraft.network.protocol.common.custom.CustomPacketPayload$Type<?>);
+  public static <T extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> net.minecraft.network.protocol.Packet<net.minecraft.network.protocol.common.ServerCommonPacketListener> createServerboundPacket(T);
+  public static net.fabricmc.fabric.api.networking.v1.PacketSender getSender() throws java.lang.IllegalStateException;
+  public static void send(net.minecraft.network.protocol.common.custom.CustomPacketPayload);
+  private net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking();
+}
+Compiled from "ServerboundConfigurationChannelEvents.java"
+public interface net.fabricmc.fabric.api.client.networking.v1.ServerboundConfigurationChannelEvents$Register {
+  public abstract void onChannelRegister(net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl, net.fabricmc.fabric.api.networking.v1.PacketSender, net.minecraft.client.Minecraft, java.util.List<net.minecraft.resources.Identifier>);
+}
+Compiled from "ServerboundConfigurationChannelEvents.java"
+public interface net.fabricmc.fabric.api.client.networking.v1.ServerboundConfigurationChannelEvents$Unregister {
+  public abstract void onChannelUnregister(net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl, net.fabricmc.fabric.api.networking.v1.PacketSender, net.minecraft.client.Minecraft, java.util.List<net.minecraft.resources.Identifier>);
+}
+Compiled from "ServerboundConfigurationChannelEvents.java"
+public final class net.fabricmc.fabric.api.client.networking.v1.ServerboundConfigurationChannelEvents {
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.client.networking.v1.ServerboundConfigurationChannelEvents$Register> REGISTER;
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.client.networking.v1.ServerboundConfigurationChannelEvents$Unregister> UNREGISTER;
+  private net.fabricmc.fabric.api.client.networking.v1.ServerboundConfigurationChannelEvents();
+  private static net.fabricmc.fabric.api.client.networking.v1.ServerboundConfigurationChannelEvents$Unregister lambda$static$2(net.fabricmc.fabric.api.client.networking.v1.ServerboundConfigurationChannelEvents$Unregister[]);
+  private static void lambda$static$3(net.fabricmc.fabric.api.client.networking.v1.ServerboundConfigurationChannelEvents$Unregister[], net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl, net.fabricmc.fabric.api.networking.v1.PacketSender, net.minecraft.client.Minecraft, java.util.List);
+  private static net.fabricmc.fabric.api.client.networking.v1.ServerboundConfigurationChannelEvents$Register lambda$static$0(net.fabricmc.fabric.api.client.networking.v1.ServerboundConfigurationChannelEvents$Register[]);
+  private static void lambda$static$1(net.fabricmc.fabric.api.client.networking.v1.ServerboundConfigurationChannelEvents$Register[], net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl, net.fabricmc.fabric.api.networking.v1.PacketSender, net.minecraft.client.Minecraft, java.util.List);
+  static {};
+}
+Compiled from "ServerboundPlayChannelEvents.java"
+public interface net.fabricmc.fabric.api.client.networking.v1.ServerboundPlayChannelEvents$Register {
+  public abstract void onChannelRegister(net.minecraft.client.multiplayer.ClientPacketListener, net.fabricmc.fabric.api.networking.v1.PacketSender, net.minecraft.client.Minecraft, java.util.List<net.minecraft.resources.Identifier>);
+}
+Compiled from "ServerboundPlayChannelEvents.java"
+public interface net.fabricmc.fabric.api.client.networking.v1.ServerboundPlayChannelEvents$Unregister {
+  public abstract void onChannelUnregister(net.minecraft.client.multiplayer.ClientPacketListener, net.fabricmc.fabric.api.networking.v1.PacketSender, net.minecraft.client.Minecraft, java.util.List<net.minecraft.resources.Identifier>);
+}
+Compiled from "ServerboundPlayChannelEvents.java"
+public final class net.fabricmc.fabric.api.client.networking.v1.ServerboundPlayChannelEvents {
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.client.networking.v1.ServerboundPlayChannelEvents$Register> REGISTER;
+  public static final net.fabricmc.fabric.api.event.Event<net.fabricmc.fabric.api.client.networking.v1.ServerboundPlayChannelEvents$Unregister> UNREGISTER;
+  private net.fabricmc.fabric.api.client.networking.v1.ServerboundPlayChannelEvents();
+  private static net.fabricmc.fabric.api.client.networking.v1.ServerboundPlayChannelEvents$Unregister lambda$static$2(net.fabricmc.fabric.api.client.networking.v1.ServerboundPlayChannelEvents$Unregister[]);
+  private static void lambda$static$3(net.fabricmc.fabric.api.client.networking.v1.ServerboundPlayChannelEvents$Unregister[], net.minecraft.client.multiplayer.ClientPacketListener, net.fabricmc.fabric.api.networking.v1.PacketSender, net.minecraft.client.Minecraft, java.util.List);
+  private static net.fabricmc.fabric.api.client.networking.v1.ServerboundPlayChannelEvents$Register lambda$static$0(net.fabricmc.fabric.api.client.networking.v1.ServerboundPlayChannelEvents$Register[]);
+  private static void lambda$static$1(net.fabricmc.fabric.api.client.networking.v1.ServerboundPlayChannelEvents$Register[], net.minecraft.client.multiplayer.ClientPacketListener, net.fabricmc.fabric.api.networking.v1.PacketSender, net.minecraft.client.Minecraft, java.util.List);
+  static {};
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.api.client.networking.v1.package-info {
+}
+Compiled from "ClientCommonNetworkAddon.java"
+abstract class net.fabricmc.fabric.impl.networking.client.ClientCommonNetworkAddon<H, T extends net.minecraft.client.multiplayer.ClientCommonPacketListenerImpl> extends net.fabricmc.fabric.impl.networking.AbstractChanneledNetworkAddon<H> {
+  protected final T listener;
+  protected final net.minecraft.client.Minecraft client;
+  protected boolean isServerReady;
+  protected net.fabricmc.fabric.impl.networking.client.ClientCommonNetworkAddon(net.fabricmc.fabric.impl.networking.GlobalReceiverRegistry<H>, net.minecraft.network.Connection, java.lang.String, T, net.minecraft.client.Minecraft);
+  public void onServerReady();
+  protected void handleRegistration(net.minecraft.resources.Identifier);
+  protected void handleUnregistration(net.minecraft.resources.Identifier);
+  protected boolean isReservedChannel(net.minecraft.resources.Identifier);
+  protected void schedule(java.lang.Runnable);
+}
+Compiled from "ClientConfigurationNetworkAddon.java"
+final class net.fabricmc.fabric.impl.networking.client.ClientConfigurationNetworkAddon$ContextImpl extends java.lang.Record implements net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking$Context {
+  private final net.minecraft.client.Minecraft client;
+  private final net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl packetListener;
+  private final net.fabricmc.fabric.api.networking.v1.PacketSender responseSender;
+  private net.fabricmc.fabric.impl.networking.client.ClientConfigurationNetworkAddon$ContextImpl(net.minecraft.client.Minecraft, net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl, net.fabricmc.fabric.api.networking.v1.PacketSender);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public net.minecraft.client.Minecraft client();
+  public net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl packetListener();
+  public net.fabricmc.fabric.api.networking.v1.PacketSender responseSender();
+}
+Compiled from "ClientConfigurationNetworkAddon.java"
+public final class net.fabricmc.fabric.impl.networking.client.ClientConfigurationNetworkAddon extends net.fabricmc.fabric.impl.networking.client.ClientCommonNetworkAddon<net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking$ConfigurationPayloadHandler<?>, net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl> {
+  private final net.fabricmc.fabric.impl.networking.client.ClientConfigurationNetworkAddon$ContextImpl context;
+  private boolean sentInitialRegisterPacket;
+  private boolean hasStarted;
+  public net.fabricmc.fabric.impl.networking.client.ClientConfigurationNetworkAddon(net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl, net.minecraft.client.Minecraft);
+  protected void invokeInitEvent();
+  public void onServerReady();
+  protected void receiveRegistration(boolean, net.fabricmc.fabric.impl.networking.RegistrationPayload);
+  public boolean handle(net.minecraft.network.protocol.common.custom.CustomPacketPayload);
+  protected boolean isOnReceiveThread();
+  private void invokeStartEvent();
+  protected void receive(net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking$ConfigurationPayloadHandler<?>, net.minecraft.network.protocol.common.custom.CustomPacketPayload);
+  public net.minecraft.network.protocol.Packet<?> createPacket(net.minecraft.network.protocol.common.custom.CustomPacketPayload);
+  protected void invokeRegisterEvent(java.util.List<net.minecraft.resources.Identifier>);
+  protected void invokeUnregisterEvent(java.util.List<net.minecraft.resources.Identifier>);
+  public void handleComplete();
+  protected void invokeDisconnectEvent();
+  public net.fabricmc.fabric.impl.networking.ChannelInfoHolder getChannelInfoHolder();
+  protected void receive(java.lang.Object, net.minecraft.network.protocol.common.custom.CustomPacketPayload);
+}
+Compiled from "ClientLoginNetworkAddon.java"
+public final class net.fabricmc.fabric.impl.networking.client.ClientLoginNetworkAddon extends net.fabricmc.fabric.impl.networking.AbstractNetworkAddon<net.fabricmc.fabric.api.client.networking.v1.ClientLoginNetworking$LoginQueryRequestHandler> {
+  private final net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl listener;
+  private final net.minecraft.client.Minecraft client;
+  private boolean firstResponse;
+  public net.fabricmc.fabric.impl.networking.client.ClientLoginNetworkAddon(net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl, net.minecraft.client.Minecraft);
+  protected void invokeInitEvent();
+  public boolean handlePacket(net.minecraft.network.protocol.login.ClientboundCustomQueryPacket);
+  private boolean handlePacket(int, net.minecraft.resources.Identifier, net.minecraft.network.FriendlyByteBuf);
+  protected void handleRegistration(net.minecraft.resources.Identifier);
+  protected void handleUnregistration(net.minecraft.resources.Identifier);
+  protected void invokeDisconnectEvent();
+  protected boolean isReservedChannel(net.minecraft.resources.Identifier);
+  private void lambda$handlePacket$0(int, java.util.List, net.minecraft.network.FriendlyByteBuf);
+  private static void lambda$handlePacket$1(java.util.List, io.netty.channel.ChannelFuture) throws java.lang.Exception;
+}
+Compiled from "ClientNetworkingImpl.java"
+public final class net.fabricmc.fabric.impl.networking.client.ClientNetworkingImpl {
+  public static final net.fabricmc.fabric.impl.networking.GlobalReceiverRegistry<net.fabricmc.fabric.api.client.networking.v1.ClientLoginNetworking$LoginQueryRequestHandler> LOGIN;
+  public static final net.fabricmc.fabric.impl.networking.GlobalReceiverRegistry<net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking$ConfigurationPayloadHandler<?>> CONFIGURATION;
+  public static final net.fabricmc.fabric.impl.networking.GlobalReceiverRegistry<net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking$PlayPayloadHandler<?>> PLAY;
+  public static final java.lang.ScopedValue<net.minecraft.network.Connection> CONNECTION_SCOPED_VALUE;
+  private static net.fabricmc.fabric.impl.networking.client.ClientPlayNetworkAddon currentPlayAddon;
+  private static net.fabricmc.fabric.impl.networking.client.ClientConfigurationNetworkAddon currentConfigurationAddon;
+  public net.fabricmc.fabric.impl.networking.client.ClientNetworkingImpl();
+  public static net.fabricmc.fabric.impl.networking.client.ClientPlayNetworkAddon getAddon(net.minecraft.client.multiplayer.ClientPacketListener);
+  public static net.fabricmc.fabric.impl.networking.client.ClientConfigurationNetworkAddon getAddon(net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl);
+  public static net.fabricmc.fabric.impl.networking.client.ClientLoginNetworkAddon getAddon(net.minecraft.client.multiplayer.ClientHandshakePacketListenerImpl);
+  public static net.minecraft.network.protocol.Packet<net.minecraft.network.protocol.common.ServerCommonPacketListener> createServerboundPacket(net.minecraft.network.protocol.common.custom.CustomPacketPayload);
+  public static net.minecraft.network.Connection getLoginConnection();
+  public static net.fabricmc.fabric.impl.networking.client.ClientConfigurationNetworkAddon getClientConfigurationAddon();
+  public static net.fabricmc.fabric.impl.networking.client.ClientPlayNetworkAddon getClientPlayAddon();
+  public static void setClientPlayAddon(net.fabricmc.fabric.impl.networking.client.ClientPlayNetworkAddon);
+  public static void setClientConfigurationAddon(net.fabricmc.fabric.impl.networking.client.ClientConfigurationNetworkAddon);
+  public static void clientInit();
+  private static int handleVersionPacket(net.fabricmc.fabric.impl.networking.CommonVersionPayload, net.fabricmc.fabric.api.networking.v1.PacketSender);
+  private static void lambda$clientInit$3(net.fabricmc.fabric.impl.networking.CommonRegisterPayload, net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking$Context);
+  private static void lambda$clientInit$2(net.fabricmc.fabric.impl.networking.CommonVersionPayload, net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking$Context);
+  private static void lambda$clientInit$1(net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl, net.minecraft.client.Minecraft);
+  private static void lambda$clientInit$0(net.minecraft.client.multiplayer.ClientPacketListener, net.minecraft.client.Minecraft);
+  static {};
+}
+Compiled from "ClientPlayNetworkAddon.java"
+final class net.fabricmc.fabric.impl.networking.client.ClientPlayNetworkAddon$ContextImpl extends java.lang.Record implements net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking$Context {
+  private final net.minecraft.client.Minecraft client;
+  private final net.fabricmc.fabric.api.networking.v1.PacketSender responseSender;
+  private net.fabricmc.fabric.impl.networking.client.ClientPlayNetworkAddon$ContextImpl(net.minecraft.client.Minecraft, net.fabricmc.fabric.api.networking.v1.PacketSender);
+  public net.minecraft.client.player.LocalPlayer player();
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public net.minecraft.client.Minecraft client();
+  public net.fabricmc.fabric.api.networking.v1.PacketSender responseSender();
+}
+Compiled from "ClientPlayNetworkAddon.java"
+public final class net.fabricmc.fabric.impl.networking.client.ClientPlayNetworkAddon extends net.fabricmc.fabric.impl.networking.client.ClientCommonNetworkAddon<net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking$PlayPayloadHandler<?>, net.minecraft.client.multiplayer.ClientPacketListener> {
+  private final net.fabricmc.fabric.impl.networking.client.ClientPlayNetworkAddon$ContextImpl context;
+  private static final org.slf4j.Logger LOGGER;
+  public net.fabricmc.fabric.impl.networking.client.ClientPlayNetworkAddon(net.minecraft.client.multiplayer.ClientPacketListener, net.minecraft.client.Minecraft);
+  protected void invokeInitEvent();
+  public void onServerReady();
+  protected boolean isOnReceiveThread();
+  protected void receive(net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking$PlayPayloadHandler<?>, net.minecraft.network.protocol.common.custom.CustomPacketPayload);
+  public net.minecraft.network.protocol.Packet<?> createPacket(net.minecraft.network.protocol.common.custom.CustomPacketPayload);
+  protected void invokeRegisterEvent(java.util.List<net.minecraft.resources.Identifier>);
+  protected void invokeUnregisterEvent(java.util.List<net.minecraft.resources.Identifier>);
+  protected void invokeDisconnectEvent();
+  protected void receive(java.lang.Object, net.minecraft.network.protocol.common.custom.CustomPacketPayload);
+  static {};
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.impl.networking.client.package-info {
+}
+Compiled from "ClientCommonPacketListenerImplMixin.java"
+public abstract class net.fabricmc.fabric.mixin.networking.client.ClientCommonPacketListenerImplMixin implements net.fabricmc.fabric.impl.networking.PacketListenerExtensions,net.fabricmc.fabric.api.networking.v1.context.PacketContextProvider {
+  protected net.minecraft.client.Minecraft minecraft;
+  protected net.minecraft.network.Connection connection;
+  public net.fabricmc.fabric.mixin.networking.client.ClientCommonPacketListenerImplMixin();
+  public void onCustomPayload(net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  public net.fabricmc.fabric.api.networking.v1.context.PacketContext getPacketContext();
+}
+Compiled from "ClientConfigurationPacketListenerImplMixin.java"
+public abstract class net.fabricmc.fabric.mixin.networking.client.ClientConfigurationPacketListenerImplMixin extends net.minecraft.client.multiplayer.ClientCommonPacketListenerImpl implements net.fabricmc.fabric.impl.networking.PacketListenerExtensions {
+  private net.fabricmc.fabric.impl.networking.client.ClientConfigurationNetworkAddon addon;
+  protected net.fabricmc.fabric.mixin.networking.client.ClientConfigurationPacketListenerImplMixin(net.minecraft.client.Minecraft, net.minecraft.network.Connection, net.minecraft.client.multiplayer.CommonListenerCookie);
+  private void initAddon(org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  public void handleComplete(net.minecraft.network.protocol.configuration.ClientboundFinishConfigurationPacket, org.spongepowered.asm.mixin.injection.callback.CallbackInfo, net.minecraft.core.RegistryAccess$Frozen);
+  public net.fabricmc.fabric.impl.networking.client.ClientConfigurationNetworkAddon getAddon();
+  public net.fabricmc.fabric.impl.networking.AbstractNetworkAddon getAddon();
+}
+Compiled from "ClientHandshakePacketListenerImplMixin.java"
+abstract class net.fabricmc.fabric.mixin.networking.client.ClientHandshakePacketListenerImplMixin implements net.fabricmc.fabric.impl.networking.PacketListenerExtensions,net.fabricmc.fabric.api.networking.v1.context.PacketContextProvider {
+  private net.minecraft.client.Minecraft minecraft;
+  private net.minecraft.network.Connection connection;
+  private net.fabricmc.fabric.impl.networking.client.ClientLoginNetworkAddon addon;
+  net.fabricmc.fabric.mixin.networking.client.ClientHandshakePacketListenerImplMixin();
+  private void initAddon(org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private void handleQueryRequest(net.minecraft.network.protocol.login.ClientboundCustomQueryPacket, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private void setGameProfileContext(net.minecraft.network.protocol.login.ClientboundLoginFinishedPacket, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  public net.fabricmc.fabric.impl.networking.client.ClientLoginNetworkAddon getAddon();
+  public net.fabricmc.fabric.api.networking.v1.context.PacketContext getPacketContext();
+  public net.fabricmc.fabric.impl.networking.AbstractNetworkAddon getAddon();
+  private java.lang.Boolean lambda$handleQueryRequest$0(net.minecraft.network.protocol.login.ClientboundCustomQueryPacket) throws java.lang.RuntimeException;
+}
+Compiled from "ClientPacketListenerMixin.java"
+abstract class net.fabricmc.fabric.mixin.networking.client.ClientPacketListenerMixin extends net.minecraft.client.multiplayer.ClientCommonPacketListenerImpl implements net.fabricmc.fabric.impl.networking.PacketListenerExtensions {
+  private net.fabricmc.fabric.impl.networking.client.ClientPlayNetworkAddon addon;
+  protected net.fabricmc.fabric.mixin.networking.client.ClientPacketListenerMixin(net.minecraft.client.Minecraft, net.minecraft.network.Connection, net.minecraft.client.multiplayer.CommonListenerCookie);
+  private void initAddon(org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  private void handleServerPlayReady(net.minecraft.network.protocol.game.ClientboundLoginPacket, org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+  public net.fabricmc.fabric.impl.networking.client.ClientPlayNetworkAddon getAddon();
+  public net.fabricmc.fabric.impl.networking.AbstractNetworkAddon getAddon();
+}
+Compiled from "LocalPlayerMixin.java"
+public class net.fabricmc.fabric.mixin.networking.client.LocalPlayerMixin implements net.fabricmc.fabric.api.networking.v1.context.PacketContextProvider {
+  public net.minecraft.client.multiplayer.ClientPacketListener connection;
+  public net.fabricmc.fabric.mixin.networking.client.LocalPlayerMixin();
+  public net.fabricmc.fabric.api.networking.v1.context.PacketContext getPacketContext();
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.mixin.networking.client.package-info {
+}
+Compiled from "ClientCommonPacketListenerImplAccessor.java"
+public interface net.fabricmc.fabric.mixin.networking.client.accessor.ClientCommonPacketListenerImplAccessor {
+  public abstract net.minecraft.network.Connection getConnection();
+}
+Compiled from "ClientConfigurationPacketListenerImplAccessor.java"
+public interface net.fabricmc.fabric.mixin.networking.client.accessor.ClientConfigurationPacketListenerImplAccessor {
+  public abstract com.mojang.authlib.GameProfile getLocalGameProfile();
+}
+Compiled from "ClientHandshakePacketListenerImplAccessor.java"
+public interface net.fabricmc.fabric.mixin.networking.client.accessor.ClientHandshakePacketListenerImplAccessor {
+  public abstract net.minecraft.network.Connection getConnection();
+}
+Compiled from "ConnectScreenAccessor.java"
+public interface net.fabricmc.fabric.mixin.networking.client.accessor.ConnectScreenAccessor {
+  public abstract net.minecraft.network.Connection getConnection();
+}
+Compiled from "MinecraftAccessor.java"
+public interface net.fabricmc.fabric.mixin.networking.client.accessor.MinecraftAccessor {
+  public abstract net.minecraft.network.Connection getPendingConnection();
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.mixin.networking.client.accessor.package-info {
+}

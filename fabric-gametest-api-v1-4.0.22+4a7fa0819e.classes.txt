@@ -1,0 +1,16 @@
+net/fabricmc/fabric/api/gametest/v1/CustomTestMethodInvoker
+net/fabricmc/fabric/api/gametest/v1/GameTest
+net/fabricmc/fabric/api/gametest/v1/package-info
+net/fabricmc/fabric/impl/gametest/FabricGameTestModInitializer
+net/fabricmc/fabric/impl/gametest/FabricGameTestRunner
+net/fabricmc/fabric/impl/gametest/GameTestSystemProperties
+net/fabricmc/fabric/impl/gametest/SavingXmlTestReporter
+net/fabricmc/fabric/impl/gametest/TestAnnotationLocator$TestMethod
+net/fabricmc/fabric/impl/gametest/TestAnnotationLocator
+net/fabricmc/fabric/impl/gametest/package-info
+net/fabricmc/fabric/mixin/gametest/GameTestServerMixin
+net/fabricmc/fabric/mixin/gametest/RegistryDataLoaderMixin
+net/fabricmc/fabric/mixin/gametest/StructureTemplateManagerMixin
+net/fabricmc/fabric/mixin/gametest/package-info
+net/fabricmc/fabric/mixin/gametest/server/MainMixin
+net/fabricmc/fabric/mixin/gametest/server/package-info

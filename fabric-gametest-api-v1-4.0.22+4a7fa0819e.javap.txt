@@ -1,0 +1,122 @@
+Compiled from "CustomTestMethodInvoker.java"
+public interface net.fabricmc.fabric.api.gametest.v1.CustomTestMethodInvoker {
+  public abstract void invokeTestMethod(net.minecraft.gametest.framework.GameTestHelper, java.lang.reflect.Method) throws java.lang.ReflectiveOperationException;
+}
+Compiled from "GameTest.java"
+public interface net.fabricmc.fabric.api.gametest.v1.GameTest extends java.lang.annotation.Annotation {
+  public abstract java.lang.String environment();
+  public abstract java.lang.String structure();
+  public abstract int maxTicks();
+  public abstract int setupTicks();
+  public abstract boolean required();
+  public abstract net.minecraft.world.level.block.Rotation rotation();
+  public abstract boolean manualOnly();
+  public abstract int maxAttempts();
+  public abstract int requiredSuccesses();
+  public abstract boolean skyAccess();
+  public abstract int padding();
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.api.gametest.v1.package-info {
+}
+Compiled from "FabricGameTestModInitializer.java"
+public final class net.fabricmc.fabric.impl.gametest.FabricGameTestModInitializer implements net.fabricmc.api.ModInitializer {
+  private static final org.slf4j.Logger LOGGER;
+  private static net.fabricmc.fabric.impl.gametest.TestAnnotationLocator locator;
+  public net.fabricmc.fabric.impl.gametest.FabricGameTestModInitializer();
+  public void onInitialize();
+  public static void registerDynamicEntries(java.util.List<net.minecraft.resources.RegistryLoadTask<?>>);
+  static {};
+}
+Compiled from "FabricGameTestRunner.java"
+public final class net.fabricmc.fabric.impl.gametest.FabricGameTestRunner {
+  public static final boolean ENABLED;
+  private static final org.slf4j.Logger LOGGER;
+  private static final java.lang.String GAMETEST_STRUCTURE_PATH;
+  public static final net.minecraft.resources.FileToIdConverter GAMETEST_STRUCTURE_FINDER;
+  private net.fabricmc.fabric.impl.gametest.FabricGameTestRunner();
+  public static void runHeadlessServer(net.minecraft.world.level.storage.LevelStorageSource$LevelStorageAccess, net.minecraft.server.packs.repository.PackRepository);
+  private static net.minecraft.gametest.framework.GameTestServer lambda$runHeadlessServer$0(net.minecraft.world.level.storage.LevelStorageSource$LevelStorageAccess, net.minecraft.server.packs.repository.PackRepository, java.util.Optional, boolean, int, java.lang.Thread);
+  static {};
+}
+Compiled from "GameTestSystemProperties.java"
+public final class net.fabricmc.fabric.impl.gametest.GameTestSystemProperties {
+  public static final java.lang.String ENABLED;
+  public static final java.lang.String REPORT_FILE;
+  public static final java.lang.String FILTER;
+  public static final java.lang.String VERIFY;
+  private net.fabricmc.fabric.impl.gametest.GameTestSystemProperties();
+}
+Compiled from "SavingXmlTestReporter.java"
+final class net.fabricmc.fabric.impl.gametest.SavingXmlTestReporter extends net.minecraft.gametest.framework.JUnitLikeTestReporter {
+  net.fabricmc.fabric.impl.gametest.SavingXmlTestReporter(java.io.File) throws javax.xml.parsers.ParserConfigurationException;
+  public void save(java.io.File) throws javax.xml.transform.TransformerException;
+}
+Compiled from "TestAnnotationLocator.java"
+public final class net.fabricmc.fabric.impl.gametest.TestAnnotationLocator$TestMethod extends java.lang.Record {
+  private final java.lang.reflect.Method method;
+  private final net.fabricmc.fabric.api.gametest.v1.GameTest gameTest;
+  private final net.fabricmc.loader.api.entrypoint.EntrypointContainer<java.lang.Object> entrypoint;
+  public net.fabricmc.fabric.impl.gametest.TestAnnotationLocator$TestMethod(java.lang.reflect.Method, net.fabricmc.fabric.api.gametest.v1.GameTest, net.fabricmc.loader.api.entrypoint.EntrypointContainer<java.lang.Object>);
+  net.minecraft.resources.Identifier identifier();
+  java.util.function.Consumer<net.minecraft.gametest.framework.GameTestHelper> testFunction();
+  net.minecraft.gametest.framework.TestData<net.minecraft.core.Holder<net.minecraft.gametest.framework.TestEnvironmentDefinition<?>>> testData(net.minecraft.core.Registry<net.minecraft.gametest.framework.TestEnvironmentDefinition<?>>);
+  net.minecraft.gametest.framework.GameTestInstance testInstance(net.minecraft.core.Registry<net.minecraft.gametest.framework.TestEnvironmentDefinition<?>>);
+  private static java.lang.String camelToSnake(java.lang.String);
+  public final java.lang.String toString();
+  public final int hashCode();
+  public final boolean equals(java.lang.Object);
+  public java.lang.reflect.Method method();
+  public net.fabricmc.fabric.api.gametest.v1.GameTest gameTest();
+  public net.fabricmc.loader.api.entrypoint.EntrypointContainer<java.lang.Object> entrypoint();
+  private void lambda$testFunction$0(net.minecraft.gametest.framework.GameTestHelper);
+}
+Compiled from "TestAnnotationLocator.java"
+final class net.fabricmc.fabric.impl.gametest.TestAnnotationLocator {
+  private static final java.lang.String ENTRYPOINT_KEY;
+  private static final org.slf4j.Logger LOGGER;
+  private final net.fabricmc.loader.api.FabricLoader fabricLoader;
+  private java.util.List<net.fabricmc.fabric.impl.gametest.TestAnnotationLocator$TestMethod> testMethods;
+  net.fabricmc.fabric.impl.gametest.TestAnnotationLocator(net.fabricmc.loader.api.FabricLoader);
+  public java.util.List<net.fabricmc.fabric.impl.gametest.TestAnnotationLocator$TestMethod> getTestMethods();
+  private java.util.List<net.fabricmc.fabric.impl.gametest.TestAnnotationLocator$TestMethod> findMagicMethods(net.fabricmc.loader.api.entrypoint.EntrypointContainer<java.lang.Object>);
+  private void findMagicMethods(net.fabricmc.loader.api.entrypoint.EntrypointContainer<java.lang.Object>, java.lang.Class<?>, java.util.List<net.fabricmc.fabric.impl.gametest.TestAnnotationLocator$TestMethod>);
+  private void validateMethod(java.lang.reflect.Method);
+  private java.util.stream.Stream lambda$getTestMethods$0(net.fabricmc.loader.api.entrypoint.EntrypointContainer);
+  static {};
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.impl.gametest.package-info {
+}
+Compiled from "GameTestServerMixin.java"
+public abstract class net.fabricmc.fabric.mixin.gametest.GameTestServerMixin {
+  public net.fabricmc.fabric.mixin.gametest.GameTestServerMixin();
+  public void isDedicated(org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<java.lang.Boolean>);
+}
+Compiled from "RegistryDataLoaderMixin.java"
+public class net.fabricmc.fabric.mixin.gametest.RegistryDataLoaderMixin {
+  private static final java.util.concurrent.atomic.AtomicBoolean LOADING_DYNAMIC_REGISTRIES;
+  public net.fabricmc.fabric.mixin.gametest.RegistryDataLoaderMixin();
+  private static void loadFromResources(net.minecraft.server.packs.resources.ResourceManager, java.util.List<net.minecraft.core.HolderLookup$RegistryLookup<?>>, java.util.List<net.minecraft.resources.RegistryDataLoader$RegistryData<?>>, java.util.concurrent.Executor, org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<net.minecraft.core.RegistryAccess$Frozen>);
+  private static void beforeFreeze(java.util.List<net.minecraft.resources.RegistryLoadTask<?>>, java.util.Map<net.minecraft.resources.ResourceKey<?>, java.lang.Exception>, java.lang.Void, org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<net.minecraft.core.RegistryAccess$Frozen>);
+  private static boolean lambda$loadFromResources$0(net.minecraft.resources.RegistryDataLoader$RegistryData);
+  static {};
+}
+Compiled from "StructureTemplateManagerMixin.java"
+public abstract class net.fabricmc.fabric.mixin.gametest.StructureTemplateManagerMixin {
+  public net.fabricmc.fabric.mixin.gametest.StructureTemplateManagerMixin();
+  private void addFabricTemplateProvider(net.minecraft.server.packs.resources.ResourceManager, net.minecraft.world.level.storage.LevelStorageSource$LevelStorageAccess, com.mojang.datafixers.DataFixer, net.minecraft.core.HolderGetter<net.minecraft.world.level.block.Block>, org.spongepowered.asm.mixin.injection.callback.CallbackInfo, com.google.common.collect.ImmutableList$Builder<net.minecraft.world.level.levelgen.structure.templatesystem.loader.TemplateSource>);
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.mixin.gametest.package-info {
+}
+Compiled from "MainMixin.java"
+public class net.fabricmc.fabric.mixin.gametest.server.MainMixin {
+  public net.fabricmc.fabric.mixin.gametest.server.MainMixin();
+  private static boolean isEulaAgreedTo(boolean);
+  private static void main(java.lang.String[], org.spongepowered.asm.mixin.injection.callback.CallbackInfo, net.minecraft.world.level.storage.LevelStorageSource$LevelStorageAccess, net.minecraft.server.packs.repository.PackRepository);
+  private static void exitOnError(org.spongepowered.asm.mixin.injection.callback.CallbackInfo);
+}
+Compiled from "package-info.java"
+interface net.fabricmc.fabric.mixin.gametest.server.package-info {
+}
