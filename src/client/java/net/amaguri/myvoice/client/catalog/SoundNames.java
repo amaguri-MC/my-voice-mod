@@ -5,11 +5,14 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -95,8 +98,43 @@ final class SoundNames {
 		return tr("myvoice.name.suffix", "%s（%s）", base, suffix);
 	}
 
-	private static String humanize(String s) {
-		return s.replace('_', ' ').replace('.', ' ');
+	/** 訳せなかった語（テストが一覧をログに出す）。 */
+	static final Set<String> UNMAPPED = ConcurrentHashMap.newKeySet();
+
+	/** 英単語1つ -> 日本語。表 -> 動作語 -> 分類語 -> 登録名（ブロック・アイテム・エンティティ）の順。無ければ null。 */
+	private static Component word(String w) {
+		String ja = SoundWords.WORDS.get(w);
+		if (ja != null) return tr("myvoice.word." + w, ja);
+		ja = ACTIONS.get(w);
+		if (ja != null) return tr("myvoice.action." + w, ja);
+		ja = GROUPS.get(w);
+		if (ja != null) return tr("myvoice.group." + w, ja);
+		if (w.chars().allMatch(Character::isDigit)) return Component.literal(w);
+		Identifier ref = Identifier.fromNamespaceAndPath("minecraft", w);
+		if (has(BuiltInRegistries.ENTITY_TYPE, ref)) return BuiltInRegistries.ENTITY_TYPE.getValue(ref).getDescription();
+		if (has(BuiltInRegistries.BLOCK, ref)) return BuiltInRegistries.BLOCK.getValue(ref).getName();
+		if (has(BuiltInRegistries.ITEM, ref)) {
+			Item it = BuiltInRegistries.ITEM.getValue(ref);
+			return it.getName(it.getDefaultInstance());
+		}
+		return null;
+	}
+
+	/** アンダースコア区切りの語列を日本語にする。訳せない語は飛ばして UNMAPPED に記録する（ローマ字は出さない）。 */
+	private static Component words(String key) {
+		MutableComponent out = Component.empty();
+		boolean any = false;
+		for (String w : key.split("[_.]")) {
+			if (w.isEmpty()) continue;
+			Component c = word(w);
+			if (c == null) {
+				UNMAPPED.add(w);
+				continue;
+			}
+			out.append(c);
+			any = true;
+		}
+		return any ? out : tr("myvoice.name.unknown", "不明な音");
 	}
 
 	private static <T> boolean has(Registry<T> r, Identifier id) {
@@ -117,7 +155,7 @@ final class SoundNames {
 		}
 		if (item && has(BuiltInRegistries.BLOCK, ref)) return BuiltInRegistries.BLOCK.getValue(ref).getName();
 		if (!ent && has(BuiltInRegistries.ENTITY_TYPE, ref)) return BuiltInRegistries.ENTITY_TYPE.getValue(ref).getDescription();
-		return Component.literal(humanize(token));
+		return words(token);
 	}
 
 	private static Component action(String[] segs, int from) {
@@ -129,24 +167,48 @@ final class SoundNames {
 		String key = sb.toString();
 		String ja = ACTIONS.get(key);
 		if (ja != null) return tr("myvoice.action." + key, ja);
-		return Component.literal(humanize(key));
+		return words(key);
 	}
 
-	/** ID から組み立てた名前（字幕を使わない版）。 */
+	/** ID から組み立てた名前（字幕を使わない版）。「全般」は分類名を省く（全般：爆発 -> 爆発）。 */
 	static Component construct(Identifier id) {
+		return construct(id, false);
+	}
+
+	/** keepGeneric = true なら「全般：」も残す（同名の見分け用）。 */
+	static Component construct(Identifier id, boolean keepGeneric) {
 		String[] segs = id.getPath().split("\\.");
 		String prefix = segs[0];
 		boolean ebi = prefix.equals("entity") || prefix.equals("block") || prefix.equals("item");
-		if (segs.length == 1) return Component.literal(humanize(id.getPath()));
+		if (segs.length == 1) return words(id.getPath());
 		if (segs.length == 2) {
 			if (ebi) return subject(prefix, id, segs[1]);
 			String pj = PREFIXES.get(prefix);
-			Component p = pj != null ? tr("myvoice.prefix." + prefix, pj) : Component.literal(humanize(prefix));
-			Component s = ebi ? subject(prefix, id, segs[1]) : (GROUPS.containsKey(segs[1])
-					? tr("myvoice.group." + segs[1], GROUPS.get(segs[1])) : Component.literal(humanize(segs[1])));
+			Component p = pj != null ? tr("myvoice.prefix." + prefix, pj) : words(prefix);
+			Component s = GROUPS.containsKey(segs[1])
+					? tr("myvoice.group." + segs[1], GROUPS.get(segs[1])) : words(segs[1]);
 			return pair(p, s);
 		}
+		if (!keepGeneric && segs[1].equals("generic")) return action(segs, 2);
 		return pair(subject(prefix, id, segs[1]), action(segs, 2));
+	}
+
+	/** 名前に英字が残っているか（TNT だけは日本語でもそう書くので許す）。 */
+	static boolean hasAscii(String name) {
+		return name.replace("TNT", "").chars().anyMatch(c -> (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'));
+	}
+
+	private static ItemStack named(String path) {
+		Identifier ref = Identifier.fromNamespaceAndPath("minecraft", path);
+		return has(BuiltInRegistries.ITEM, ref) ? new ItemStack(BuiltInRegistries.ITEM.getValue(ref)) : ItemStack.EMPTY;
+	}
+
+	private static ItemStack firstNamed(String... paths) {
+		for (String p : paths) {
+			ItemStack st = named(p);
+			if (!st.isEmpty()) return st;
+		}
+		return ItemStack.EMPTY;
 	}
 
 	static ItemStack icon(Identifier id, SoundCatalog.Category cat) {
@@ -172,16 +234,43 @@ final class SoundNames {
 				case ITEM -> {
 					if (ref != null && has(BuiltInRegistries.ITEM, ref)) s = new ItemStack(BuiltInRegistries.ITEM.getValue(ref));
 					if (s.isEmpty()) s = blockItem(id, token);
-					if (s.isEmpty()) s = new ItemStack(Items.STICK);
+					if (s.isEmpty()) s = new ItemStack(Items.NOTE_BLOCK);
 				}
-				case AMBIENT -> s = new ItemStack(Items.CLOCK);
-				case UI -> s = new ItemStack(Items.LEVER);
+				case AMBIENT -> s = ambientIcon(segs);
+				case UI -> s = uiIcon(token);
 				default -> s = new ItemStack(Items.NOTE_BLOCK);
 			}
 		} catch (RuntimeException e) {
 			s = ItemStack.EMPTY;
 		}
 		return s.isEmpty() ? new ItemStack(Items.NOTE_BLOCK) : s;
+	}
+
+	/** 画面の音: ボタンは石のボタン、ほかは対応する作業台など。 */
+	private static ItemStack uiIcon(String token) {
+		ItemStack st = switch (token) {
+			case "button" -> firstNamed("stone_button");
+			case "loom" -> firstNamed("loom");
+			case "stonecutter" -> firstNamed("stonecutter");
+			case "cartography_table" -> firstNamed("cartography_table");
+			case "toast" -> firstNamed("experience_bottle");
+			default -> ItemStack.EMPTY;
+		};
+		return st.isEmpty() ? firstNamed("stone_button", "oak_button") : st;
+	}
+
+	/** まわりの音: 音楽はレコード、天気は雨や雷、洞窟などは地形のブロック。 */
+	private static ItemStack ambientIcon(String[] segs) {
+		String p = segs[0];
+		String t = segs.length > 1 ? segs[1] : "";
+		ItemStack st = ItemStack.EMPTY;
+		if (p.equals("music")) st = firstNamed("music_disc_cat", "jukebox");
+		else if (p.equals("weather")) st = t.equals("rain") ? firstNamed("water_bucket") : firstNamed("lightning_rod");
+		else if (t.equals("cave")) st = firstNamed("cobbled_deepslate", "stone");
+		else if (t.equals("underwater")) st = firstNamed("water_bucket");
+		else if (t.contains("nether") || t.equals("basalt_deltas") || t.equals("soul_sand_valley")
+				|| t.equals("crimson_forest") || t.equals("warped_forest")) st = firstNamed("netherrack");
+		return st.isEmpty() ? firstNamed("jukebox", "note_block") : st;
 	}
 
 	private static ItemStack blockItem(Identifier id, String token) {

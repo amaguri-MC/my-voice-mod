@@ -120,7 +120,7 @@ public final class SoundCatalog {
 			if (sub == null) return null;
 			String s = sub.getString();
 			// 翻訳が無いと生のキーが出るので捨てる
-			if (s.isBlank() || s.startsWith("subtitles.")) return null;
+			if (s.isBlank() || s.startsWith("subtitles.") || SoundNames.hasAscii(s)) return null;
 			return s;
 		} catch (RuntimeException e) {
 			return null;
@@ -159,30 +159,56 @@ public final class SoundCatalog {
 		return k;
 	}
 
+	/** 同名が並ぶものは、ID から組み立てた名前（全般も残す）にし、それでも同じなら（2）（3）…を付ける。 */
 	private static List<Entry> disambiguate(List<Entry> group) {
-		String[] modes = { "last", "tail", "full" };
-		List<Entry> next = group;
-		for (String mode : modes) {
-			next = new ArrayList<>(group.size());
-			Map<String, Integer> seen = new HashMap<>();
-			for (Entry e : group) {
-				Component n = SoundNames.withSuffix(e.name(), suffix(e.sound(), mode));
-				next.add(new Entry(e.sound(), n, e.category(), e.icon()));
-				seen.merge(n.getString(), 1, Integer::sum);
+		List<Entry> sorted = new ArrayList<>(group);
+		sorted.sort(Comparator.comparing(e -> e.sound().toString()));
+		List<Entry> next = new ArrayList<>(sorted.size());
+		Map<String, List<Entry>> byName = new HashMap<>();
+		for (Entry e : sorted) {
+			Component n = SoundNames.construct(e.sound(), true);
+			Entry ne = new Entry(e.sound(), n, e.category(), e.icon());
+			next.add(ne);
+			byName.computeIfAbsent(n.getString(), x -> new ArrayList<>()).add(ne);
+		}
+		for (List<Entry> same : byName.values()) {
+			if (same.size() < 2) continue;
+			for (int i = 1; i < same.size(); i++) {
+				Entry e = same.get(i);
+				int at = next.indexOf(e);
+				next.set(at, new Entry(e.sound(), SoundNames.withSuffix(e.name(), Integer.toString(i + 1)), e.category(), e.icon()));
 			}
-			if (seen.values().stream().allMatch(v -> v == 1)) break;
 		}
 		return next;
 	}
 
-	private static String suffix(Identifier id, String mode) {
-		String p = id.getPath();
-		String[] segs = p.split("\\.");
-		return switch (mode) {
-			case "last" -> segs[segs.length - 1];
-			case "tail" -> segs.length > 1 ? p.substring(p.indexOf('.') + 1) : p;
-			default -> id.toString();
-		};
+	/** 訳せなかった語（テスト用）。 */
+	public static List<String> unmappedWords() {
+		List<String> l = new ArrayList<>(SoundNames.UNMAPPED);
+		l.sort(null);
+		return l;
+	}
+
+	/** 画面やチャットに出す名前。目録に出せる音は日本語名、そうでなければ ID のまま。 */
+	public static String displayName(Identifier sound) {
+		if (sound == null) return "";
+		try {
+			Cache k = ensure();
+			Entry e = k.entries.get(sound);
+			if (e == null && (BuiltInRegistries.SOUND_EVENT.containsKey(sound)
+					|| Minecraft.getInstance().getSoundManager().getAvailableSounds().contains(sound))) {
+				e = entry(sound);
+			}
+			return e == null ? sound.toString() : e.name().getString();
+		} catch (RuntimeException ex) {
+			return sound.toString();
+		}
+	}
+
+	/** ID の文字列（"minecraft:..."）が来るチャット用。解釈できなければそのまま返す。 */
+	public static String displayName(String id) {
+		Identifier parsed = id == null ? null : Identifier.tryParse(id);
+		return parsed == null ? String.valueOf(id) : displayName(parsed);
 	}
 
 	private static Entry make(Cache k, Identifier id, String subtitle) {

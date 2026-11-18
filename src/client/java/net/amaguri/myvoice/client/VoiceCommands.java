@@ -7,6 +7,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.amaguri.myvoice.client.audio.ClientClips;
 import net.amaguri.myvoice.client.audio.ClipPlayer;
+import net.amaguri.myvoice.client.catalog.SoundCatalog;
 import net.amaguri.myvoice.client.ui.PickerLauncher;
 import net.amaguri.myvoice.client.ui.RecordFlow;
 import net.amaguri.myvoice.net.VoiceNet;
@@ -124,7 +125,7 @@ public final class VoiceCommands {
 		}
 		Identifier sound = ctx.getArgument("sound", Identifier.class);
 		if (ClientClips.get(sound) == null) {
-			ctx.getSource().sendError(Component.translatable("myvoice.cmd.play_none", sound.toString()));
+			ctx.getSource().sendError(Component.translatable("myvoice.cmd.play_none", SoundCatalog.displayName(sound)));
 			return 0;
 		}
 		VoiceClientNet.setPitchMode(sound, follow);
@@ -143,7 +144,7 @@ public final class VoiceCommands {
 		}
 		Identifier sound = ctx.getArgument("sound", Identifier.class);
 		RecordFlow.begin(sound, seconds, followPitch, CHAT_LISTENER);
-		src.sendFeedback(Component.translatable("myvoice.cmd.record_start", sound.toString(), seconds));
+		src.sendFeedback(Component.translatable("myvoice.cmd.record_start", SoundCatalog.displayName(sound), seconds));
 		return 1;
 	}
 
@@ -167,7 +168,7 @@ public final class VoiceCommands {
 	private static int play(CommandContext<FabricClientCommandSource> ctx) {
 		Identifier sound = ctx.getArgument("sound", Identifier.class);
 		if (ClientClips.get(sound) == null || !ClipPlayer.preview(sound)) {
-			ctx.getSource().sendError(Component.translatable("myvoice.cmd.play_none", sound.toString()));
+			ctx.getSource().sendError(Component.translatable("myvoice.cmd.play_none", SoundCatalog.displayName(sound)));
 			return 0;
 		}
 		return 1;
@@ -194,7 +195,7 @@ public final class VoiceCommands {
 		src.sendFeedback(Component.translatable("myvoice.cmd.list_header", clips.size()));
 		for (ClientClips.ClipInfo c : clips) {
 			src.sendFeedback(Component.translatable("myvoice.cmd.list_entry",
-					c.sound().toString(), c.owner(), String.format("%.1f", c.seconds())));
+					SoundCatalog.displayName(c.sound()), c.owner(), String.format("%.1f", c.seconds())));
 		}
 		return clips.size();
 	}

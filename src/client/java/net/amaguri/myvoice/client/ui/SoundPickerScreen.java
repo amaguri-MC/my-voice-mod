@@ -37,7 +37,8 @@ public final class SoundPickerScreen extends Screen {
 	private static final int LINE_HOVER = 0xAAFFFFFF;
 	private static final int ROW_SELECTED = 0x2EFFFFFF;
 	private static final int ROW_HOVER = 0x14FFFFFF;
-	private static final int PANEL = 0x78000000;
+	/** 画面全体を覆うほぼ不透明の暗色（後ろのチャット・HUD が透けない）。 */
+	private static final int BACKDROP = 0xE8101014;
 	private static final int VOICE_MARK = 0xFF9CC9FF;
 	private static final int ERROR = 0xFFFF5555;
 	private static final int BAR_TRACK = 0x44FFFFFF;
@@ -388,8 +389,7 @@ public final class SoundPickerScreen extends Screen {
 	}
 
 	private void drawBackdrop(GuiGraphicsExtractor g) {
-		extractTransparentBackground(g); // バニラの半透明の暗幕
-		g.fill(px, py, px + pw, py + ph, PANEL);
+		g.fill(0, 0, width, height, BACKDROP);
 		g.outline(px, py, pw, ph, LINE);
 		g.fill(px, py + HEAD_H, px + pw, py + HEAD_H + 1, LINE); // 上の罫線
 		g.fill(px + leftW, bodyTop, px + leftW + 1, bodyBottom, LINE); // 左列と中央の罫線

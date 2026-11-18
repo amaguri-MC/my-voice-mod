@@ -161,6 +161,24 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 			check(name != null && !name.isBlank(), "empty name for " + path);
 		}
 
+		// 全サウンドの名前に英字が残っていないこと（TNT は除く）
+		List<String> ascii = context.computeOnClient(m -> {
+			List<String> out = new java.util.ArrayList<>();
+			for (SoundCatalog.Entry e : SoundCatalog.list(null, "")) {
+				String n = e.name().getString();
+				if (n.replace("TNT", "").chars().anyMatch(c -> (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))) {
+					out.add("MYVOICE_TEST ascii " + n + " id=" + e.sound());
+				}
+			}
+			return out;
+		});
+		int total = context.computeOnClient(m -> SoundCatalog.list(null, "").size());
+		ascii.forEach(System.out::println);
+		List<String> unmapped = context.computeOnClient(m -> SoundCatalog.unmappedWords());
+		log("unmapped words: %s", unmapped);
+		log("ascii names: %d of %d sounds", ascii.size(), total);
+		check(ascii.isEmpty(), "sound names still containing ASCII letters: " + ascii.size());
+
 		// playOriginal は置換せず、さっき鳴った音にも入れない（clipId は声が割り当て済み）
 		check(context.computeOnClient(m -> ClientClips.get(clipId) != null), "clip should be assigned for bypass test");
 		playUi(context, clipId.getPath());

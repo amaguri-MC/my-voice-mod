@@ -1,6 +1,7 @@
 package net.amaguri.myvoice.client;
 
 import net.amaguri.myvoice.client.audio.ClientClips;
+import net.amaguri.myvoice.client.catalog.SoundCatalog;
 import net.amaguri.myvoice.net.VoiceNet;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -31,15 +32,15 @@ public final class VoiceClientNet {
 				// ピッチだけの変更（録音は同じ）。自分の操作ならコマンドの反応で足りるので控えめに、1回だけ
 				if (pendingSelfPitch != null && pendingSelfPitch.equals(payload.sound())) {
 					pendingSelfPitch = null;
-					chat(mc, Component.translatable("myvoice.chat.pitch_mode_self", payload.sound().toString(), pitchLabel(payload.followPitch())));
+					chat(mc, Component.translatable("myvoice.chat.pitch_mode_self", SoundCatalog.displayName(payload.sound()), pitchLabel(payload.followPitch())));
 				} else {
-					chat(mc, Component.translatable("myvoice.chat.pitch_mode", payload.owner(), payload.sound().toString(), pitchLabel(payload.followPitch())));
+					chat(mc, Component.translatable("myvoice.chat.pitch_mode", payload.owner(), SoundCatalog.displayName(payload.sound()), pitchLabel(payload.followPitch())));
 				}
 				return;
 			}
 			// 自分が録音した分は notice("saved") が知らせるので重ねて出さない
 			if (!payload.owner().equals(selfName(mc))) {
-				chat(mc, Component.translatable("myvoice.chat.clip_added", payload.owner(), payload.sound().toString()));
+				chat(mc, Component.translatable("myvoice.chat.clip_added", payload.owner(), SoundCatalog.displayName(payload.sound())));
 			}
 		});
 
@@ -47,14 +48,19 @@ public final class VoiceClientNet {
 			Minecraft mc = context.client();
 			ClientClips.remove(payload.sound());
 			if (!isQuiet()) {
-				chat(mc, Component.translatable("myvoice.chat.clip_removed", payload.by(), payload.sound().toString()));
+				chat(mc, Component.translatable("myvoice.chat.clip_removed", payload.by(), SoundCatalog.displayName(payload.sound())));
 			}
 		});
 
 		ClientPlayNetworking.registerGlobalReceiver(VoiceNet.NoticeS2C.TYPE, (payload, context) -> {
 			// 翻訳キーは自分の MOD のものだけ受け付ける
 			if (payload.key().startsWith("myvoice.")) {
-				chat(context.client(), Component.translatable(payload.key(), payload.arg()));
+				String arg = payload.arg();
+				// 音のIDが入る通知は日本語名にする（rejected の arg は理由コードなのでそのまま）
+				if (payload.key().equals("myvoice.notice.saved") || payload.key().equals("myvoice.notice.not_found")) {
+					arg = SoundCatalog.displayName(arg);
+				}
+				chat(context.client(), Component.translatable(payload.key(), arg));
 			}
 		});
 	}
