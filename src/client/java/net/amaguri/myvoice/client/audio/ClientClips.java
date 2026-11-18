@@ -8,6 +8,7 @@ import java.util.Map;
 
 import net.amaguri.myvoice.client.audio.dsp.VoiceDsp;
 import net.amaguri.myvoice.client.audio.dsp.VoiceTrim;
+import net.amaguri.myvoice.client.audio.dsp.VoiceVolume;
 import net.amaguri.myvoice.net.VoiceNet;
 import net.minecraft.resources.Identifier;
 
@@ -15,12 +16,13 @@ import net.minecraft.resources.Identifier;
 public final class ClientClips {
 	private ClientClips() {}
 
-	public record ClipInfo(Identifier sound, String owner, int sampleRate, float seconds, boolean followPitch, float pitch, float speed, float trim) {}
+	public record ClipInfo(Identifier sound, String owner, int sampleRate, float seconds, boolean followPitch, float pitch, float speed, float trim, float volume) {}
 
 	/** PCM と（再生時に作る）AL バッファ。 */
 	static final class Entry {
 		final ClipInfo info;
-		byte[] pcm; // AL バッファの元になる加工後 PCM。null = 加工中（まだ鳴らさない）
+		byte[] pcm; // AL バッファの元になる加工後 PCM（音量まで）。null = 加工中（まだ鳴らさない）
+		byte[] dsp; // trim → DSP までの PCM（音量を掛ける前）。音量だけ変わるときの作り直し用キャッシュ。null = 未完了
 		final byte[] rawPcm; // 元の録音（無加工）
 		final double[] rms; // 元 PCM の 10ms 窓 RMS（put 時に1回。cutFraction 用。null = 作っていない）
 		float[] envCache; // envelope の直近の結果
@@ -43,30 +45,42 @@ public final class ClientClips {
 	private static final Map<Identifier, Entry> CLIPS = new LinkedHashMap<>();
 
 	/**
-	 * 加工順は 元の録音 → VoiceTrim(trim) → VoiceDsp(pitch, speed)。どちらも別スレッド。
-	 * trim=0 かつ pitch=speed=1 なら元のまま即座に鳴らせる。
+	 * 加工順は 元の録音 → VoiceTrim(trim) → VoiceDsp(pitch, speed) → VoiceVolume(volume)。どれも別スレッド。
+	 * 全部が素通し（trim=0, pitch=speed=1, volume=1）なら元のまま即座に鳴らせる。
+	 * 音量だけが変わったとき（録音・trim・pitch・speed が同じ）は、前の DSP 後の PCM を使い回して音量だけ掛け直す。
 	 */
-	public static void put(Identifier sound, String owner, int sampleRate, byte[] pcm, boolean followPitch, float pitch, float speed, float trim) {
+	public static void put(Identifier sound, String owner, int sampleRate, byte[] pcm, boolean followPitch, float pitch, float speed, float trim, float volume) {
 		if (sound == null || pcm == null || sampleRate <= 0) return;
-		remove(sound); // 上書き: 古いソースとバッファを先に片付ける（値が変わったら AL バッファも作り直しになる）
 		pitch = VoiceNet.clampTune(pitch);
 		speed = VoiceNet.clampTune(speed);
 		trim = VoiceNet.clampTrim(trim);
-		byte[] raw = pcm.clone();
+		volume = VoiceNet.clampVolume(volume);
+		Entry old = CLIPS.get(sound);
+		byte[] cachedDsp = null;
+		if (old != null && old.dsp != null && old.info.sampleRate() == sampleRate && old.info.pitch() == pitch
+				&& old.info.speed() == speed && old.info.trim() == trim && java.util.Arrays.equals(old.rawPcm, pcm)) {
+			cachedDsp = old.dsp;
+		}
+		remove(sound); // 上書き: 古いソースとバッファを先に片付ける（値が変わったら AL バッファも作り直しになる）
+		byte[] raw = cachedDsp != null && old != null ? old.rawPcm : pcm.clone();
 		boolean plain = pitch == 1.0f && speed == 1.0f && trim == 0f;
-		double[] rms = VoiceTrim.windowRms(raw, sampleRate); // 1回だけ
+		double[] rms = old != null && cachedDsp != null ? old.rms : VoiceTrim.windowRms(raw, sampleRate); // 1回だけ
 		int total = raw.length / 2;
 		VoiceTrim.Cut cut = VoiceTrim.findCut(rms, total, sampleRate, trim);
 		float seconds = (cut.toSample() - cut.fromSample()) / (float) sampleRate / speed; // 長さは先に決める（加工は別スレッド）
-		Entry e = new Entry(new ClipInfo(sound, owner == null ? "" : owner, sampleRate, seconds, followPitch, pitch, speed, trim), raw, plain ? raw : null, rms);
+		byte[] dspNow = cachedDsp != null ? cachedDsp : plain ? raw : null;
+		byte[] pcmNow = dspNow == null ? null : volume == 1.0f ? dspNow : null;
+		Entry e = new Entry(new ClipInfo(sound, owner == null ? "" : owner, sampleRate, seconds, followPitch, pitch, speed, trim, volume), raw, pcmNow, rms);
+		e.dsp = dspNow;
 		CLIPS.put(sound, e);
-		if (!plain) {
-			tuneAsync(raw, sampleRate, pitch, speed, trim, tuned -> {
+		if (pcmNow == null) {
+			tuneAsync(raw, sampleRate, pitch, speed, trim, volume, dspNow, (dsp, fin) -> {
 				// 世代確認: 上書き・削除されていたら捨てる（put のたびに新しい Entry）
 				if (CLIPS.get(sound) != e) return;
 				ClipPlayer.stopSourcesOf(e);
 				ClipPlayer.deleteBuffer(e);
-				e.pcm = tuned;
+				e.dsp = dsp;
+				e.pcm = fin;
 			});
 		}
 	}
@@ -115,15 +129,26 @@ public final class ClientClips {
 		return t;
 	});
 
-	/** 単一スレッドで加工（trim → DSP）し、結果をクライアントスレッドで渡す。 */
-	static void tuneAsync(byte[] raw, int sampleRate, float pitch, float speed, float trim, java.util.function.Consumer<byte[]> onMain) {
+	/**
+	 * 単一スレッドで加工（trim → DSP → 音量）し、結果をクライアントスレッドで渡す。
+	 * cachedDsp があれば trim・DSP は飛ばして音量だけ掛ける。onMain には (DSP 後, 音量後) を渡す。
+	 */
+	static void tuneAsync(byte[] raw, int sampleRate, float pitch, float speed, float trim, float volume, byte[] cachedDsp,
+			java.util.function.BiConsumer<byte[], byte[]> onMain) {
 		DSP.execute(() -> {
-			byte[] out = tune(raw, sampleRate, pitch, speed, trim);
-			net.minecraft.client.Minecraft.getInstance().execute(() -> onMain.accept(out));
+			byte[] dsp = cachedDsp != null ? cachedDsp : tune(raw, sampleRate, pitch, speed, trim);
+			byte[] fin;
+			try {
+				fin = volume == 1.0f ? dsp : VoiceVolume.apply(dsp, volume);
+			} catch (Throwable t) {
+				fin = dsp;
+			}
+			byte[] finalPcm = fin;
+			net.minecraft.client.Minecraft.getInstance().execute(() -> onMain.accept(dsp, finalPcm));
 		});
 	}
 
-	/** 加工。何も要らなければ元のまま。失敗したら元の PCM で鳴らす。 */
+	/** trim → DSP の加工。何も要らなければ元のまま。失敗したら元の PCM で鳴らす。 */
 	static byte[] tune(byte[] raw, int sampleRate, float pitch, float speed, float trim) {
 		byte[] cur = raw;
 		try {

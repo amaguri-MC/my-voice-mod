@@ -69,6 +69,7 @@ public final class ClipPlayer {
 			ClientClips.Entry e = ClientClips.entry(id);
 			if (e == null) return false;
 			replaced++; // OpenAL が使えなくても数える
+			if (e.info.volume() <= 0f) return true; // 音量0: 元の音は止めて、何も鳴らさない
 			try {
 				playInstance(e, s);
 			} catch (Throwable t) {
@@ -85,6 +86,7 @@ public final class ClipPlayer {
 		try {
 			ClientClips.Entry e = ClientClips.entry(sound);
 			if (e == null) return false;
+			if (e.info.volume() <= 0f) return true; // 消音の声: 鳴らさない
 			float vol = categoryVolume(SoundSource.MASTER);
 			start(e, vol, 1.0F, true, 0, 0, 0, false, 0F);
 			return true;
@@ -95,10 +97,10 @@ public final class ClipPlayer {
 	}
 
 	/**
-	 * 送らずに手元だけで、その高さ・速さ・無音カットで試聴する（バーを動かしながら聞く用）。前の試聴は止めてから鳴らす。
+	 * 送らずに手元だけで、その高さ・速さ・無音カット・音量で試聴する（バーを動かしながら聞く用）。前の試聴は止めてから鳴らす。
 	 * 声が無ければ false。followPitch は関係なく AL_PITCH は 1.0（加工は DSP 側）。
 	 */
-	public static boolean previewTuned(Identifier sound, float pitch, float speed, float trim) {
+	public static boolean previewTuned(Identifier sound, float pitch, float speed, float trim, float volume) {
 		try {
 			ClientClips.Entry e = ClientClips.entry(sound);
 			if (e == null) return false;
@@ -106,8 +108,12 @@ public final class ClipPlayer {
 			float p = VoiceNet.clampTune(pitch);
 			float sp = VoiceNet.clampTune(speed);
 			float tr = VoiceNet.clampTrim(trim);
+			float vol = VoiceNet.clampVolume(volume);
 			int gen = ++previewGen;
-			ClientClips.tuneAsync(e.rawPcm, e.info.sampleRate(), p, sp, tr, tuned -> {
+			if (vol <= 0f) return true; // 消音: 何も鳴らさない（前の試聴は止めた）
+			// 高さ・速さ・無音カットが今の声と同じなら DSP 後の PCM を使い回して音量だけ掛ける
+			byte[] cached = e.dsp != null && e.info.pitch() == p && e.info.speed() == sp && e.info.trim() == tr ? e.dsp : null;
+			ClientClips.tuneAsync(e.rawPcm, e.info.sampleRate(), p, sp, tr, vol, cached, (dsp, tuned) -> {
 				// 古い試聴の結果、または声が差し替わった・消えた場合は捨てる
 				if (gen != previewGen || ClientClips.entry(sound) != e) return;
 				releasePreview();

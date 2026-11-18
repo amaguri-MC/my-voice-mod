@@ -22,7 +22,7 @@ public final class VoiceClientNet {
 	private static final java.util.Map<Identifier, InFlight> IN_FLIGHT = new java.util.HashMap<>();
 	private static final long IN_FLIGHT_TTL_NANOS = 3_000_000_000L;
 
-	public record Tune(boolean followPitch, float pitch, float speed, float trim) {}
+	public record Tune(boolean followPitch, float pitch, float speed, float trim, float volume) {}
 	/** 音ごとの「最後の値だけ」の送信予約。 */
 	private static final java.util.Map<Identifier, Tune> PENDING = new java.util.LinkedHashMap<>();
 	/** サーバーの連投制限（1秒）に余裕を足した間隔。upload / setTune の最終送信時刻から数える。 */
@@ -44,7 +44,7 @@ public final class VoiceClientNet {
 			var en = it.next();
 			it.remove();
 			Tune t = en.getValue();
-			setTune(en.getKey(), t.followPitch(), t.pitch(), t.speed(), t.trim());
+			setTune(en.getKey(), t.followPitch(), t.pitch(), t.speed(), t.trim(), t.volume());
 		});
 
 		ClientPlayNetworking.registerGlobalReceiver(VoiceNet.ClipS2C.TYPE, (payload, context) -> {
@@ -52,13 +52,13 @@ public final class VoiceClientNet {
 			ClientClips.ClipInfo old = ClientClips.get(payload.sound());
 			boolean samePcm = ClientClips.samePcm(payload.sound(), payload.pcm());
 			ClientClips.put(payload.sound(), payload.owner(), payload.sampleRate(), payload.pcm(),
-					payload.followPitch(), payload.pitch(), payload.speed(), payload.trim());
+					payload.followPitch(), payload.pitch(), payload.speed(), payload.trim(), payload.volume());
 			ClientClips.ClipInfo now = ClientClips.get(payload.sound());
 			InFlight fl = IN_FLIGHT.get(payload.sound());
-			boolean mine = fl != null && fl.tune().equals(new Tune(now.followPitch(), now.pitch(), now.speed(), now.trim()));
+			boolean mine = fl != null && fl.tune().equals(new Tune(now.followPitch(), now.pitch(), now.speed(), now.trim(), now.volume()));
 			boolean tuneOnly = old != null && samePcm && old.owner().equals(payload.owner())
 					&& old.sampleRate() == payload.sampleRate()
-					&& (old.followPitch() != now.followPitch() || old.pitch() != now.pitch() || old.speed() != now.speed() || old.trim() != now.trim());
+					&& (old.followPitch() != now.followPitch() || old.pitch() != now.pitch() || old.speed() != now.speed() || old.trim() != now.trim() || old.volume() != now.volume());
 			if (tuneOnly) {
 				// 録音は同じで調整だけ変わった。自分の操作は出さない
 				if (mine) IN_FLIGHT.remove(payload.sound());
@@ -105,8 +105,8 @@ public final class VoiceClientNet {
 		});
 	}
 
-	/** 録音したクリップをサーバーへ送る。MOD の無いサーバーでは送らずに知らせる。pitch/speed は 0.5〜2.0（1 = そのまま）、trim は 0〜1（0 = 切らない）。 */
-	public static void upload(Identifier sound, byte[] pcm, boolean followPitch, float pitch, float speed, float trim) {
+	/** 録音したクリップをサーバーへ送る。MOD の無いサーバーでは送らずに知らせる。pitch/speed は 0.5〜2.0（1 = そのまま）、trim は 0〜1（0 = 切らない）、volume は 0〜2（1 = そのまま、0 = 消音）。 */
+	public static void upload(Identifier sound, byte[] pcm, boolean followPitch, float pitch, float speed, float trim, float volume) {
 		if (!canSend()) {
 			notifyNeedServer();
 			return;
@@ -114,11 +114,11 @@ public final class VoiceClientNet {
 		PENDING.remove(sound); // 録音の送信が最新の値を持っている
 		lastSendAt = System.nanoTime();
 		ClientPlayNetworking.send(new VoiceNet.UploadClipC2S(sound, VoiceNet.SAMPLE_RATE, pcm, followPitch,
-				VoiceNet.clampTune(pitch), VoiceNet.clampTune(speed), VoiceNet.clampTrim(trim)));
+				VoiceNet.clampTune(pitch), VoiceNet.clampTune(speed), VoiceNet.clampTrim(trim), VoiceNet.clampVolume(volume)));
 	}
 
 	/** 録音し直さずに声の調整（ピッチ追従・高さ・速さ）だけ変える。 */
-	public static void setTune(Identifier sound, boolean followPitch, float pitch, float speed, float trim) {
+	public static void setTune(Identifier sound, boolean followPitch, float pitch, float speed, float trim, float volume) {
 		if (!canSend()) {
 			notifyNeedServer();
 			return;
@@ -126,19 +126,20 @@ public final class VoiceClientNet {
 		float p = VoiceNet.clampTune(pitch);
 		float sp = VoiceNet.clampTune(speed);
 		float tr = VoiceNet.clampTrim(trim);
+		float vo = VoiceNet.clampVolume(volume);
 		ClientClips.ClipInfo cur = ClientClips.get(sound);
-		if (cur != null && cur.followPitch() == followPitch && cur.pitch() == p && cur.speed() == sp && cur.trim() == tr) return; // サーバーも無処理
+		if (cur != null && cur.followPitch() == followPitch && cur.pitch() == p && cur.speed() == sp && cur.trim() == tr && cur.volume() == vo) return; // サーバーも無処理
 		PENDING.remove(sound);
 		lastSendAt = System.nanoTime();
-		IN_FLIGHT.put(sound, new InFlight(new Tune(followPitch, p, sp, tr), lastSendAt));
-		ClientPlayNetworking.send(new VoiceNet.SetTuneC2S(sound, followPitch, p, sp, tr));
+		IN_FLIGHT.put(sound, new InFlight(new Tune(followPitch, p, sp, tr, vo), lastSendAt));
+		ClientPlayNetworking.send(new VoiceNet.SetTuneC2S(sound, followPitch, p, sp, tr, vo));
 	}
 
 	/** 調整の送信を予約する（音ごとに最後の値だけ。最終送信から 1.3 秒あけて tick で送る）。 */
-	public static void queueTune(Identifier sound, boolean followPitch, float pitch, float speed, float trim) {
+	public static void queueTune(Identifier sound, boolean followPitch, float pitch, float speed, float trim, float volume) {
 		if (sound == null) return;
 		PENDING.remove(sound); // 後勝ち（順番も最新に）
-		PENDING.put(sound, new Tune(followPitch, VoiceNet.clampTune(pitch), VoiceNet.clampTune(speed), VoiceNet.clampTrim(trim)));
+		PENDING.put(sound, new Tune(followPitch, VoiceNet.clampTune(pitch), VoiceNet.clampTune(speed), VoiceNet.clampTrim(trim), VoiceNet.clampVolume(volume)));
 	}
 
 	/** その音の送信予約があるか（画面が表示を ClientClips に合わせてよいかの判定用）。 */

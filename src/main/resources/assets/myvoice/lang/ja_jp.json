@@ -692,5 +692,7 @@
   "myvoice.trim.weak": "弱",
   "myvoice.trim.medium": "中",
   "myvoice.trim.strong": "強",
-  "myvoice.picker.rerecord": "録り直す"
+  "myvoice.picker.rerecord": "録り直す",
+  "myvoice.volume.label": "音量 %s",
+  "myvoice.volume.mute": "音量 消音"
 }

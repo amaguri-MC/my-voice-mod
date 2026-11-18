@@ -73,7 +73,7 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 
 			// a) アップロード
 			byte[] pcm = sine();
-			context.runOnClient(mc -> VoiceClientNet.upload(id, pcm, true, 1.0f, 1.0f, 0f));
+			context.runOnClient(mc -> VoiceClientNet.upload(id, pcm, true, 1.0f, 1.0f, 0f, 1.0f));
 			log("a) uploaded %d bytes to %s", pcm.length, id);
 
 			// b) 両側に登録される
@@ -106,7 +106,7 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 
 			// e) followPitch=false でアップ（連投制限を避けて待つ）
 			context.waitTicks(30);
-			context.runOnClient(mc -> VoiceClientNet.upload(id, pcm, false, 1.0f, 1.0f, 0f));
+			context.runOnClient(mc -> VoiceClientNet.upload(id, pcm, false, 1.0f, 1.0f, 0f, 1.0f));
 			server.waitFor(s -> VoiceServer.has(id));
 			context.waitFor(mc -> ClientClips.get(id) != null && !ClientClips.get(id).followPitch());
 			boolean eOk = context.computeOnClient(mc -> ClientClips.get(id) != null && !ClientClips.get(id).followPitch());
@@ -115,7 +115,7 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 
 			// f) setTune(followPitch=true, 1, 1)
 			context.waitTicks(30);
-			context.runOnClient(mc -> VoiceClientNet.setTune(id, true, 1.0f, 1.0f, 0f));
+			context.runOnClient(mc -> VoiceClientNet.setTune(id, true, 1.0f, 1.0f, 0f, 1.0f));
 			context.waitFor(mc -> ClientClips.get(id) != null && ClientClips.get(id).followPitch());
 			boolean fOk = context.computeOnClient(mc -> ClientClips.get(id) != null && ClientClips.get(id).followPitch());
 			log("f) setTune(followPitch=true) client=%s", fOk);
@@ -124,7 +124,7 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 			// g) pitch=1.5, speed=0.75 でアップ → 長さは元の約 1/0.75 = 1.33 倍
 			float orig = (pcm.length / 2) / (float) VoiceNet.SAMPLE_RATE;
 			context.waitTicks(30);
-			context.runOnClient(mc -> VoiceClientNet.upload(id, pcm, true, 1.5f, 0.75f, 0f));
+			context.runOnClient(mc -> VoiceClientNet.upload(id, pcm, true, 1.5f, 0.75f, 0f, 1.0f));
 			context.waitFor(mc -> ClientClips.get(id) != null && ClientClips.get(id).speed() == 0.75f && ClientClips.ready(id));
 			float gSec = context.computeOnClient(mc -> ClientClips.get(id).seconds());
 			float gRatio = gSec / orig;
@@ -135,7 +135,7 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 
 			// h) setTune(1,1) で元の長さに戻る
 			context.waitTicks(30);
-			context.runOnClient(mc -> VoiceClientNet.setTune(id, true, 1.0f, 1.0f, 0f));
+			context.runOnClient(mc -> VoiceClientNet.setTune(id, true, 1.0f, 1.0f, 0f, 1.0f));
 			context.waitFor(mc -> ClientClips.get(id) != null && ClientClips.get(id).speed() == 1.0f && ClientClips.ready(id));
 			float hSec = context.computeOnClient(mc -> ClientClips.get(id).seconds());
 			log("h) setTune(1.0, 1.0) seconds=%.3f orig=%.3f", hSec, orig);
@@ -143,12 +143,12 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 
 			// h2) ピッチ追従 on → すぐ off（予約のまとめ）→ 3秒待って followPitch=false に落ち着く
 			context.waitTicks(40);
-			context.runOnClient(mc -> VoiceClientNet.queueTune(id, false, 1.0f, 1.0f, 0f));
+			context.runOnClient(mc -> VoiceClientNet.queueTune(id, false, 1.0f, 1.0f, 0f, 1.0f));
 			context.waitFor(mc -> ClientClips.get(id) != null && !ClientClips.get(id).followPitch());
 			context.waitTicks(40);
-			context.runOnClient(mc -> VoiceClientNet.queueTune(id, true, 1.0f, 1.0f, 0f));
+			context.runOnClient(mc -> VoiceClientNet.queueTune(id, true, 1.0f, 1.0f, 0f, 1.0f));
 			context.waitTicks(3);
-			context.runOnClient(mc -> VoiceClientNet.queueTune(id, false, 1.0f, 1.0f, 0f));
+			context.runOnClient(mc -> VoiceClientNet.queueTune(id, false, 1.0f, 1.0f, 0f, 1.0f));
 			context.waitTicks(60);
 			boolean h2 = context.computeOnClient(mc -> ClientClips.get(id) != null && !ClientClips.get(id).followPitch());
 			log("h2) on -> immediately off, after 3s followPitch=false client=%s", h2);
@@ -158,18 +158,36 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 			// k) 無音カット: 1秒の音 + 0.5秒の小さな減衰 + 0.5秒無音 を trim=0 でアップ → 約2.0秒、trim=1 で短くなる
 			context.waitTicks(40);
 			byte[] tailPcm = voiceWithTail(1.0, 0.5, 0.5);
-			context.runOnClient(mc -> VoiceClientNet.upload(id, tailPcm, false, 1.0f, 1.0f, 0f));
+			context.runOnClient(mc -> VoiceClientNet.upload(id, tailPcm, false, 1.0f, 1.0f, 0f, 1.0f));
 			context.waitFor(mc -> ClientClips.get(id) != null && ClientClips.get(id).trim() == 0f && ClientClips.get(id).seconds() > 1.9f && ClientClips.ready(id));
 			float k0 = context.computeOnClient(mc -> ClientClips.get(id).seconds());
 			log("k) trim=0 seconds=%.3f (expect ~2.0)", k0);
 			check(Math.abs(k0 - 2.0f) < 0.05f, "trim=0 should keep the whole 2.0s, got " + k0);
 			context.waitTicks(40);
-			context.runOnClient(mc -> VoiceClientNet.setTune(id, false, 1.0f, 1.0f, 1.0f));
+			context.runOnClient(mc -> VoiceClientNet.setTune(id, false, 1.0f, 1.0f, 1.0f, 1.0f));
 			context.waitFor(mc -> ClientClips.get(id) != null && ClientClips.get(id).trim() == 1.0f && ClientClips.ready(id));
 			float k1 = context.computeOnClient(mc -> ClientClips.get(id).seconds());
 			float[] kCut = context.computeOnClient(mc -> ClientClips.cutFraction(id, 1.0f));
 			log("k) trim=1 seconds=%.3f (expect 1.2..1.6) cutFraction=[%.3f, %.3f]", k1, kCut[0], kCut[1]);
 			check(k1 >= 1.2f && k1 <= 1.6f, "trim=1 should shorten the clip to 1.2..1.6s, got " + k1);
+			context.waitTicks(40);
+
+			// m) 音量: volume=0.5 でアップ → 0.5。setTune volume=0 → 元の音は止める（tryReplace は true）が何も鳴らさない
+			context.waitTicks(40);
+			context.runOnClient(mc -> VoiceClientNet.upload(id, pcm, false, 1.0f, 1.0f, 0f, 0.5f));
+			context.waitFor(mc -> ClientClips.get(id) != null && ClientClips.get(id).volume() == 0.5f && ClientClips.ready(id));
+			float mVol = context.computeOnClient(mc -> ClientClips.get(id).volume());
+			log("m) upload(volume=0.5) client volume=%.2f", mVol);
+			check(mVol == 0.5f, "volume should be 0.5 after upload, got " + mVol);
+			context.waitTicks(40);
+			context.runOnClient(mc -> VoiceClientNet.setTune(id, false, 1.0f, 1.0f, 0f, 0f));
+			context.waitFor(mc -> ClientClips.get(id) != null && ClientClips.get(id).volume() == 0f && ClientClips.ready(id));
+			int mBefore = ClipPlayer.replacedCount();
+			context.runOnClient(mc -> mc.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1f)));
+			context.waitTicks(5);
+			int mAfter = ClipPlayer.replacedCount();
+			log("m) volume=0 replacedCount %d -> %d", mBefore, mAfter);
+			check(mAfter > mBefore, "volume=0 should still replace (stop the original), replacedCount " + mBefore + " -> " + mAfter);
 			context.waitTicks(40);
 
 			// ---- 音選び画面（W6） ----
@@ -310,14 +328,14 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 		// 波形が分かるよう、減衰する語尾つきの声をアップしておく（高さ・速さ・無音カットは既定）
 		byte[] shotPcm = voiceWithTail(0.8, 1.2, 0.6);
 		context.waitTicks(30);
-		context.runOnClient(m -> VoiceClientNet.upload(clipId, shotPcm, true, 1.0f, 1.0f, VoiceNet.DEFAULT_TRIM));
+		context.runOnClient(m -> VoiceClientNet.upload(clipId, shotPcm, true, 1.0f, 1.0f, VoiceNet.DEFAULT_TRIM, 1.0f));
 		context.waitFor(m -> ClientClips.get(clipId) != null && ClientClips.get(clipId).trim() == VoiceNet.DEFAULT_TRIM && ClientClips.ready(clipId));
-		// 画面のバーにその値が出る状態で撮る: 声の調整を 高さ1.5・速さ0.75 にして同期を待つ
+		// 画面のバーにその値が出る状態で撮る: 声の調整を 高さ1.5・速さ0.75・音量150% にして同期を待つ
 		context.waitTicks(30);
-		context.runOnClient(m -> VoiceClientNet.setTune(clipId, true, 1.5f, 0.75f, VoiceNet.DEFAULT_TRIM));
-		context.waitFor(m -> ClientClips.get(clipId) != null && ClientClips.get(clipId).pitch() == 1.5f && ClientClips.get(clipId).speed() == 0.75f && ClientClips.ready(clipId));
+		context.runOnClient(m -> VoiceClientNet.setTune(clipId, true, 1.5f, 0.75f, VoiceNet.DEFAULT_TRIM, 1.5f));
+		context.waitFor(m -> ClientClips.get(clipId) != null && ClientClips.get(clipId).pitch() == 1.5f && ClientClips.get(clipId).speed() == 0.75f && ClientClips.get(clipId).volume() == 1.5f && ClientClips.ready(clipId));
 		context.waitTicks(30);
-		log("pj) tuned %s to pitch=1.5 speed=0.75 for the screenshot", clipId);
+		log("pj) tuned %s to pitch=1.5 speed=0.75 volume=1.5 for the screenshot", clipId);
 		shot(context, "picker_detail");
 
 		context.runOnClient(m -> m.gui.screen().onClose());
