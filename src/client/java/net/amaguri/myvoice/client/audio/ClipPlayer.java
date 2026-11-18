@@ -11,6 +11,7 @@ import org.lwjgl.openal.ALC10;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.amaguri.myvoice.net.VoiceNet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.Sound;
@@ -55,6 +56,8 @@ public final class ClipPlayer {
 	private static boolean bypass;
 	private static SoundInstance lastOriginal;
 	private static int errorCount;
+	/** previewTuned の一時エントリ（ClientClips には入れない）。次の試聴か stopAll で片付ける。 */
+	private static ClientClips.Entry previewEntry;
 
 	// ------------------------------------------------------------ 公開 API
 
@@ -90,6 +93,37 @@ public final class ClipPlayer {
 		}
 	}
 
+	/**
+	 * 送らずに手元だけで、その高さ・速さで試聴する（バーを動かしながら聞く用）。前の試聴は止めてから鳴らす。
+	 * 声が無ければ false。followPitch は関係なく AL_PITCH は 1.0（加工は DSP 側）。
+	 */
+	public static boolean previewTuned(Identifier sound, float pitch, float speed) {
+		try {
+			ClientClips.Entry e = ClientClips.entry(sound);
+			if (e == null) return false;
+			releasePreview();
+			float p = VoiceNet.clampTune(pitch);
+			float sp = VoiceNet.clampTune(speed);
+			byte[] tuned = ClientClips.tune(e.rawPcm, e.info.sampleRate(), p, sp);
+			ClientClips.Entry tmp = new ClientClips.Entry(e.info, e.rawPcm, tuned);
+			previewEntry = tmp;
+			start(tmp, categoryVolume(SoundSource.MASTER), 1.0F, true, 0, 0, 0, false, 0F);
+			return true;
+		} catch (Throwable t) {
+			logError("previewTuned failed", t);
+			return false;
+		}
+	}
+
+	private static void releasePreview() {
+		ClientClips.Entry prev = previewEntry;
+		previewEntry = null;
+		if (prev != null) {
+			stopSourcesOf(prev);
+			deleteBuffer(prev);
+		}
+	}
+
 	/** 元の音（置換されないバニラの音）を自分だけに聞かせる。音選び画面の試聴用。 */
 	public static void playOriginal(Identifier sound) {
 		if (sound == null) return;
@@ -118,6 +152,7 @@ public final class ClipPlayer {
 	public static void stopAll() {
 		for (Src s : new ArrayList<>(SOURCES)) destroy(s);
 		SOURCES.clear();
+		releasePreview();
 	}
 
 	public static int replacedCount() {

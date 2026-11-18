@@ -16,8 +16,10 @@ public final class VoiceClientNet {
 	/** 参加直後の一括同期ではチャットを出さないための猶予（ナノ秒）。 */
 	private static final long QUIET_AFTER_JOIN_NANOS = 3_000_000_000L;
 	private static long joinedAt = 0L;
-	/** 自分が setPitchMode を送った音（返ってきた通知を自分用の文言にする）。 */
-	private static Identifier pendingSelfPitch = null;
+	/** 自分が setTune を送った音と時刻（返ってきた通知を出さない。断られたら取り消す）。 */
+	private static Identifier pendingSelfTune = null;
+	private static long pendingSelfTuneAt = 0L;
+	private static final long PENDING_TTL_NANOS = 5_000_000_000L;
 
 	public static void init() {
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> joinedAt = System.nanoTime());
@@ -26,19 +28,21 @@ public final class VoiceClientNet {
 			Minecraft mc = context.client();
 			ClientClips.ClipInfo old = ClientClips.get(payload.sound());
 			boolean samePcm = ClientClips.samePcm(payload.sound(), payload.pcm());
-			ClientClips.put(payload.sound(), payload.owner(), payload.sampleRate(), payload.pcm(), payload.followPitch());
-			if (isQuiet()) return;
-			if (old != null && samePcm && old.followPitch() != payload.followPitch() && old.owner().equals(payload.owner())
-					&& old.sampleRate() == payload.sampleRate() && Math.abs(old.seconds() - (payload.pcm().length / 2) / (float) payload.sampleRate()) < 1e-6f) {
-				// ピッチだけの変更（録音は同じ）。自分の操作ならコマンドの反応で足りるので控えめに、1回だけ
-				if (pendingSelfPitch != null && pendingSelfPitch.equals(payload.sound())) {
-					pendingSelfPitch = null;
-					chat(mc, Component.translatable("myvoice.chat.pitch_mode_self", SoundCatalog.displayName(payload.sound()), pitchLabel(payload.followPitch())));
-				} else {
-					chat(mc, Component.translatable("myvoice.chat.pitch_mode", payload.owner(), SoundCatalog.displayName(payload.sound()), pitchLabel(payload.followPitch())));
-				}
+			ClientClips.put(payload.sound(), payload.owner(), payload.sampleRate(), payload.pcm(),
+					payload.followPitch(), payload.pitch(), payload.speed());
+			ClientClips.ClipInfo now = ClientClips.get(payload.sound());
+			boolean tuneOnly = old != null && samePcm && old.owner().equals(payload.owner())
+					&& old.sampleRate() == payload.sampleRate()
+					&& (old.followPitch() != now.followPitch() || old.pitch() != now.pitch() || old.speed() != now.speed());
+			if (tuneOnly) {
+				// 録音は同じで調整だけ変わった。自分の操作は出さない
+				boolean self = pendingSelfTune != null && pendingSelfTune.equals(payload.sound())
+						&& System.nanoTime() - pendingSelfTuneAt < PENDING_TTL_NANOS;
+				if (self) pendingSelfTune = null;
+				else if (!isQuiet()) chat(mc, Component.translatable("myvoice.chat.tuned", SoundCatalog.displayName(payload.sound())));
 				return;
 			}
+			if (isQuiet()) return;
 			// 自分が録音した分は notice("saved") が知らせるので重ねて出さない
 			if (!payload.owner().equals(selfName(mc))) {
 				chat(mc, Component.translatable("myvoice.chat.clip_added", payload.owner(), SoundCatalog.displayName(payload.sound())));
@@ -57,7 +61,7 @@ public final class VoiceClientNet {
 			// 翻訳キーは自分の MOD のものだけ受け付ける
 			if (payload.key().startsWith("myvoice.")) {
 				if (payload.key().equals("myvoice.notice.rejected") || payload.key().equals("myvoice.notice.not_found")) {
-					pendingSelfPitch = null; // 断られた: 返事待ちの自分のピッチ変更は無くなった
+					pendingSelfTune = null; // 断られた: 返事待ちの自分の調整は無くなった
 				}
 				String arg = payload.arg();
 				// 音のIDが入る通知は日本語名にする（rejected の arg は理由コードなのでそのまま）
@@ -69,27 +73,29 @@ public final class VoiceClientNet {
 		});
 	}
 
-	/** 録音したクリップをサーバーへ送る。MOD の無いサーバーでは送らずに知らせる。 */
-	public static void upload(Identifier sound, byte[] pcm, boolean followPitch) {
+	/** 録音したクリップをサーバーへ送る。MOD の無いサーバーでは送らずに知らせる。pitch/speed は 0.5〜2.0（1 = そのまま）。 */
+	public static void upload(Identifier sound, byte[] pcm, boolean followPitch, float pitch, float speed) {
 		if (!canSend()) {
 			notifyNeedServer();
 			return;
 		}
-		ClientPlayNetworking.send(new VoiceNet.UploadClipC2S(sound, VoiceNet.SAMPLE_RATE, pcm, followPitch));
+		ClientPlayNetworking.send(new VoiceNet.UploadClipC2S(sound, VoiceNet.SAMPLE_RATE, pcm, followPitch,
+				VoiceNet.clampTune(pitch), VoiceNet.clampTune(speed)));
 	}
 
-	/** 録音し直さずにピッチ設定だけ変える。 */
-	public static void setPitchMode(Identifier sound, boolean followPitch) {
+	/** 録音し直さずに声の調整（ピッチ追従・高さ・速さ）だけ変える。 */
+	public static void setTune(Identifier sound, boolean followPitch, float pitch, float speed) {
 		if (!canSend()) {
 			notifyNeedServer();
 			return;
 		}
-		pendingSelfPitch = sound;
-		ClientPlayNetworking.send(new VoiceNet.SetPitchModeC2S(sound, followPitch));
-	}
-
-	private static Component pitchLabel(boolean followPitch) {
-		return Component.translatable(followPitch ? "myvoice.pitch.game" : "myvoice.pitch.voice");
+		float p = VoiceNet.clampTune(pitch);
+		float sp = VoiceNet.clampTune(speed);
+		ClientClips.ClipInfo cur = ClientClips.get(sound);
+		if (cur != null && cur.followPitch() == followPitch && cur.pitch() == p && cur.speed() == sp) return; // サーバーも無処理
+		pendingSelfTune = sound;
+		pendingSelfTuneAt = System.nanoTime();
+		ClientPlayNetworking.send(new VoiceNet.SetTuneC2S(sound, followPitch, p, sp));
 	}
 
 	/** サーバーにも My Voice が入っているか。 */

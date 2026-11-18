@@ -57,7 +57,7 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 
 			// a) アップロード
 			byte[] pcm = sine();
-			context.runOnClient(mc -> VoiceClientNet.upload(id, pcm, true));
+			context.runOnClient(mc -> VoiceClientNet.upload(id, pcm, true, 1.0f, 1.0f));
 			log("a) uploaded %d bytes to %s", pcm.length, id);
 
 			// b) 両側に登録される
@@ -90,20 +90,40 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 
 			// e) followPitch=false でアップ（連投制限を避けて待つ）
 			context.waitTicks(30);
-			context.runOnClient(mc -> VoiceClientNet.upload(id, pcm, false));
+			context.runOnClient(mc -> VoiceClientNet.upload(id, pcm, false, 1.0f, 1.0f));
 			server.waitFor(s -> VoiceServer.has(id));
 			context.waitFor(mc -> ClientClips.get(id) != null && !ClientClips.get(id).followPitch());
 			boolean eOk = context.computeOnClient(mc -> ClientClips.get(id) != null && !ClientClips.get(id).followPitch());
 			log("e) followPitch=false client=%s", eOk);
 			check(eOk, "followPitch should be false after upload(false)");
 
-			// f) setPitchMode(true)
+			// f) setTune(followPitch=true, 1, 1)
 			context.waitTicks(30);
-			context.runOnClient(mc -> VoiceClientNet.setPitchMode(id, true));
+			context.runOnClient(mc -> VoiceClientNet.setTune(id, true, 1.0f, 1.0f));
 			context.waitFor(mc -> ClientClips.get(id) != null && ClientClips.get(id).followPitch());
 			boolean fOk = context.computeOnClient(mc -> ClientClips.get(id) != null && ClientClips.get(id).followPitch());
-			log("f) setPitchMode(true) client=%s", fOk);
-			check(fOk, "followPitch should be true after setPitchMode(true)");
+			log("f) setTune(followPitch=true) client=%s", fOk);
+			check(fOk, "followPitch should be true after setTune(true)");
+
+			// g) pitch=1.5, speed=0.75 でアップ → 長さは元の約 1/0.75 = 1.33 倍
+			float orig = (pcm.length / 2) / (float) VoiceNet.SAMPLE_RATE;
+			context.waitTicks(30);
+			context.runOnClient(mc -> VoiceClientNet.upload(id, pcm, true, 1.5f, 0.75f));
+			context.waitFor(mc -> ClientClips.get(id) != null && ClientClips.get(id).speed() == 0.75f);
+			float gSec = context.computeOnClient(mc -> ClientClips.get(id).seconds());
+			float gRatio = gSec / orig;
+			log("g) upload(pitch=1.5, speed=0.75) seconds=%.3f orig=%.3f ratio=%.3f", gSec, orig, gRatio);
+			check(Math.abs(gRatio - 1.0f / 0.75f) < 0.05f, "seconds should be about 1.33x the original, ratio=" + gRatio);
+			boolean gServer = server.computeOnServer(s -> VoiceServer.has(id));
+			check(gServer, "server should have the tuned clip");
+
+			// h) setTune(1,1) で元の長さに戻る
+			context.waitTicks(30);
+			context.runOnClient(mc -> VoiceClientNet.setTune(id, true, 1.0f, 1.0f));
+			context.waitFor(mc -> ClientClips.get(id) != null && ClientClips.get(id).speed() == 1.0f);
+			float hSec = context.computeOnClient(mc -> ClientClips.get(id).seconds());
+			log("h) setTune(1.0, 1.0) seconds=%.3f orig=%.3f", hSec, orig);
+			check(Math.abs(hSec - orig) < 0.01f, "seconds should return to the original, got " + hSec);
 
 			// ---- 音選び画面（W6） ----
 			pickerTest(context, id);
@@ -189,7 +209,7 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 		context.waitTicks(10);
 		int replacedAfter = ClipPlayer.replacedCount();
 		Long heardAfter = heardAt(context, clipId);
-		log("g) playOriginal replacedCount %d -> %d, recent atMillis %s -> %s", replacedBefore, replacedAfter, heardBefore, heardAfter);
+		log("pg) playOriginal replacedCount %d -> %d, recent atMillis %s -> %s", replacedBefore, replacedAfter, heardBefore, heardAfter);
 		check(replacedAfter == replacedBefore, "playOriginal must not be replaced");
 		check(heardBefore != null && heardBefore.equals(heardAfter), "playOriginal must not be recorded in RecentSounds");
 
@@ -207,7 +227,7 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 		context.waitForScreen(SoundPickerScreen.class);
 		context.waitTicks(25);
 		int recentRows = context.computeOnClient(m -> SoundCatalog.list(SoundCatalog.Category.RECENT, "").size());
-		log("h) picker opened, recent rows=%d", recentRows);
+		log("ph) picker opened, recent rows=%d", recentRows);
 		check(recentRows >= 3, "recent list should contain the sounds just played");
 		boolean notPaused = context.computeOnClient(m -> !m.gui.screen().isPauseScreen());
 		check(notPaused, "picker must not pause the game");
@@ -220,12 +240,12 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 		context.waitTicks(5);
 		String typed = context.computeOnClient(m -> ((SoundPickerScreen) m.gui.screen()).query());
 		if (!"ウシ".equals(typed)) {
-			log("i) typeChars did not reach the search box (query='%s'); using setQuery", typed);
+			log("pi) typeChars did not reach the search box (query='%s'); using setQuery", typed);
 			context.runOnClient(m -> ((SoundPickerScreen) m.gui.screen()).setQuery("ウシ"));
 			context.waitTicks(5);
 		}
 		int hits = context.computeOnClient(m -> SoundCatalog.list(SoundCatalog.Category.CREATURE, "ウシ").size());
-		log("i) search ウシ in creatures: %d hits (typed query='%s')", hits, typed);
+		log("pi) search ウシ in creatures: %d hits (typed query='%s')", hits, typed);
 		check(hits > 0, "search ウシ should find cow sounds");
 		shot(context, "picker_search");
 
@@ -238,8 +258,14 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 		});
 		context.waitTicks(10);
 		Identifier chosen = context.computeOnClient(m -> ((SoundPickerScreen) m.gui.screen()).selectedSound());
-		log("j) selected %s", chosen);
+		log("pj) selected %s", chosen);
 		check(clipId.equals(chosen), "ui.button.click should be selected");
+		// 画面のバーにその値が出る状態で撮る: 声の調整を 高さ1.5・速さ0.75 にして同期を待つ
+		context.waitTicks(30);
+		context.runOnClient(m -> VoiceClientNet.setTune(clipId, true, 1.5f, 0.75f));
+		context.waitFor(m -> ClientClips.get(clipId) != null && ClientClips.get(clipId).pitch() == 1.5f && ClientClips.get(clipId).speed() == 0.75f);
+		context.waitTicks(30);
+		log("pj) tuned %s to pitch=1.5 speed=0.75 for the screenshot", clipId);
 		shot(context, "picker_detail");
 
 		context.runOnClient(m -> m.gui.screen().onClose());

@@ -20,6 +20,13 @@ public final class VoiceNet {
 	public static final int MAX_SECONDS = 10;
 	/** PCM の最大バイト数（= SAMPLE_RATE * 2byte * MAX_SECONDS）。 */
 	public static final int MAX_PCM_BYTES = SAMPLE_RATE * 2 * MAX_SECONDS;
+	/** 声の高さ（ピッチ）・速さの倍率の範囲。1.0 = そのまま。 */
+	public static final float MIN_TUNE = 0.5f;
+	public static final float MAX_TUNE = 2.0f;
+	public static float clampTune(float v) {
+		return Float.isFinite(v) ? Math.max(MIN_TUNE, Math.min(MAX_TUNE, v)) : 1.0f;
+	}
+
 	/** 1 プレイヤーが登録できるクリップ数の上限（サーバー側で数える）。 */
 	public static final int MAX_CLIPS_PER_PLAYER = 64;
 	private static final int MAX_PACKET = MAX_PCM_BYTES + 4096;
@@ -32,20 +39,23 @@ public final class VoiceNet {
 	 * C→S: 録音したクリップを sound に割り当てる（同じ sound があれば上書き）。
 	 * followPitch: true = ゲームが鳴らすときのピッチ（ランダムな揺れ・0.8倍など）を声にもかける / false = 声のまま（既定）。
 	 */
-	public record UploadClipC2S(Identifier sound, int sampleRate, byte[] pcm, boolean followPitch) implements CustomPacketPayload {
+	public record UploadClipC2S(Identifier sound, int sampleRate, byte[] pcm, boolean followPitch, float pitch, float speed) implements CustomPacketPayload {
 		public static final Type<UploadClipC2S> TYPE = new Type<>(id("upload_clip"));
 		public static final StreamCodec<RegistryFriendlyByteBuf, UploadClipC2S> CODEC = CustomPacketPayload.codec(
-				(p, b) -> { b.writeIdentifier(p.sound); b.writeVarInt(p.sampleRate); b.writeByteArray(p.pcm); b.writeBoolean(p.followPitch); },
-				b -> new UploadClipC2S(b.readIdentifier(), b.readVarInt(), b.readByteArray(MAX_PCM_BYTES), b.readBoolean()));
+				(p, b) -> { b.writeIdentifier(p.sound); b.writeVarInt(p.sampleRate); b.writeByteArray(p.pcm); b.writeBoolean(p.followPitch); b.writeFloat(p.pitch); b.writeFloat(p.speed); },
+				b -> new UploadClipC2S(b.readIdentifier(), b.readVarInt(), b.readByteArray(MAX_PCM_BYTES), b.readBoolean(), b.readFloat(), b.readFloat()));
 		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
 	}
 
-	/** C→S: 録音し直さずにピッチ設定だけ変える（誰でも可。無ければ not_found）。 */
-	public record SetPitchModeC2S(Identifier sound, boolean followPitch) implements CustomPacketPayload {
-		public static final Type<SetPitchModeC2S> TYPE = new Type<>(id("set_pitch_mode"));
-		public static final StreamCodec<RegistryFriendlyByteBuf, SetPitchModeC2S> CODEC = CustomPacketPayload.codec(
-				(p, b) -> { b.writeIdentifier(p.sound); b.writeBoolean(p.followPitch); },
-				b -> new SetPitchModeC2S(b.readIdentifier(), b.readBoolean()));
+	/**
+	 * C→S: 録音し直さずに声の調整だけ変える（誰でも可。無ければ not_found）。
+	 * pitch = 声の高さの倍率、speed = 速さの倍率（どちらも MIN_TUNE..MAX_TUNE、高さと速さは独立）。
+	 */
+	public record SetTuneC2S(Identifier sound, boolean followPitch, float pitch, float speed) implements CustomPacketPayload {
+		public static final Type<SetTuneC2S> TYPE = new Type<>(id("set_tune"));
+		public static final StreamCodec<RegistryFriendlyByteBuf, SetTuneC2S> CODEC = CustomPacketPayload.codec(
+				(p, b) -> { b.writeIdentifier(p.sound); b.writeBoolean(p.followPitch); b.writeFloat(p.pitch); b.writeFloat(p.speed); },
+				b -> new SetTuneC2S(b.readIdentifier(), b.readBoolean(), b.readFloat(), b.readFloat()));
 		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
 	}
 
@@ -59,11 +69,11 @@ public final class VoiceNet {
 	}
 
 	/** S→C: sound にクリップが割り当てられた（参加時の同期でも使う）。owner は録音した人の名前。 */
-	public record ClipS2C(Identifier sound, String owner, int sampleRate, byte[] pcm, boolean followPitch) implements CustomPacketPayload {
+	public record ClipS2C(Identifier sound, String owner, int sampleRate, byte[] pcm, boolean followPitch, float pitch, float speed) implements CustomPacketPayload {
 		public static final Type<ClipS2C> TYPE = new Type<>(id("clip"));
 		public static final StreamCodec<RegistryFriendlyByteBuf, ClipS2C> CODEC = CustomPacketPayload.codec(
-				(p, b) -> { b.writeIdentifier(p.sound); b.writeUtf(p.owner, 64); b.writeVarInt(p.sampleRate); b.writeByteArray(p.pcm); b.writeBoolean(p.followPitch); },
-				b -> new ClipS2C(b.readIdentifier(), b.readUtf(64), b.readVarInt(), b.readByteArray(MAX_PCM_BYTES), b.readBoolean()));
+				(p, b) -> { b.writeIdentifier(p.sound); b.writeUtf(p.owner, 64); b.writeVarInt(p.sampleRate); b.writeByteArray(p.pcm); b.writeBoolean(p.followPitch); b.writeFloat(p.pitch); b.writeFloat(p.speed); },
+				b -> new ClipS2C(b.readIdentifier(), b.readUtf(64), b.readVarInt(), b.readByteArray(MAX_PCM_BYTES), b.readBoolean(), b.readFloat(), b.readFloat()));
 		@Override public Type<? extends CustomPacketPayload> type() { return TYPE; }
 	}
 
@@ -89,7 +99,7 @@ public final class VoiceNet {
 	public static void registerTypes() {
 		PayloadTypeRegistry.serverboundPlay().registerLarge(UploadClipC2S.TYPE, UploadClipC2S.CODEC, MAX_PACKET);
 		PayloadTypeRegistry.serverboundPlay().register(ClearClipC2S.TYPE, ClearClipC2S.CODEC);
-		PayloadTypeRegistry.serverboundPlay().register(SetPitchModeC2S.TYPE, SetPitchModeC2S.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(SetTuneC2S.TYPE, SetTuneC2S.CODEC);
 		PayloadTypeRegistry.clientboundPlay().registerLarge(ClipS2C.TYPE, ClipS2C.CODEC, MAX_PACKET);
 		PayloadTypeRegistry.clientboundPlay().register(ClipRemovedS2C.TYPE, ClipRemovedS2C.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(NoticeS2C.TYPE, NoticeS2C.CODEC);

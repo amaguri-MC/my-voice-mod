@@ -1,5 +1,6 @@
 package net.amaguri.myvoice.client;
 
+import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -30,7 +31,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-/** /myvoice record|stop|play|clear|list（クライアントコマンド）。 */
+/** /myvoice record|tune|pitch|stop|play|clear|list（クライアントコマンド）。 */
 public final class VoiceCommands {
 	private VoiceCommands() {}
 
@@ -47,6 +48,8 @@ public final class VoiceCommands {
 	};
 	private static final SuggestionProvider<FabricClientCommandSource> PITCH_MODES =
 			(ctx, builder) -> SharedSuggestionProvider.suggest(List.of("voice", "game"), builder);
+	private static final SuggestionProvider<FabricClientCommandSource> TUNE_VALUES =
+			(ctx, builder) -> SharedSuggestionProvider.suggest(List.of("0.5", "0.75", "1", "1.25", "1.5", "2"), builder);
 	private static final SuggestionProvider<FabricClientCommandSource> SOUNDS_AND_ASSIGNED = (ctx, builder) -> {
 		Set<Identifier> all = new LinkedHashSet<>();
 		for (ClientClips.ClipInfo c : ClientClips.all()) {
@@ -88,6 +91,14 @@ public final class VoiceCommands {
 									.then(ClientCommands.argument("mode", StringArgumentType.word())
 											.suggests(PITCH_MODES)
 											.executes(VoiceCommands::pitch))))
+					.then(ClientCommands.literal("tune")
+							.then(ClientCommands.argument("sound", IdentifierArgument.id())
+									.suggests(ASSIGNED_ONLY)
+									.then(ClientCommands.argument("pitch", FloatArgumentType.floatArg(VoiceNet.MIN_TUNE, VoiceNet.MAX_TUNE))
+											.suggests(TUNE_VALUES)
+											.then(ClientCommands.argument("speed", FloatArgumentType.floatArg(VoiceNet.MIN_TUNE, VoiceNet.MAX_TUNE))
+													.suggests(TUNE_VALUES)
+													.executes(VoiceCommands::tune)))))
 					.then(ClientCommands.literal("stop").executes(VoiceCommands::stop))
 					.then(ClientCommands.literal("play")
 							.then(ClientCommands.argument("sound", IdentifierArgument.id())
@@ -128,8 +139,26 @@ public final class VoiceCommands {
 			ctx.getSource().sendError(Component.translatable("myvoice.cmd.play_none", SoundCatalog.displayName(sound)));
 			return 0;
 		}
-		if (ClientClips.get(sound).followPitch() == follow) return 1; // もう同じ設定
-		VoiceClientNet.setPitchMode(sound, follow);
+		ClientClips.ClipInfo cur = ClientClips.get(sound);
+		if (cur.followPitch() == follow) return 1; // もう同じ設定
+		VoiceClientNet.setTune(sound, follow, cur.pitch(), cur.speed());
+		return 1;
+	}
+
+	private static int tune(CommandContext<FabricClientCommandSource> ctx) {
+		if (!VoiceClientNet.canSend()) {
+			ctx.getSource().sendError(Component.translatable("myvoice.cmd.need_server"));
+			return 0;
+		}
+		Identifier sound = ctx.getArgument("sound", Identifier.class);
+		ClientClips.ClipInfo cur = ClientClips.get(sound);
+		if (cur == null) {
+			ctx.getSource().sendError(Component.translatable("myvoice.cmd.play_none", SoundCatalog.displayName(sound)));
+			return 0;
+		}
+		float pitch = FloatArgumentType.getFloat(ctx, "pitch");
+		float speed = FloatArgumentType.getFloat(ctx, "speed");
+		VoiceClientNet.setTune(sound, cur.followPitch(), pitch, speed);
 		return 1;
 	}
 

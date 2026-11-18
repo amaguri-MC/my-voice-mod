@@ -3,6 +3,7 @@ package net.amaguri.myvoice.client.ui;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import net.amaguri.myvoice.client.VoiceClientNet;
@@ -50,6 +51,13 @@ public final class SoundPickerScreen extends Screen {
 	private static final int CAT_H = 14;
 	private static final int SEPARATOR_GAP = 8;
 	private static final int BTN_H = 14;
+	private static final int SMALL_H = 12;
+	/** バーが 1.0 に吸い付く幅（±）。 */
+	private static final float SNAP = 0.03f;
+	private static final int PREVIEW_TICKS = 6; // ドラッグ中の試聴間隔 0.3 秒
+	private static final long SEND_DELAY_MS = 600; // 放してから送るまで
+	private static final long SEND_MIN_GAP_MS = 1100; // サーバーの連投制限（1秒）より少し長く
+	private static final int BAR_NONE = 0, BAR_LENGTH = 1, BAR_PITCH = 2, BAR_SPEED = 3;
 	private static final int PERSIST = Integer.MAX_VALUE;
 
 	private record Cat(SoundCatalog.Category category, String key) {}
@@ -85,9 +93,20 @@ public final class SoundPickerScreen extends Screen {
 	private int seconds = RecordFlow.DEFAULT_SECONDS;
 	/** ピッチ設定の表示。声があればその設定、無ければ次の録音に使う値。 */
 	private boolean followLocal = false;
-	/** setPitchMode を送ってからサーバーの返事を待つ間（tick）。 */
+	/** 高さ・速さ。声があればその設定、無ければ次の録音に使う値。 */
+	private float tunePitch = 1.0f;
+	private float tuneSpeed = 1.0f;
+	/** setTune を送ってからサーバーの返事を待つ間（tick）。 */
 	private int pitchPendingTicks = 0;
-	private boolean draggingSlider = false;
+	private int dragging = BAR_NONE;
+	private int tickNo = 0;
+	private int lastPreviewTick = -100;
+	private boolean previewDirty = false;
+	private boolean prevHadClip = false;
+	/** まとめて送る予約（最後の値だけ）。sendTarget が null なら予約なし。 */
+	private Identifier sendTarget = null;
+	private long sendAtMs = 0;
+	private static long lastSendMs = 0;
 	private int refreshTicks = 0;
 	private Component message = null;
 	private int messageColor = TEXT;
@@ -105,8 +124,8 @@ public final class SoundPickerScreen extends Screen {
 	private List<FormattedCharSequence> nameLines = List.of();
 	private List<FormattedCharSequence> messageLines = List.of();
 	private int detailX, detailW;
-	private int nameY, idY, statusY, countY, barY, lengthY, pitchY, clipInfoY, messageY;
-	private R playOrig, playVoice, slider, pitchVoice, pitchGame, recordBtn, stopBtn, clearBtn;
+	private int nameY, idY, statusY, countY, barY, lengthY, pitchY, tuneY1, tuneY2, clipInfoY, messageY;
+	private R playOrig, playVoice, slider, pitchBar, speedBar, resetBtn, pitchVoice, pitchGame, recordBtn, stopBtn, clearBtn;
 
 	private final RecordFlow.Listener flowListener = new RecordFlow.Listener() {
 		@Override
@@ -265,12 +284,22 @@ public final class SoundPickerScreen extends Screen {
 	// ------------------------------------------------------------ 選択・状態
 
 	private void select(Identifier sound) {
+		if (sendTarget != null && !sendTarget.equals(sound)) sendNow();
 		selected = sound;
 		selectedEntry = sound == null ? null : SoundCatalog.entry(sound);
 		clearMessage();
 		ClientClips.ClipInfo clip = sound == null ? null : ClientClips.get(sound);
 		followLocal = clip != null && clip.followPitch();
+		if (clip != null) {
+			tunePitch = clip.pitch();
+			tuneSpeed = clip.speed();
+		} else if (prevHadClip) {
+			tunePitch = 1.0f;
+			tuneSpeed = 1.0f;
+		}
+		prevHadClip = clip != null;
 		pitchPendingTicks = 0;
+		previewDirty = false;
 	}
 
 	private ClientClips.ClipInfo clip() {
@@ -301,6 +330,9 @@ public final class SoundPickerScreen extends Screen {
 	@Override
 	public void tick() {
 		super.tick();
+		tickNo++;
+		if (previewDirty && tickNo - lastPreviewTick >= PREVIEW_TICKS) previewNow();
+		if (sendTarget != null && dragging == BAR_NONE && System.currentTimeMillis() >= sendAtMs) sendNow();
 		if (++refreshTicks >= 20) {
 			refreshTicks = 0;
 			// 「さっき鳴った」は画面を開いている間も1秒ごとに更新（選択・スクロールは保つ）
@@ -309,19 +341,57 @@ public final class SoundPickerScreen extends Screen {
 		if (messageTicks > 0 && messageTicks != PERSIST && --messageTicks == 0) message = null;
 		Identifier target = RecordFlow.target();
 		if (target != null && !target.equals(selected)) select(target); // コマンドで録音が始まったとき
-		// 声があるときは実際の設定に合わせる（断られても押した値のまま残さない）。送信後 1 秒ほどだけ返事待ち
+		// 声があるときは実際の設定に合わせる（断られても押した値のまま残さない）。
+		// 自分が動かしている最中・送る予約中・送信後 1 秒ほどは合わせない
 		if (pitchPendingTicks > 0) {
 			pitchPendingTicks--;
-		} else {
+		} else if (dragging == BAR_NONE && sendTarget == null && !previewDirty) {
 			ClientClips.ClipInfo clip = clip();
-			if (clip != null) followLocal = clip.followPitch();
+			if (clip != null) {
+				followLocal = clip.followPitch();
+				tunePitch = clip.pitch();
+				tuneSpeed = clip.speed();
+			}
 		}
+	}
+
+	/** 手元だけで、いまの値で試聴（送らない）。声が無ければ何もしない。 */
+	private void previewNow() {
+		previewDirty = false;
+		lastPreviewTick = tickNo;
+		if (selected != null && clip() != null) ClipPlayer.previewTuned(selected, tunePitch, tuneSpeed);
+	}
+
+	/** 声があれば、最後の値だけを 0.6 秒後（連投制限を避けて）に送る予約。 */
+	private void scheduleSend() {
+		if (selected == null || clip() == null) return;
+		sendTarget = selected;
+		sendAtMs = Math.max(System.currentTimeMillis() + SEND_DELAY_MS, lastSendMs + SEND_MIN_GAP_MS);
+	}
+
+	private void sendNow() {
+		Identifier target = sendTarget;
+		sendTarget = null;
+		if (target == null || ClientClips.get(target) == null) return;
+		if (!RecordFlow.canSend()) {
+			if (target.equals(selected)) showError(Component.translatable("myvoice.cmd.need_server"));
+			return;
+		}
+		lastSendMs = System.currentTimeMillis();
+		pitchPendingTicks = 20;
+		VoiceClientNet.setTune(target, followLocal, tunePitch, tuneSpeed);
+	}
+
+	@Override
+	public void removed() {
+		if (sendTarget != null) sendNow(); // 閉じるときに予約が残っていれば送る
+		super.removed();
 	}
 
 	// ------------------------------------------------------------ 右列の配置
 
 	private void layoutDetail() {
-		playOrig = playVoice = slider = pitchVoice = pitchGame = recordBtn = stopBtn = clearBtn = null;
+		playOrig = playVoice = slider = pitchBar = speedBar = resetBtn = pitchVoice = pitchGame = recordBtn = stopBtn = clearBtn = null;
 		nameLines = List.of();
 		messageLines = List.of();
 		detailX = px + pw - rightW + 8;
@@ -357,26 +427,39 @@ public final class SoundPickerScreen extends Screen {
 				int half = (detailW - 4) / 2;
 				playOrig = new R(detailX, y, half, BTN_H);
 				playVoice = new R(detailX + half + 4, y, detailW - half - 4, BTN_H);
-				y += BTN_H + 7;
+				y += BTN_H + 4;
 				lengthY = y;
-				y += lh + 3;
+				y += lh + 1;
 				slider = new R(detailX, y, detailW, 9);
-				y += 9 + 7;
+				y += 9 + 3;
+				tuneY1 = y;
+				y += lh + 1;
+				pitchBar = new R(detailX, y, detailW, 9);
+				y += 9 + 3;
+				tuneY2 = y;
+				y += lh + 1;
+				speedBar = new R(detailX, y, detailW, 9);
+				y += 9 + 4;
+				// 「元に戻す」と「消す」は同じ行（左右）
+				int rw = this.font.width(Component.translatable("myvoice.tune.reset")) + 12;
+				resetBtn = new R(detailX, y, rw, SMALL_H);
+				if (clip != null) {
+					int cw = this.font.width(Component.translatable("myvoice.picker.clear")) + 12;
+					clearBtn = new R(detailX + detailW - cw, y, cw, SMALL_H);
+				}
+				y += SMALL_H + 4;
 				pitchY = y;
-				y += lh + 3;
+				y += lh + 1;
 				int wl = Math.min(detailW / 2,
 						this.font.width(Component.translatable("myvoice.pitch.voice")) + 10);
-				pitchVoice = new R(detailX, y, wl, 12);
-				pitchGame = new R(detailX + wl, y, detailW - wl, 12);
-				y += 12 + 7;
+				pitchVoice = new R(detailX, y, wl, SMALL_H);
+				pitchGame = new R(detailX + wl, y, detailW - wl, SMALL_H);
+				y += SMALL_H + 4;
 				recordBtn = new R(detailX, y, detailW, BTN_H);
-				y += BTN_H + 7;
+				y += BTN_H + 4;
 				if (clip != null) {
 					clipInfoY = y;
 					y += lh + 3;
-					int cw = this.font.width(Component.translatable("myvoice.picker.clear")) + 12;
-					clearBtn = new R(detailX, y, cw, 12);
-					y += 12 + 4;
 				}
 			}
 		}
@@ -552,6 +635,13 @@ public final class SoundPickerScreen extends Screen {
 			g.text(this.font, Component.translatable("myvoice.picker.length", Integer.toString(seconds)), detailX, lengthY, TEXT, false);
 			drawSlider(g);
 
+			g.text(this.font, Component.translatable("myvoice.tune.pitch", fmt(tunePitch)), detailX, tuneY1, TEXT, false);
+			drawTuneBar(g, pitchBar, tunePitch);
+			g.text(this.font, Component.translatable("myvoice.tune.speed", fmt(tuneSpeed)), detailX, tuneY2, TEXT, false);
+			drawTuneBar(g, speedBar, tuneSpeed);
+			drawButton(g, resetBtn, Component.translatable("myvoice.tune.reset"), mx, my, true);
+			if (clip() != null) drawButton(g, clearBtn, Component.translatable("myvoice.picker.clear"), mx, my, true);
+
 			g.text(this.font, Component.translatable("myvoice.picker.pitch"), detailX, pitchY, TEXT, false);
 			drawSegment(g, pitchVoice, Component.translatable("myvoice.pitch.voice"), !followLocal, mx, my, true);
 			drawSegment(g, pitchGame, Component.translatable("myvoice.pitch.game"), followLocal, mx, my, false);
@@ -562,7 +652,6 @@ public final class SoundPickerScreen extends Screen {
 			if (clip != null) {
 				g.text(this.font, Component.translatable("myvoice.picker.clip_info", clip.owner(),
 						String.format("%.1f", clip.seconds())), detailX, clipInfoY, GRAY, false);
-				drawButton(g, clearBtn, Component.translatable("myvoice.picker.clear"), mx, my, true);
 			}
 		}
 		drawMessage(g);
@@ -611,6 +700,38 @@ public final class SoundPickerScreen extends Screen {
 		}
 		int hx = s.x() + (s.w() - 3) * (seconds - 1) / (max - 1);
 		g.fill(hx, s.y(), hx + 3, s.y() + s.h(), WHITE);
+	}
+
+	private static String fmt(float v) {
+		return String.format(Locale.ROOT, "%.2f", v);
+	}
+
+	/** 長さバーと同じ作り（細い線＋つまみ）。左 0.5・中央 1.0・右 2.0 の対数目盛り。 */
+	private void drawTuneBar(GuiGraphicsExtractor g, R s, float v) {
+		int trackY = s.y() + s.h() / 2;
+		g.fill(s.x(), trackY, s.x() + s.w(), trackY + 1, LINE_HOVER);
+		int span = s.w() - 3;
+		g.fill(s.x() + 1, trackY - 2, s.x() + 2, trackY + 3, LINE); // 0.5
+		g.fill(s.x() + 1 + span, trackY - 2, s.x() + 2 + span, trackY + 3, LINE); // 2.0
+		int cx = s.x() + 1 + span / 2;
+		g.fill(cx, trackY - 3, cx + 1, trackY + 4, LINE_HOVER); // 1.0（少し長い目盛り）
+		int hx = s.x() + Math.round(span * tuneToT(v));
+		g.fill(hx, s.y(), hx + 3, s.y() + s.h(), WHITE);
+	}
+
+	private static float tuneToT(float v) {
+		float c = VoiceNet.clampTune(v);
+		return (float) (Math.log(c / VoiceNet.MIN_TUNE) / Math.log(VoiceNet.MAX_TUNE / VoiceNet.MIN_TUNE));
+	}
+
+	private static float tuneFromT(float t) {
+		float v = (float) (VoiceNet.MIN_TUNE * Math.pow(VoiceNet.MAX_TUNE / VoiceNet.MIN_TUNE, Math.max(0f, Math.min(1f, t))));
+		return snap(v);
+	}
+
+	private static float snap(float v) {
+		v = VoiceNet.clampTune(v);
+		return Math.abs(v - 1.0f) <= SNAP ? 1.0f : v;
 	}
 
 	private void drawSegment(GuiGraphicsExtractor g, R r, Component label, boolean on, int mx, int my, boolean first) {
@@ -677,9 +798,23 @@ public final class SoundPickerScreen extends Screen {
 			}
 			return true;
 		}
-		if (slider != null && new R(slider.x() - 2, slider.y() - 2, slider.w() + 4, slider.h() + 4).has(mx, my)) {
-			draggingSlider = true;
+		if (slider != null && grab(slider).has(mx, my)) {
+			dragging = BAR_LENGTH;
 			setSecondsFromMouse(mx);
+			return true;
+		}
+		if (pitchBar != null && grab(pitchBar).has(mx, my)) {
+			dragging = BAR_PITCH;
+			setTuneFromMouse(mx);
+			return true;
+		}
+		if (speedBar != null && grab(speedBar).has(mx, my)) {
+			dragging = BAR_SPEED;
+			setTuneFromMouse(mx);
+			return true;
+		}
+		if (resetBtn != null && resetBtn.has(mx, my)) {
+			resetTune();
 			return true;
 		}
 		if (pitchVoice != null && pitchVoice.has(mx, my)) {
@@ -701,17 +836,53 @@ public final class SoundPickerScreen extends Screen {
 		return false;
 	}
 
+	private static R grab(R r) {
+		return new R(r.x() - 2, r.y() - 2, r.w() + 4, r.h() + 4);
+	}
+
 	private void setPitch(boolean follow) {
 		followLocal = follow;
 		ClientClips.ClipInfo clip = clip();
-		if (clip != null && clip.followPitch() != follow) { // 声が既にあれば即切り替え（録音し直さない）
+		if (clip != null && clip.followPitch() != follow) { // 声が既にあれば切り替え（録音し直さない）。ほかの調整とまとめて送る
 			if (!RecordFlow.canSend()) {
 				showError(Component.translatable("myvoice.cmd.need_server"));
 				return;
 			}
 			clearMessage();
-			pitchPendingTicks = 20;
-			VoiceClientNet.setPitchMode(selected, follow);
+			scheduleSend();
+		}
+	}
+
+	private void resetTune() {
+		if (tunePitch == 1.0f && tuneSpeed == 1.0f) return;
+		tunePitch = 1.0f;
+		tuneSpeed = 1.0f;
+		tuneChanged(true);
+	}
+
+	/** 値が変わった: 試聴と（声があれば）送る予約。ボタンは now、ホイールは 0.3 秒間隔で試聴。 */
+	private void tuneChanged(boolean now) {
+		previewDirty = true;
+		if (now) previewNow();
+		scheduleSend();
+	}
+
+	private void setTuneFromMouse(double mx) {
+		R s = dragging == BAR_PITCH ? pitchBar : dragging == BAR_SPEED ? speedBar : null;
+		if (s == null) return;
+		float t = (float) ((mx - s.x() - 1.5) / Math.max(1, s.w() - 3));
+		float v = tuneFromT(t);
+		if (dragging == BAR_PITCH) {
+			if (v == tunePitch) return;
+			tunePitch = v;
+		} else {
+			if (v == tuneSpeed) return;
+			tuneSpeed = v;
+		}
+		previewDirty = true; // ドラッグ中は tick が 0.3 秒ごとに試聴
+		if (selected != null && clip() != null) {
+			sendTarget = selected; // 送るのは放して 0.6 秒後
+			sendAtMs = Long.MAX_VALUE;
 		}
 	}
 
@@ -722,7 +893,7 @@ public final class SoundPickerScreen extends Screen {
 			return;
 		}
 		clearMessage();
-		RecordFlow.begin(selected, seconds, followLocal, flowListener);
+		RecordFlow.begin(selected, seconds, followLocal, tunePitch, tuneSpeed, flowListener);
 	}
 
 	private void clearClip() {
@@ -746,9 +917,12 @@ public final class SoundPickerScreen extends Screen {
 
 	@Override
 	public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
-		if (draggingSlider) {
+		if (dragging != BAR_NONE) {
 			layoutDetail();
-			if (!locked()) setSecondsFromMouse(event.x());
+			if (!locked()) {
+				if (dragging == BAR_LENGTH) setSecondsFromMouse(event.x());
+				else setTuneFromMouse(event.x());
+			}
 			return true;
 		}
 		return super.mouseDragged(event, dx, dy);
@@ -756,13 +930,44 @@ public final class SoundPickerScreen extends Screen {
 
 	@Override
 	public boolean mouseReleased(MouseButtonEvent event) {
-		boolean was = draggingSlider;
-		draggingSlider = false;
-		return was || super.mouseReleased(event);
+		int was = dragging;
+		dragging = BAR_NONE;
+		if (was == BAR_PITCH || was == BAR_SPEED) {
+			previewNow(); // 放したとき必ず試聴
+			if (sendTarget != null) {
+				sendAtMs = Math.max(System.currentTimeMillis() + SEND_DELAY_MS, lastSendMs + SEND_MIN_GAP_MS);
+			}
+		}
+		return was != BAR_NONE || super.mouseReleased(event);
+	}
+
+	/** ホイール 1 目盛り = 約 5%。1.0 をまたぐときは 1.0 で一度止まる。 */
+	private static float wheel(float v, int dir) {
+		float next = v * (dir > 0 ? 1.05f : 1 / 1.05f);
+		if ((v < 1.0f && next > 1.0f) || (v > 1.0f && next < 1.0f)) next = 1.0f;
+		return snap(next);
 	}
 
 	@Override
 	public boolean mouseScrolled(double mx, double my, double scrollX, double scrollY) {
+		if (scrollY != 0 && selected != null && !locked() && mx >= px + pw - rightW) {
+			layoutDetail();
+			int dir = (int) Math.signum(scrollY);
+			if (slider != null && grab(slider).has(mx, my)) {
+				seconds = Math.max(1, Math.min(VoiceNet.MAX_SECONDS, seconds + dir));
+				return true;
+			}
+			if (pitchBar != null && grab(pitchBar).has(mx, my)) {
+				tunePitch = wheel(tunePitch, dir);
+				tuneChanged(false);
+				return true;
+			}
+			if (speedBar != null && grab(speedBar).has(mx, my)) {
+				tuneSpeed = wheel(tuneSpeed, dir);
+				tuneChanged(false);
+				return true;
+			}
+		}
 		if (mx >= centerLeft() && mx < centerRight() && my >= bodyTop && my < bodyBottom && scrollY != 0) {
 			firstRow -= (int) Math.signum(scrollY) * 3;
 			clampScroll();

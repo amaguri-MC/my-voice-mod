@@ -35,6 +35,8 @@ public final class RecordFlow {
 	private static Identifier target = null;
 	private static int seconds = DEFAULT_SECONDS;
 	private static boolean followPitch = false;
+	private static float tunePitch = 1.0f;
+	private static float tuneSpeed = 1.0f;
 	private static Listener listener = null;
 	/** 録音中か（MicRecorder.start 〜 onDone/onError）。 */
 	private static boolean recording = false;
@@ -75,8 +77,15 @@ public final class RecordFlow {
 	 * canSend の確認は呼ぶ側でする（メッセージの出し方が違うため）。
 	 */
 	public static boolean begin(Identifier sound, int secs, boolean follow, Listener l) {
+		return begin(sound, secs, follow, 1.0f, 1.0f, l);
+	}
+
+	/** 高さ・速さ（0.5〜2.0）つき。録音のアップロードにそのまま渡す。 */
+	public static boolean begin(Identifier sound, int secs, boolean follow, float pitch, float speed, Listener l) {
 		if (sound == null || busy()) return false;
 		target = sound;
+		tunePitch = VoiceNet.clampTune(pitch);
+		tuneSpeed = VoiceNet.clampTune(speed);
 		seconds = Math.max(1, Math.min(VoiceNet.MAX_SECONDS, secs));
 		followPitch = follow;
 		listener = l;
@@ -114,14 +123,14 @@ public final class RecordFlow {
 		if (countdownTicks > 0) {
 			countdownTicks--;
 			if (countdownTicks == 0 && target != null) {
-				startRecording(target, seconds, followPitch, listener);
+				startRecording(target, seconds, followPitch, tunePitch, tuneSpeed, listener);
 			}
 		} else if (recording) {
 			recordTicks++;
 		}
 	}
 
-	private static void startRecording(Identifier sound, int secs, boolean follow, Listener l) {
+	private static void startRecording(Identifier sound, int secs, boolean follow, float pitch, float speed, Listener l) {
 		recording = true;
 		recordSeconds = secs;
 		recordTicks = 0;
@@ -131,7 +140,7 @@ public final class RecordFlow {
 				fail(l, Component.translatable("myvoice.error.mic_failed"));
 				return;
 			}
-			VoiceClientNet.upload(sound, pcm, follow);
+			VoiceClientNet.upload(sound, pcm, follow, pitch, speed);
 			if (l != null) l.sent(sound);
 		}, errorKey -> {
 			recording = false;
