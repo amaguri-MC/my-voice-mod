@@ -3,15 +3,24 @@ package net.amaguri.myvoice.gametest;
 import net.amaguri.myvoice.client.VoiceClientNet;
 import net.amaguri.myvoice.client.audio.ClientClips;
 import net.amaguri.myvoice.client.audio.ClipPlayer;
+import net.amaguri.myvoice.client.catalog.RecentSounds;
+import net.amaguri.myvoice.client.catalog.SoundCatalog;
+import net.amaguri.myvoice.client.ui.PickerLauncher;
+import net.amaguri.myvoice.client.ui.SoundPickerScreen;
 import net.amaguri.myvoice.net.VoiceNet;
 import net.amaguri.myvoice.server.VoiceServer;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
+import net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotOptions;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.locale.Language;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+
+import java.util.List;
 
 /** マイク無しで: 送信 → 両側に登録 → 再生が置き換わる → 削除。ログは MYVOICE_TEST。 */
 public class MyVoiceClientGameTest implements FabricClientGameTest {
@@ -96,7 +105,126 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 			log("f) setPitchMode(true) client=%s", fOk);
 			check(fOk, "followPitch should be true after setPitchMode(true)");
 
+			// ---- 音選び画面（W6） ----
+			pickerTest(context, id);
+
 			log("all passed");
 		}
+	}
+
+	private static final List<String> NAME_IDS = List.of(
+			"entity.cow.ambient", "block.stone.break", "entity.player.hurt", "ui.button.click",
+			"block.wooden_door.open", "entity.generic.explode", "item.bucket.fill", "ambient.cave",
+			"entity.chicken.step", "block.grass.step");
+
+	private static Identifier mc(String path) {
+		return Identifier.fromNamespaceAndPath("minecraft", path);
+	}
+
+	private static void playUi(ClientGameTestContext context, String path) {
+		context.runOnClient(m -> m.getSoundManager().play(
+				SimpleSoundInstance.forUI(SoundEvent.createVariableRangeEvent(mc(path)), 1f)));
+	}
+
+	private static void shot(ClientGameTestContext context, String name) {
+		context.takeScreenshot(TestScreenshotOptions.of(name).disableCounterPrefix());
+		log("screenshot %s.png", name);
+	}
+
+	private static Long heardAt(ClientGameTestContext context, Identifier sound) {
+		return context.computeOnClient(m -> {
+			for (RecentSounds.Heard h : RecentSounds.recent()) {
+				if (h.sound().equals(sound)) return h.atMillis();
+			}
+			return null;
+		});
+	}
+
+	private void pickerTest(ClientGameTestContext context, Identifier clipId) {
+		// 言語を ja_jp に（画面の翻訳と名前の組み立てを日本語で確かめる）
+		String probe = "myvoice.picker.title";
+		String before = context.computeOnClient(m -> Language.getInstance().getOrDefault(probe, "?"));
+		context.runOnClient(m -> {
+			m.getLanguageManager().setSelected("ja_jp");
+			m.options.languageCode = "ja_jp";
+			m.reloadResourcePacks();
+		});
+		context.waitFor(m -> m.gui.overlay() == null
+				&& "声を割り当てる音を選ぶ".equals(Language.getInstance().getOrDefault(probe, "?")), 1200);
+		log("language switched: title '%s' -> '%s'", before,
+				context.computeOnClient(m -> Language.getInstance().getOrDefault(probe, "?")));
+
+		// 名前の組み立て（10件）
+		for (String path : NAME_IDS) {
+			String name = context.computeOnClient(m -> SoundCatalog.entry(mc(path)).name().getString());
+			log("name %s id=%s", name, mc(path));
+			check(name != null && !name.isBlank(), "empty name for " + path);
+		}
+
+		// playOriginal は置換せず、さっき鳴った音にも入れない（clipId は声が割り当て済み）
+		check(context.computeOnClient(m -> ClientClips.get(clipId) != null), "clip should be assigned for bypass test");
+		playUi(context, clipId.getPath());
+		context.waitTicks(5);
+		Long heardBefore = heardAt(context, clipId);
+		int replacedBefore = ClipPlayer.replacedCount();
+		context.runOnClient(m -> ClipPlayer.playOriginal(clipId));
+		context.waitTicks(10);
+		int replacedAfter = ClipPlayer.replacedCount();
+		Long heardAfter = heardAt(context, clipId);
+		log("g) playOriginal replacedCount %d -> %d, recent atMillis %s -> %s", replacedBefore, replacedAfter, heardBefore, heardAfter);
+		check(replacedAfter == replacedBefore, "playOriginal must not be replaced");
+		check(heardBefore != null && heardBefore.equals(heardAfter), "playOriginal must not be recorded in RecentSounds");
+
+		// 画面を開く前に、ウシ・ドア・ボタンを鳴らす
+		context.getInput().resizeWindow(1280, 720);
+		context.waitTicks(5);
+		playUi(context, "entity.cow.ambient");
+		context.waitTicks(3);
+		playUi(context, "block.wooden_door.open");
+		context.waitTicks(3);
+		playUi(context, "ui.button.click");
+		context.waitTicks(10);
+
+		context.runOnClient(m -> PickerLauncher.open());
+		context.waitForScreen(SoundPickerScreen.class);
+		context.waitTicks(25);
+		int recentRows = context.computeOnClient(m -> SoundCatalog.list(SoundCatalog.Category.RECENT, "").size());
+		log("h) picker opened, recent rows=%d", recentRows);
+		check(recentRows >= 3, "recent list should contain the sounds just played");
+		boolean notPaused = context.computeOnClient(m -> !m.gui.screen().isPauseScreen());
+		check(notPaused, "picker must not pause the game");
+		shot(context, "picker_recent");
+
+		// 生き物分類で検索「ウシ」
+		context.runOnClient(m -> ((SoundPickerScreen) m.gui.screen()).openCategory(SoundCatalog.Category.CREATURE));
+		context.waitTicks(3);
+		context.getInput().typeChars("ウシ");
+		context.waitTicks(5);
+		String typed = context.computeOnClient(m -> ((SoundPickerScreen) m.gui.screen()).query());
+		if (!"ウシ".equals(typed)) {
+			log("i) typeChars did not reach the search box (query='%s'); using setQuery", typed);
+			context.runOnClient(m -> ((SoundPickerScreen) m.gui.screen()).setQuery("ウシ"));
+			context.waitTicks(5);
+		}
+		int hits = context.computeOnClient(m -> SoundCatalog.list(SoundCatalog.Category.CREATURE, "ウシ").size());
+		log("i) search ウシ in creatures: %d hits (typed query='%s')", hits, typed);
+		check(hits > 0, "search ウシ should find cow sounds");
+		shot(context, "picker_search");
+
+		// ui.button.click を選んで右列の詳細
+		context.runOnClient(m -> {
+			SoundPickerScreen sp = (SoundPickerScreen) m.gui.screen();
+			sp.setQuery("");
+			sp.openCategory(SoundCatalog.Category.UI);
+			sp.choose(clipId);
+		});
+		context.waitTicks(10);
+		Identifier chosen = context.computeOnClient(m -> ((SoundPickerScreen) m.gui.screen()).selectedSound());
+		log("j) selected %s", chosen);
+		check(clipId.equals(chosen), "ui.button.click should be selected");
+		shot(context, "picker_detail");
+
+		context.runOnClient(m -> m.gui.screen().onClose());
+		context.waitTicks(5);
 	}
 }

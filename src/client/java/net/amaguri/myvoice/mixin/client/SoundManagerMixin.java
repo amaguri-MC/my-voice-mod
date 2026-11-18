@@ -17,6 +17,7 @@ public abstract class SoundManagerMixin {
 	@Inject(method = "play(Lnet/minecraft/client/resources/sounds/SoundInstance;)Lnet/minecraft/client/sounds/SoundEngine$PlayResult;",
 			at = @At("HEAD"), cancellable = true)
 	private void myvoice$replace(SoundInstance instance, CallbackInfoReturnable<SoundEngine.PlayResult> cir) {
+		if (ClipPlayer.isBypassing()) return; // 元の音の試聴: 置換せず、さっき鳴った音にも入れない
 		RecentSounds.record(instance);
 		if (ClipPlayer.tryReplace(instance)) {
 			cir.setReturnValue(SoundEngine.PlayResult.STARTED);

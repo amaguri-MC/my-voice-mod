@@ -12,9 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 
 /**
@@ -49,6 +51,9 @@ public final class ClipPlayer {
 
 	private static final List<Src> SOURCES = new ArrayList<>(); // 古い順
 	private static int replaced;
+	/** playOriginal の間だけ true。SoundManagerMixin が置換も RecentSounds への記録もしない。 */
+	private static boolean bypass;
+	private static SoundInstance lastOriginal;
 	private static int errorCount;
 
 	// ------------------------------------------------------------ 公開 API
@@ -83,6 +88,31 @@ public final class ClipPlayer {
 			logError("preview failed", t);
 			return false;
 		}
+	}
+
+	/** 元の音（置換されないバニラの音）を自分だけに聞かせる。音選び画面の試聴用。 */
+	public static void playOriginal(Identifier sound) {
+		if (sound == null) return;
+		try {
+			Minecraft mc = Minecraft.getInstance();
+			if (mc == null || mc.getSoundManager() == null) return;
+			if (lastOriginal != null) mc.getSoundManager().stop(lastOriginal);
+			SimpleSoundInstance inst = SimpleSoundInstance.forUI(SoundEvent.createVariableRangeEvent(sound), 1.0F, 1.0F);
+			lastOriginal = inst;
+			bypass = true;
+			try {
+				mc.getSoundManager().play(inst);
+			} finally {
+				bypass = false;
+			}
+		} catch (Throwable t) {
+			logError("playOriginal failed", t);
+		}
+	}
+
+	/** playOriginal の再生中か（Mixin 用）。 */
+	public static boolean isBypassing() {
+		return bypass;
 	}
 
 	public static void stopAll() {

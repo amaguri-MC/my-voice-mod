@@ -7,7 +7,8 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.amaguri.myvoice.client.audio.ClientClips;
 import net.amaguri.myvoice.client.audio.ClipPlayer;
-import net.amaguri.myvoice.client.audio.MicRecorder;
+import net.amaguri.myvoice.client.ui.PickerLauncher;
+import net.amaguri.myvoice.client.ui.RecordFlow;
 import net.amaguri.myvoice.net.VoiceNet;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
@@ -17,6 +18,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.IdentifierArgument;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -31,19 +33,7 @@ import java.util.Set;
 public final class VoiceCommands {
 	private VoiceCommands() {}
 
-	private static final int TICKS_PER_SECOND = 20;
-	private static final int COUNTDOWN_TICKS = 3 * TICKS_PER_SECOND;
-	private static final int DEFAULT_SECONDS = 3;
-
-	/** カウントダウンの残りtick（0なら動いていない）。 */
-	private static int countdownTicks = 0;
-	private static Identifier pendingSound = null;
-	private static int pendingSeconds = DEFAULT_SECONDS;
-	private static boolean pendingFollowPitch = false;
-	/** 録音中か（MicRecorder.start 〜 onDone/onError）。 */
-	private static boolean recording = false;
-	private static int recordSeconds = DEFAULT_SECONDS;
-	private static int recordTicks = 0;
+	private static final int DEFAULT_SECONDS = RecordFlow.DEFAULT_SECONDS;
 
 	private static final SuggestionProvider<FabricClientCommandSource> ALL_SOUNDS =
 			(ctx, builder) -> SharedSuggestionProvider.suggestResource(BuiltInRegistries.SOUND_EVENT.keySet(), builder);
@@ -67,10 +57,14 @@ public final class VoiceCommands {
 
 	public static void register() {
 		RecordHud.init();
-		ClientTickEvents.END_CLIENT_TICK.register(mc -> tick());
-		ClientPlayConnectionEvents.DISCONNECT.register((handler, mc) -> reset());
+		ClientTickEvents.END_CLIENT_TICK.register(mc -> RecordFlow.tick());
+		ClientPlayConnectionEvents.DISCONNECT.register((handler, mc) -> RecordFlow.reset());
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, buildContext) -> {
 			LiteralArgumentBuilder<FabricClientCommandSource> root = ClientCommands.literal("myvoice")
+					.executes(ctx -> {
+						PickerLauncher.requestOpen(); // チャット画面が閉じたあとの tick で開く
+						return 1;
+					})
 					.then(ClientCommands.literal("record")
 							.then(ClientCommands.argument("sound", IdentifierArgument.id())
 									.suggests(ALL_SOUNDS)
@@ -107,63 +101,8 @@ public final class VoiceCommands {
 		});
 	}
 
-	// ---- 状態（HUD から読む） ----
-
-	/** カウントダウン中なら 3,2,1、そうでなければ 0。 */
-	static int countdownNumber() {
-		return countdownTicks <= 0 ? 0 : (countdownTicks + TICKS_PER_SECOND - 1) / TICKS_PER_SECOND;
-	}
-
-	static boolean isRecordingNow() {
-		return recording;
-	}
-
-	static float remainingSeconds() {
-		return Math.max(0f, recordSeconds - recordTicks / (float) TICKS_PER_SECOND);
-	}
-
-	private static boolean busy() {
-		return countdownTicks > 0 || recording || MicRecorder.isRecording();
-	}
-
-	private static void reset() {
-		countdownTicks = 0;
-		pendingSound = null;
-		if (recording || MicRecorder.isRecording()) {
-			MicRecorder.stop();
-		}
-		recording = false;
-		recordTicks = 0;
-	}
-
-	private static void tick() {
-		if (countdownTicks > 0) {
-			countdownTicks--;
-			if (countdownTicks == 0 && pendingSound != null) {
-				startRecording(pendingSound, pendingSeconds, pendingFollowPitch);
-				pendingSound = null;
-			}
-		} else if (recording) {
-			recordTicks++;
-		}
-	}
-
-	private static void startRecording(Identifier sound, int seconds, boolean followPitch) {
-		recording = true;
-		recordSeconds = seconds;
-		recordTicks = 0;
-		MicRecorder.start(seconds, pcm -> {
-			recording = false;
-			if (pcm == null || pcm.length < 2) {
-				VoiceClientNet.chat(net.minecraft.client.Minecraft.getInstance(), Component.translatable("myvoice.error.mic_failed"));
-				return;
-			}
-			VoiceClientNet.upload(sound, pcm, followPitch);
-		}, errorKey -> {
-			recording = false;
-			VoiceClientNet.chat(net.minecraft.client.Minecraft.getInstance(), Component.translatable(errorKey));
-		});
-	}
+	private static final RecordFlow.Listener CHAT_LISTENER = message ->
+			VoiceClientNet.chat(Minecraft.getInstance(), message);
 
 	// ---- コマンド ----
 
@@ -194,7 +133,7 @@ public final class VoiceCommands {
 
 	private static int record(CommandContext<FabricClientCommandSource> ctx, int seconds, boolean followPitch) {
 		FabricClientCommandSource src = ctx.getSource();
-		if (busy()) {
+		if (RecordFlow.busy()) {
 			src.sendError(Component.translatable("myvoice.cmd.already_recording"));
 			return 0;
 		}
@@ -202,28 +141,27 @@ public final class VoiceCommands {
 			src.sendError(Component.translatable("myvoice.cmd.need_server"));
 			return 0;
 		}
-		pendingSound = ctx.getArgument("sound", Identifier.class);
-		pendingSeconds = seconds;
-		pendingFollowPitch = followPitch;
-		countdownTicks = COUNTDOWN_TICKS;
-		src.sendFeedback(Component.translatable("myvoice.cmd.record_start", pendingSound.toString(), seconds));
+		Identifier sound = ctx.getArgument("sound", Identifier.class);
+		RecordFlow.begin(sound, seconds, followPitch, CHAT_LISTENER);
+		src.sendFeedback(Component.translatable("myvoice.cmd.record_start", sound.toString(), seconds));
 		return 1;
 	}
 
 	private static int stop(CommandContext<FabricClientCommandSource> ctx) {
 		FabricClientCommandSource src = ctx.getSource();
-		if (countdownTicks > 0) {
-			countdownTicks = 0;
-			pendingSound = null;
-			src.sendFeedback(Component.translatable("myvoice.cmd.countdown_cancelled"));
-			return 1;
+		switch (RecordFlow.stopEarly()) {
+			case COUNTDOWN_CANCELLED -> {
+				src.sendFeedback(Component.translatable("myvoice.cmd.countdown_cancelled"));
+				return 1;
+			}
+			case STOPPING -> {
+				return 1;
+			}
+			default -> {
+				src.sendError(Component.translatable("myvoice.cmd.not_recording"));
+				return 0;
+			}
 		}
-		if (recording || MicRecorder.isRecording()) {
-			MicRecorder.stop();
-			return 1;
-		}
-		src.sendError(Component.translatable("myvoice.cmd.not_recording"));
-		return 0;
 	}
 
 	private static int play(CommandContext<FabricClientCommandSource> ctx) {

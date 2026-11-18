@@ -1,6 +1,8 @@
 package net.amaguri.myvoice.client;
 
 import net.amaguri.myvoice.client.audio.MicRecorder;
+import net.amaguri.myvoice.client.ui.RecordFlow;
+import net.amaguri.myvoice.client.ui.SoundPickerScreen;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.DeltaTracker;
@@ -24,10 +26,12 @@ public final class RecordHud implements HudElement {
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor g, DeltaTracker delta) {
 		Minecraft mc = Minecraft.getInstance();
+		// 音選び画面は同じ内容を右列に出すので重ねない
+		if (mc.gui.screen() instanceof SoundPickerScreen) return;
 		Font font = mc.font;
 		int w = g.guiWidth();
 
-		int count = VoiceCommands.countdownNumber();
+		int count = RecordFlow.countdownNumber();
 		if (count > 0) {
 			float scale = 4f;
 			String s = Integer.toString(count);
@@ -41,8 +45,8 @@ public final class RecordHud implements HudElement {
 			return;
 		}
 
-		if (VoiceCommands.isRecordingNow()) {
-			float remaining = VoiceCommands.remainingSeconds();
+		if (RecordFlow.isRecording()) {
+			float remaining = RecordFlow.remainingSeconds();
 			Component text = Component.translatable("myvoice.hud.recording", String.format("%.1f", remaining));
 			g.centeredText(font, text, w / 2, 6, WHITE);
 			int x0 = w / 2 - BAR_WIDTH / 2;
