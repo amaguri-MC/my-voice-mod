@@ -125,6 +125,20 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 			log("h) setTune(1.0, 1.0) seconds=%.3f orig=%.3f", hSec, orig);
 			check(Math.abs(hSec - orig) < 0.01f, "seconds should return to the original, got " + hSec);
 
+			// h2) ピッチ追従 on → すぐ off（予約のまとめ）→ 3秒待って followPitch=false に落ち着く
+			context.waitTicks(40);
+			context.runOnClient(mc -> VoiceClientNet.queueTune(id, false, 1.0f, 1.0f));
+			context.waitFor(mc -> ClientClips.get(id) != null && !ClientClips.get(id).followPitch());
+			context.waitTicks(40);
+			context.runOnClient(mc -> VoiceClientNet.queueTune(id, true, 1.0f, 1.0f));
+			context.waitTicks(3);
+			context.runOnClient(mc -> VoiceClientNet.queueTune(id, false, 1.0f, 1.0f));
+			context.waitTicks(60);
+			boolean h2 = context.computeOnClient(mc -> ClientClips.get(id) != null && !ClientClips.get(id).followPitch());
+			log("h2) on -> immediately off, after 3s followPitch=false client=%s", h2);
+			check(h2, "followPitch should settle to false after quick on/off");
+			context.waitTicks(40);
+
 			// ---- 音選び画面（W6） ----
 			pickerTest(context, id);
 

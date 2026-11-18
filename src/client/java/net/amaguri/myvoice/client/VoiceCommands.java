@@ -124,6 +124,12 @@ public final class VoiceCommands {
 		return null;
 	}
 
+	/** 予約（または返事待ち）があればその値、無ければ ClientClips の値。 */
+	private static VoiceClientNet.Tune baseTune(Identifier sound, ClientClips.ClipInfo cur) {
+		VoiceClientNet.Tune p = VoiceClientNet.pendingTune(sound);
+		return p != null ? p : new VoiceClientNet.Tune(cur.followPitch(), cur.pitch(), cur.speed());
+	}
+
 	private static int pitch(CommandContext<FabricClientCommandSource> ctx) {
 		Boolean follow = parseMode(StringArgumentType.getString(ctx, "mode"));
 		if (follow == null) {
@@ -140,8 +146,9 @@ public final class VoiceCommands {
 			return 0;
 		}
 		ClientClips.ClipInfo cur = ClientClips.get(sound);
-		if (cur.followPitch() == follow) return 1; // もう同じ設定
-		VoiceClientNet.queueTune(sound, follow, cur.pitch(), cur.speed());
+		VoiceClientNet.Tune base = baseTune(sound, cur);
+		if (base.followPitch() == follow) return 1; // もう同じ設定（予約・返事待ちがあればその値で判定）
+		VoiceClientNet.queueTune(sound, follow, base.pitch(), base.speed());
 		return 1;
 	}
 
@@ -158,7 +165,7 @@ public final class VoiceCommands {
 		}
 		float pitch = FloatArgumentType.getFloat(ctx, "pitch");
 		float speed = FloatArgumentType.getFloat(ctx, "speed");
-		VoiceClientNet.queueTune(sound, cur.followPitch(), pitch, speed);
+		VoiceClientNet.queueTune(sound, baseTune(sound, cur).followPitch(), pitch, speed);
 		return 1;
 	}
 

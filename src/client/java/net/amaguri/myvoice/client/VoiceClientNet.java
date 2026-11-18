@@ -17,24 +17,26 @@ public final class VoiceClientNet {
 	private static final long QUIET_AFTER_JOIN_NANOS = 3_000_000_000L;
 	private static long joinedAt = 0L;
 	/** 自分が setTune を送った音と時刻（返ってきた通知を出さない。断られたら取り消す）。 */
-	private static Identifier pendingSelfTune = null;
-	private static long pendingSelfTuneAt = 0L;
-	private static final long PENDING_TTL_NANOS = 5_000_000_000L;
+	/** 送信済みで ClipS2C の返事待ちの調整（音 → 値と送信時刻）。自分の ClipS2C が届くか 3 秒で解除。 */
+	private record InFlight(Tune tune, long at) {}
+	private static final java.util.Map<Identifier, InFlight> IN_FLIGHT = new java.util.HashMap<>();
+	private static final long IN_FLIGHT_TTL_NANOS = 3_000_000_000L;
 
-	private record Tune(boolean followPitch, float pitch, float speed) {}
+	public record Tune(boolean followPitch, float pitch, float speed) {}
 	/** 音ごとの「最後の値だけ」の送信予約。 */
 	private static final java.util.Map<Identifier, Tune> PENDING = new java.util.LinkedHashMap<>();
 	/** サーバーの連投制限（1秒）に余裕を足した間隔。upload / setTune の最終送信時刻から数える。 */
-	private static final long MIN_GAP_NANOS = 1_100_000_000L;
+	private static final long MIN_GAP_NANOS = 1_300_000_000L;
 	private static long lastSendAt = System.nanoTime() - MIN_GAP_NANOS;
 
 	public static void init() {
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> joinedAt = System.nanoTime());
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
 			PENDING.clear();
-			pendingSelfTune = null;
+			IN_FLIGHT.clear();
 		});
 		net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(mc -> {
+			expireInFlight();
 			if (PENDING.isEmpty()) return;
 			if (!canSend()) { PENDING.clear(); return; }
 			if (System.nanoTime() - lastSendAt < MIN_GAP_NANOS) return;
@@ -52,17 +54,19 @@ public final class VoiceClientNet {
 			ClientClips.put(payload.sound(), payload.owner(), payload.sampleRate(), payload.pcm(),
 					payload.followPitch(), payload.pitch(), payload.speed());
 			ClientClips.ClipInfo now = ClientClips.get(payload.sound());
+			InFlight fl = IN_FLIGHT.get(payload.sound());
+			boolean mine = fl != null && fl.tune().equals(new Tune(now.followPitch(), now.pitch(), now.speed()));
 			boolean tuneOnly = old != null && samePcm && old.owner().equals(payload.owner())
 					&& old.sampleRate() == payload.sampleRate()
 					&& (old.followPitch() != now.followPitch() || old.pitch() != now.pitch() || old.speed() != now.speed());
 			if (tuneOnly) {
 				// 録音は同じで調整だけ変わった。自分の操作は出さない
-				boolean self = pendingSelfTune != null && pendingSelfTune.equals(payload.sound())
-						&& System.nanoTime() - pendingSelfTuneAt < PENDING_TTL_NANOS;
-				if (self) pendingSelfTune = null;
+				if (mine) IN_FLIGHT.remove(payload.sound());
+				else if (fl != null) return; // 自分の前の送信の返事（最新の返事待ちは残す）
 				else if (!isQuiet()) chat(mc, Component.translatable("myvoice.chat.tuned", SoundCatalog.displayName(payload.sound())));
 				return;
 			}
+			if (mine) IN_FLIGHT.remove(payload.sound());
 			if (isQuiet()) return;
 			// 自分が録音した分は notice("saved") が知らせるので重ねて出さない
 			if (!payload.owner().equals(selfName(mc))) {
@@ -81,8 +85,15 @@ public final class VoiceClientNet {
 		ClientPlayNetworking.registerGlobalReceiver(VoiceNet.NoticeS2C.TYPE, (payload, context) -> {
 			// 翻訳キーは自分の MOD のものだけ受け付ける
 			if (payload.key().startsWith("myvoice.")) {
-				if (payload.key().equals("myvoice.notice.rejected") || payload.key().equals("myvoice.notice.not_found")) {
-					pendingSelfTune = null; // 断られた: 返事待ちの自分の調整は無くなった
+				if (payload.key().equals("myvoice.notice.rejected") && "too_fast".equals(payload.arg())) {
+					// 連投制限: 返事待ちの調整を予約に戻して再送する（新しい予約があればそちらが勝つ）
+					for (var en : IN_FLIGHT.entrySet()) PENDING.putIfAbsent(en.getKey(), en.getValue().tune());
+					IN_FLIGHT.clear();
+					lastSendAt = System.nanoTime();
+				} else if (payload.key().equals("myvoice.notice.rejected")) {
+					IN_FLIGHT.clear(); // 断られた: 返事待ちは無くなった
+				} else if (payload.key().equals("myvoice.notice.not_found")) {
+					IN_FLIGHT.remove(Identifier.tryParse(payload.arg()));
 				}
 				String arg = payload.arg();
 				// 音のIDが入る通知は日本語名にする（rejected の arg は理由コードなのでそのまま）
@@ -118,12 +129,11 @@ public final class VoiceClientNet {
 		if (cur != null && cur.followPitch() == followPitch && cur.pitch() == p && cur.speed() == sp) return; // サーバーも無処理
 		PENDING.remove(sound);
 		lastSendAt = System.nanoTime();
-		pendingSelfTune = sound;
-		pendingSelfTuneAt = System.nanoTime();
+		IN_FLIGHT.put(sound, new InFlight(new Tune(followPitch, p, sp), lastSendAt));
 		ClientPlayNetworking.send(new VoiceNet.SetTuneC2S(sound, followPitch, p, sp));
 	}
 
-	/** 調整の送信を予約する（音ごとに最後の値だけ。最終送信から 1.1 秒あけて tick で送る）。 */
+	/** 調整の送信を予約する（音ごとに最後の値だけ。最終送信から 1.3 秒あけて tick で送る）。 */
 	public static void queueTune(Identifier sound, boolean followPitch, float pitch, float speed) {
 		if (sound == null) return;
 		PENDING.remove(sound); // 後勝ち（順番も最新に）
@@ -132,7 +142,22 @@ public final class VoiceClientNet {
 
 	/** その音の送信予約があるか（画面が表示を ClientClips に合わせてよいかの判定用）。 */
 	public static boolean hasPendingTune(Identifier sound) {
-		return PENDING.containsKey(sound);
+		return pendingTune(sound) != null;
+	}
+
+	/** その音の「まだ反映されていない最新の値」: 予約 → 返事待ち → null。コマンドと画面はこれを基準にする。 */
+	public static Tune pendingTune(Identifier sound) {
+		Tune t = PENDING.get(sound);
+		if (t != null) return t;
+		expireInFlight();
+		InFlight f = IN_FLIGHT.get(sound);
+		return f == null ? null : f.tune();
+	}
+
+	private static void expireInFlight() {
+		if (IN_FLIGHT.isEmpty()) return;
+		long now = System.nanoTime();
+		IN_FLIGHT.values().removeIf(f -> now - f.at() >= IN_FLIGHT_TTL_NANOS);
 	}
 
 	/** サーバーにも My Voice が入っているか。 */

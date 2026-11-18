@@ -97,7 +97,6 @@ public final class SoundPickerScreen extends Screen {
 	private float tunePitch = 1.0f;
 	private float tuneSpeed = 1.0f;
 	/** setTune を送ってからサーバーの返事を待つ間（tick）。 */
-	private int pitchPendingTicks = 0;
 	private int dragging = BAR_NONE;
 	private int tickNo = 0;
 	private int lastPreviewTick = -100;
@@ -290,7 +289,12 @@ public final class SoundPickerScreen extends Screen {
 		clearMessage();
 		ClientClips.ClipInfo clip = sound == null ? null : ClientClips.get(sound);
 		followLocal = clip != null && clip.followPitch();
-		if (clip != null) {
+		VoiceClientNet.Tune pend = sound == null ? null : VoiceClientNet.pendingTune(sound);
+		if (clip != null && pend != null) {
+			followLocal = pend.followPitch();
+			tunePitch = pend.pitch();
+			tuneSpeed = pend.speed();
+		} else if (clip != null) {
 			tunePitch = clip.pitch();
 			tuneSpeed = clip.speed();
 		} else if (prevHadClip) {
@@ -298,7 +302,6 @@ public final class SoundPickerScreen extends Screen {
 			tuneSpeed = 1.0f;
 		}
 		prevHadClip = clip != null;
-		pitchPendingTicks = 0;
 		previewDirty = false;
 	}
 
@@ -343,9 +346,7 @@ public final class SoundPickerScreen extends Screen {
 		if (target != null && !target.equals(selected)) select(target); // コマンドで録音が始まったとき
 		// 声があるときは実際の設定に合わせる（断られても押した値のまま残さない）。
 		// 自分が動かしている最中・送る予約中・送信後 1 秒ほどは合わせない
-		if (pitchPendingTicks > 0) {
-			pitchPendingTicks--;
-		} else if (dragging == BAR_NONE && sendTarget == null && !previewDirty && (selected == null || !VoiceClientNet.hasPendingTune(selected))) {
+		if (dragging == BAR_NONE && sendTarget == null && !previewDirty && (selected == null || !VoiceClientNet.hasPendingTune(selected))) {
 			ClientClips.ClipInfo clip = clip();
 			if (clip != null) {
 				followLocal = clip.followPitch();
@@ -378,7 +379,6 @@ public final class SoundPickerScreen extends Screen {
 			return;
 		}
 		lastSendMs = System.currentTimeMillis();
-		pitchPendingTicks = 20;
 		VoiceClientNet.queueTune(target, followLocal, tunePitch, tuneSpeed);
 	}
 
