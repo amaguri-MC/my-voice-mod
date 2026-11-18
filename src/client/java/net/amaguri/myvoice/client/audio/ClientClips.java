@@ -60,6 +60,12 @@ public final class ClientClips {
 		return list;
 	}
 
+	/** 同じ録音（PCM が一致）か。ピッチだけの変更の判定用。 */
+	public static boolean samePcm(Identifier sound, byte[] pcm) {
+		Entry e = entry(sound);
+		return e != null && pcm != null && java.util.Arrays.equals(e.pcm, pcm);
+	}
+
 	static Entry entry(Identifier sound) {
 		return sound == null ? null : CLIPS.get(sound);
 	}

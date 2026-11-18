@@ -118,6 +118,7 @@ public final class VoiceServer {
 				ServerPlayNetworking.send(player, new VoiceNet.NoticeS2C("myvoice.notice.not_found", p.sound().toString()));
 				return;
 			}
+			if (existing.followPitch() == p.followPitch()) return; // 今と同じ値: 保存も放送も連投制限の更新もしない
 			UUID id = player.getUUID();
 			long now = System.nanoTime();
 			Long last = LAST_UPLOAD.get(id);

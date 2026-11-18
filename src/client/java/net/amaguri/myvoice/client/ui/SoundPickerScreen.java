@@ -85,7 +85,8 @@ public final class SoundPickerScreen extends Screen {
 	private int seconds = RecordFlow.DEFAULT_SECONDS;
 	/** ピッチ設定の表示。声があればその設定、無ければ次の録音に使う値。 */
 	private boolean followLocal = false;
-	private Boolean lastClipFollow = null;
+	/** setPitchMode を送ってからサーバーの返事を待つ間（tick）。 */
+	private int pitchPendingTicks = 0;
 	private boolean draggingSlider = false;
 	private int refreshTicks = 0;
 	private Component message = null;
@@ -269,7 +270,7 @@ public final class SoundPickerScreen extends Screen {
 		clearMessage();
 		ClientClips.ClipInfo clip = sound == null ? null : ClientClips.get(sound);
 		followLocal = clip != null && clip.followPitch();
-		lastClipFollow = clip == null ? null : clip.followPitch();
+		pitchPendingTicks = 0;
 	}
 
 	private ClientClips.ClipInfo clip() {
@@ -308,10 +309,13 @@ public final class SoundPickerScreen extends Screen {
 		if (messageTicks > 0 && messageTicks != PERSIST && --messageTicks == 0) message = null;
 		Identifier target = RecordFlow.target();
 		if (target != null && !target.equals(selected)) select(target); // コマンドで録音が始まったとき
-		ClientClips.ClipInfo clip = clip();
-		Boolean now = clip == null ? null : clip.followPitch();
-		if (now != null && !now.equals(lastClipFollow)) followLocal = now; // サーバーからの反映
-		lastClipFollow = now;
+		// 声があるときは実際の設定に合わせる（断られても押した値のまま残さない）。送信後 1 秒ほどだけ返事待ち
+		if (pitchPendingTicks > 0) {
+			pitchPendingTicks--;
+		} else {
+			ClientClips.ClipInfo clip = clip();
+			if (clip != null) followLocal = clip.followPitch();
+		}
 	}
 
 	// ------------------------------------------------------------ 右列の配置
@@ -390,7 +394,6 @@ public final class SoundPickerScreen extends Screen {
 
 	private void drawBackdrop(GuiGraphicsExtractor g) {
 		// HUD・チャットより上の層に描く（同じ層だとチャット等が透けて上に出る）
-		g.nextStratum();
 		g.fill(0, 0, width, height, BACKDROP);
 		g.outline(px, py, pw, ph, LINE);
 		g.fill(px, py + HEAD_H, px + pw, py + HEAD_H + 1, LINE); // 上の罫線
@@ -707,6 +710,7 @@ public final class SoundPickerScreen extends Screen {
 				return;
 			}
 			clearMessage();
+			pitchPendingTicks = 20;
 			VoiceClientNet.setPitchMode(selected, follow);
 		}
 	}

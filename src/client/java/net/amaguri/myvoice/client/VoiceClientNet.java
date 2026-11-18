@@ -25,9 +25,10 @@ public final class VoiceClientNet {
 		ClientPlayNetworking.registerGlobalReceiver(VoiceNet.ClipS2C.TYPE, (payload, context) -> {
 			Minecraft mc = context.client();
 			ClientClips.ClipInfo old = ClientClips.get(payload.sound());
+			boolean samePcm = ClientClips.samePcm(payload.sound(), payload.pcm());
 			ClientClips.put(payload.sound(), payload.owner(), payload.sampleRate(), payload.pcm(), payload.followPitch());
 			if (isQuiet()) return;
-			if (old != null && old.followPitch() != payload.followPitch() && old.owner().equals(payload.owner())
+			if (old != null && samePcm && old.followPitch() != payload.followPitch() && old.owner().equals(payload.owner())
 					&& old.sampleRate() == payload.sampleRate() && Math.abs(old.seconds() - (payload.pcm().length / 2) / (float) payload.sampleRate()) < 1e-6f) {
 				// ピッチだけの変更（録音は同じ）。自分の操作ならコマンドの反応で足りるので控えめに、1回だけ
 				if (pendingSelfPitch != null && pendingSelfPitch.equals(payload.sound())) {
@@ -55,6 +56,9 @@ public final class VoiceClientNet {
 		ClientPlayNetworking.registerGlobalReceiver(VoiceNet.NoticeS2C.TYPE, (payload, context) -> {
 			// 翻訳キーは自分の MOD のものだけ受け付ける
 			if (payload.key().startsWith("myvoice.")) {
+				if (payload.key().equals("myvoice.notice.rejected") || payload.key().equals("myvoice.notice.not_found")) {
+					pendingSelfPitch = null; // 断られた: 返事待ちの自分のピッチ変更は無くなった
+				}
 				String arg = payload.arg();
 				// 音のIDが入る通知は日本語名にする（rejected の arg は理由コードなのでそのまま）
 				if (payload.key().equals("myvoice.notice.saved") || payload.key().equals("myvoice.notice.not_found")) {

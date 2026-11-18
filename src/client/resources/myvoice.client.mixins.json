@@ -3,7 +3,8 @@
 	"package": "net.amaguri.myvoice.mixin.client",
 	"compatibilityLevel": "JAVA_25",
 	"client": [
-		"SoundManagerMixin"
+		"SoundManagerMixin",
+		"HudMixin"
 	],
 	"injectors": { "defaultRequire": 1 }
 }

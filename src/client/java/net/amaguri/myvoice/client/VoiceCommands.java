@@ -128,6 +128,7 @@ public final class VoiceCommands {
 			ctx.getSource().sendError(Component.translatable("myvoice.cmd.play_none", SoundCatalog.displayName(sound)));
 			return 0;
 		}
+		if (ClientClips.get(sound).followPitch() == follow) return 1; // もう同じ設定
 		VoiceClientNet.setPitchMode(sound, follow);
 		return 1;
 	}
