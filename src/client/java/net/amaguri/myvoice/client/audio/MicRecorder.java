@@ -22,11 +22,8 @@ public final class MicRecorder {
 	private static final Logger LOGGER = LoggerFactory.getLogger("myvoice/mic");
 	private static final int[] RATES = {VoiceNet.SAMPLE_RATE, 44100, 48000};
 	/** 前後の無音を切るしきい値（16bit 振幅）。約 -40 dBFS。 */
-	private static final int SILENCE_THRESHOLD = 330;
 	/** 切ったあとに残す余白（ミリ秒）。 */
-	private static final int TRIM_MARGIN_MS = 60;
 	/** 正規化のピーク目標 = -1 dBFS。 */
-	private static final double TARGET_PEAK = 32767.0 * 0.8912509381337456;
 
 	private static volatile boolean recording;
 	private static volatile boolean stopRequested;
@@ -169,39 +166,9 @@ public final class MicRecorder {
 		return (short) ((b[idx * 2] & 0xFF) | (b[idx * 2 + 1] << 8));
 	}
 
-	/** 前後の無音を切り、ピークを -1 dBFS に正規化する。全部無音なら null。 */
+	/** 前後の無音を切り、ピークを -1 dBFS に正規化する（語尾を残す・端はフェード）。全部無音なら null。 */
 	static byte[] process(byte[] pcm) {
-		int n = pcm.length / 2;
-		int first = -1, last = -1;
-		int peak = 0;
-		for (int i = 0; i < n; i++) {
-			int v = Math.abs(sample(pcm, i));
-			if (v > peak) peak = v;
-			if (v >= SILENCE_THRESHOLD) {
-				if (first < 0) first = i;
-				last = i;
-			}
-		}
-		if (first < 0) return null;
-		int margin = VoiceNet.SAMPLE_RATE * TRIM_MARGIN_MS / 1000;
-		int from = Math.max(0, first - margin);
-		int to = Math.min(n, last + 1 + margin);
-		int len = to - from;
-		if (len < 1) return null;
-		double gain = TARGET_PEAK / peak;
-		byte[] out = new byte[len * 2];
-		for (int i = 0; i < len; i++) {
-			int v = (int) Math.round(sample(pcm, from + i) * gain);
-			v = Math.max(-32768, Math.min(32767, v));
-			out[i * 2] = (byte) v;
-			out[i * 2 + 1] = (byte) (v >> 8);
-		}
-		if (out.length > VoiceNet.MAX_PCM_BYTES) {
-			byte[] cut = new byte[VoiceNet.MAX_PCM_BYTES];
-			System.arraycopy(out, 0, cut, 0, cut.length);
-			return cut;
-		}
-		return out;
+		return net.amaguri.myvoice.client.audio.dsp.VoiceTrim.process(pcm, VoiceNet.SAMPLE_RATE, VoiceNet.MAX_PCM_BYTES);
 	}
 
 	private static void postDone(Consumer<byte[]> onDone, byte[] data) {
