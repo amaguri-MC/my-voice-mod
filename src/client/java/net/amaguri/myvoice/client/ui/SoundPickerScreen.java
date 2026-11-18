@@ -389,6 +389,8 @@ public final class SoundPickerScreen extends Screen {
 	}
 
 	private void drawBackdrop(GuiGraphicsExtractor g) {
+		// HUD・チャットより上の層に描く（同じ層だとチャット等が透けて上に出る）
+		g.nextStratum();
 		g.fill(0, 0, width, height, BACKDROP);
 		g.outline(px, py, pw, ph, LINE);
 		g.fill(px, py + HEAD_H, px + pw, py + HEAD_H + 1, LINE); // 上の罫線
