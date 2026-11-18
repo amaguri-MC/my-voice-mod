@@ -503,7 +503,14 @@ public final class SoundPickerScreen extends Screen {
 				}
 			}
 		}
-		int below = bodyBottom - 4 - messageLines.size() * lh;
+		if (!messageLines.isEmpty() && clipInfoY > 0) {
+			// 知らせがあるときは「録音: 〜」の行を譲る（gui 高さ 240 で下にはみ出さないように）
+			y = clipInfoY;
+			clipInfoY = 0;
+		}
+		int room = Math.max(1, (bodyBottom - 2 - y) / lh);
+		if (messageLines.size() > room) messageLines = messageLines.subList(0, room);
+		int below = bodyBottom - 2 - messageLines.size() * lh;
 		messageY = Math.max(y, below);
 	}
 
