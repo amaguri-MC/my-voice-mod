@@ -12,7 +12,7 @@ import net.minecraft.resources.Identifier;
 public final class ClientClips {
 	private ClientClips() {}
 
-	public record ClipInfo(Identifier sound, String owner, int sampleRate, float seconds) {}
+	public record ClipInfo(Identifier sound, String owner, int sampleRate, float seconds, boolean followPitch) {}
 
 	/** PCM と（再生時に作る）AL バッファ。 */
 	static final class Entry {
@@ -29,12 +29,12 @@ public final class ClientClips {
 
 	private static final Map<Identifier, Entry> CLIPS = new LinkedHashMap<>();
 
-	public static void put(Identifier sound, String owner, int sampleRate, byte[] pcm) {
+	public static void put(Identifier sound, String owner, int sampleRate, byte[] pcm, boolean followPitch) {
 		if (sound == null || pcm == null || sampleRate <= 0) return;
 		remove(sound); // 上書き: 古いソースとバッファを先に片付ける
 		byte[] copy = pcm.clone();
 		float seconds = (copy.length / 2) / (float) sampleRate;
-		CLIPS.put(sound, new Entry(new ClipInfo(sound, owner == null ? "" : owner, sampleRate, seconds), copy));
+		CLIPS.put(sound, new Entry(new ClipInfo(sound, owner == null ? "" : owner, sampleRate, seconds, followPitch), copy));
 	}
 
 	public static void remove(Identifier sound) {

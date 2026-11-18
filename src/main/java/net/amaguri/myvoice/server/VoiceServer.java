@@ -35,7 +35,7 @@ public final class VoiceServer {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static final long MIN_INTERVAL_NANOS = 1_000_000_000L;
 
-	private record Clip(Identifier sound, String owner, UUID ownerId, int sampleRate, byte[] pcm) {}
+	private record Clip(Identifier sound, String owner, UUID ownerId, int sampleRate, byte[] pcm, boolean followPitch) {}
 
 	private static final Map<Identifier, Clip> CLIPS = new ConcurrentHashMap<>();
 	private static final Map<UUID, Long> LAST_UPLOAD = new ConcurrentHashMap<>();
@@ -63,6 +63,8 @@ public final class VoiceServer {
 				ctx.server().execute(() -> onUpload(ctx.server(), ctx.player(), payload)));
 		ServerPlayNetworking.registerGlobalReceiver(VoiceNet.ClearClipC2S.TYPE, (payload, ctx) ->
 				ctx.server().execute(() -> onClear(ctx.server(), ctx.player(), payload)));
+		ServerPlayNetworking.registerGlobalReceiver(VoiceNet.SetPitchModeC2S.TYPE, (payload, ctx) ->
+				ctx.server().execute(() -> onSetPitchMode(ctx.server(), ctx.player(), payload)));
 	}
 
 	/** テスト用。 */
@@ -99,18 +101,46 @@ public final class VoiceServer {
 				return;
 			}
 			LAST_UPLOAD.put(id, System.nanoTime());
-			Clip clip = new Clip(p.sound(), player.getPlainTextName(), id, p.sampleRate(), pcm.clone());
+			Clip clip = new Clip(p.sound(), player.getPlainTextName(), id, p.sampleRate(), pcm.clone(), p.followPitch());
 			CLIPS.put(clip.sound(), clip); // 上書きは置換
 			save(server, clip);
-			VoiceNet.ClipS2C packet = toPacket(clip);
-			for (ServerPlayer other : server.getPlayerList().getPlayers()) {
-				if (ServerPlayNetworking.canSend(other, VoiceNet.ClipS2C.TYPE)) {
-					ServerPlayNetworking.send(other, packet);
-				}
-			}
+			broadcast(server, clip);
 			ServerPlayNetworking.send(player, new VoiceNet.NoticeS2C("myvoice.notice.saved", p.sound().toString()));
 		} catch (Exception e) {
 			LOGGER.warn("Failed to handle upload from {}", player.getPlainTextName(), e);
+		}
+	}
+
+	private static void onSetPitchMode(MinecraftServer server, ServerPlayer player, VoiceNet.SetPitchModeC2S p) {
+		try {
+			Clip existing = CLIPS.get(p.sound());
+			if (existing == null) {
+				ServerPlayNetworking.send(player, new VoiceNet.NoticeS2C("myvoice.notice.not_found", p.sound().toString()));
+				return;
+			}
+			UUID id = player.getUUID();
+			long now = System.nanoTime();
+			Long last = LAST_UPLOAD.get(id);
+			if (last != null && now - last < MIN_INTERVAL_NANOS) {
+				ServerPlayNetworking.send(player, new VoiceNet.NoticeS2C("myvoice.notice.rejected", "too_fast"));
+				return;
+			}
+			LAST_UPLOAD.put(id, now);
+			Clip clip = new Clip(existing.sound(), existing.owner(), existing.ownerId(), existing.sampleRate(), existing.pcm(), p.followPitch());
+			CLIPS.put(clip.sound(), clip);
+			writeIndex();
+			broadcast(server, clip);
+		} catch (Exception e) {
+			LOGGER.warn("Failed to handle pitch mode from {}", player.getPlainTextName(), e);
+		}
+	}
+
+	private static void broadcast(MinecraftServer server, Clip clip) {
+		VoiceNet.ClipS2C packet = toPacket(clip);
+		for (ServerPlayer other : server.getPlayerList().getPlayers()) {
+			if (ServerPlayNetworking.canSend(other, VoiceNet.ClipS2C.TYPE)) {
+				ServerPlayNetworking.send(other, packet);
+			}
 		}
 	}
 
@@ -141,7 +171,7 @@ public final class VoiceServer {
 	}
 
 	private static VoiceNet.ClipS2C toPacket(Clip c) {
-		return new VoiceNet.ClipS2C(c.sound(), c.owner(), c.sampleRate(), c.pcm());
+		return new VoiceNet.ClipS2C(c.sound(), c.owner(), c.sampleRate(), c.pcm(), c.followPitch());
 	}
 
 	// ---- 保存・読込 ----
@@ -180,12 +210,13 @@ public final class VoiceServer {
 					String owner = o.get("owner").getAsString();
 					UUID ownerId = o.has("ownerId") ? UUID.fromString(o.get("ownerId").getAsString()) : new UUID(0L, 0L);
 					int rate = o.get("sampleRate").getAsInt();
+					boolean followPitch = o.has("followPitch") && o.get("followPitch").isJsonPrimitive() && o.get("followPitch").getAsBoolean();
 					byte[] pcm = Files.readAllBytes(dir.resolve(fileName(sound)));
 					if (rate != VoiceNet.SAMPLE_RATE || pcm.length < 2 || pcm.length > VoiceNet.MAX_PCM_BYTES || (pcm.length & 1) != 0) {
 						LOGGER.warn("Skipping invalid clip {}", sound);
 						continue;
 					}
-					CLIPS.put(sound, new Clip(sound, owner, ownerId, rate, pcm));
+					CLIPS.put(sound, new Clip(sound, owner, ownerId, rate, pcm, followPitch));
 				} catch (Exception e) {
 					LOGGER.warn("Failed to load a clip entry: {}", e.toString());
 				}
@@ -229,6 +260,7 @@ public final class VoiceServer {
 				o.addProperty("owner", c.owner());
 				o.addProperty("ownerId", c.ownerId().toString());
 				o.addProperty("sampleRate", c.sampleRate());
+				o.addProperty("followPitch", c.followPitch());
 				arr.add(o);
 			}
 			JsonObject root = new JsonObject();

@@ -18,5 +18,10 @@
   "myvoice.hud.get_ready": "もうすぐ録音",
   "myvoice.hud.recording": "● 録音中 残り %s 秒",
   "myvoice.error.silent": "声が入っていなかった。マイクを確認してもう一度録音しよう",
-  "myvoice.error.already_recording": "もう録音中だ"
+  "myvoice.error.already_recording": "もう録音中だ",
+  "myvoice.pitch.voice": "声のまま",
+  "myvoice.pitch.game": "ゲームに合わせる",
+  "myvoice.chat.pitch_mode": "%s が %s のピッチを『%s』にした",
+  "myvoice.chat.pitch_mode_self": "%s のピッチを『%s』にした",
+  "myvoice.cmd.pitch_bad_mode": "ピッチは voice（声のまま）か game（ゲームに合わせる）で指定する"
 }

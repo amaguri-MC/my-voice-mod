@@ -180,7 +180,7 @@ public final class ClipPlayer {
 		if (Float.isNaN(pitch) || pitch <= 0) pitch = 1.0F;
 
 		float vol = clamp(instVol * categoryVolume(category), 0F, 1F);
-		pitch = clamp(pitch, 0.5F, 2.0F);
+		pitch = e.info.followPitch() ? clamp(pitch, 0.5F, 2.0F) : 1.0F; // 声のまま: ピッチはかけない（音量・距離はそのまま）
 		if (vol <= 0F) return; // バニラも無音は鳴らさない
 		float maxDist = Math.max(instVol, 1.0F) * attDist;
 		start(e, vol, pitch, relative, x, y, z, linear, maxDist);

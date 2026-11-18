@@ -48,7 +48,7 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 
 			// a) アップロード
 			byte[] pcm = sine();
-			context.runOnClient(mc -> VoiceClientNet.upload(id, pcm));
+			context.runOnClient(mc -> VoiceClientNet.upload(id, pcm, true));
 			log("a) uploaded %d bytes to %s", pcm.length, id);
 
 			// b) 両側に登録される
@@ -78,6 +78,23 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 			log("d) cleared server=%s client=%s", serverGone, clientGone);
 			check(serverGone, "server still has the clip");
 			check(clientGone, "client still has the clip");
+
+			// e) followPitch=false でアップ（連投制限を避けて待つ）
+			context.waitTicks(30);
+			context.runOnClient(mc -> VoiceClientNet.upload(id, pcm, false));
+			server.waitFor(s -> VoiceServer.has(id));
+			context.waitFor(mc -> ClientClips.get(id) != null && !ClientClips.get(id).followPitch());
+			boolean eOk = context.computeOnClient(mc -> ClientClips.get(id) != null && !ClientClips.get(id).followPitch());
+			log("e) followPitch=false client=%s", eOk);
+			check(eOk, "followPitch should be false after upload(false)");
+
+			// f) setPitchMode(true)
+			context.waitTicks(30);
+			context.runOnClient(mc -> VoiceClientNet.setPitchMode(id, true));
+			context.waitFor(mc -> ClientClips.get(id) != null && ClientClips.get(id).followPitch());
+			boolean fOk = context.computeOnClient(mc -> ClientClips.get(id) != null && ClientClips.get(id).followPitch());
+			log("f) setPitchMode(true) client=%s", fOk);
+			check(fOk, "followPitch should be true after setPitchMode(true)");
 
 			log("all passed");
 		}

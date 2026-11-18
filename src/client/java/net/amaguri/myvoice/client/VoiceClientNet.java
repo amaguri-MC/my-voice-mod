@@ -15,15 +15,30 @@ public final class VoiceClientNet {
 	/** 参加直後の一括同期ではチャットを出さないための猶予（ナノ秒）。 */
 	private static final long QUIET_AFTER_JOIN_NANOS = 3_000_000_000L;
 	private static long joinedAt = 0L;
+	/** 自分が setPitchMode を送った音（返ってきた通知を自分用の文言にする）。 */
+	private static Identifier pendingSelfPitch = null;
 
 	public static void init() {
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> joinedAt = System.nanoTime());
 
 		ClientPlayNetworking.registerGlobalReceiver(VoiceNet.ClipS2C.TYPE, (payload, context) -> {
 			Minecraft mc = context.client();
-			ClientClips.put(payload.sound(), payload.owner(), payload.sampleRate(), payload.pcm());
+			ClientClips.ClipInfo old = ClientClips.get(payload.sound());
+			ClientClips.put(payload.sound(), payload.owner(), payload.sampleRate(), payload.pcm(), payload.followPitch());
+			if (isQuiet()) return;
+			if (old != null && old.followPitch() != payload.followPitch() && old.owner().equals(payload.owner())
+					&& old.sampleRate() == payload.sampleRate() && Math.abs(old.seconds() - (payload.pcm().length / 2) / (float) payload.sampleRate()) < 1e-6f) {
+				// ピッチだけの変更（録音は同じ）。自分の操作ならコマンドの反応で足りるので控えめに、1回だけ
+				if (pendingSelfPitch != null && pendingSelfPitch.equals(payload.sound())) {
+					pendingSelfPitch = null;
+					chat(mc, Component.translatable("myvoice.chat.pitch_mode_self", payload.sound().toString(), pitchLabel(payload.followPitch())));
+				} else {
+					chat(mc, Component.translatable("myvoice.chat.pitch_mode", payload.owner(), payload.sound().toString(), pitchLabel(payload.followPitch())));
+				}
+				return;
+			}
 			// 自分が録音した分は notice("saved") が知らせるので重ねて出さない
-			if (!isQuiet() && !payload.owner().equals(selfName(mc))) {
+			if (!payload.owner().equals(selfName(mc))) {
 				chat(mc, Component.translatable("myvoice.chat.clip_added", payload.owner(), payload.sound().toString()));
 			}
 		});
@@ -45,12 +60,26 @@ public final class VoiceClientNet {
 	}
 
 	/** 録音したクリップをサーバーへ送る。MOD の無いサーバーでは送らずに知らせる。 */
-	public static void upload(Identifier sound, byte[] pcm) {
+	public static void upload(Identifier sound, byte[] pcm, boolean followPitch) {
 		if (!canSend()) {
 			notifyNeedServer();
 			return;
 		}
-		ClientPlayNetworking.send(new VoiceNet.UploadClipC2S(sound, VoiceNet.SAMPLE_RATE, pcm));
+		ClientPlayNetworking.send(new VoiceNet.UploadClipC2S(sound, VoiceNet.SAMPLE_RATE, pcm, followPitch));
+	}
+
+	/** 録音し直さずにピッチ設定だけ変える。 */
+	public static void setPitchMode(Identifier sound, boolean followPitch) {
+		if (!canSend()) {
+			notifyNeedServer();
+			return;
+		}
+		pendingSelfPitch = sound;
+		ClientPlayNetworking.send(new VoiceNet.SetPitchModeC2S(sound, followPitch));
+	}
+
+	private static Component pitchLabel(boolean followPitch) {
+		return Component.translatable(followPitch ? "myvoice.pitch.game" : "myvoice.pitch.voice");
 	}
 
 	/** サーバーにも My Voice が入っているか。 */
