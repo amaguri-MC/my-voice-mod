@@ -38,10 +38,12 @@ public final class ClipPlayer {
 	private static final class Src {
 		final int id;
 		final ClientClips.Entry entry;
+		final long ctx;
 
-		Src(int id, ClientClips.Entry entry) {
+		Src(int id, ClientClips.Entry entry, long ctx) {
 			this.id = id;
 			this.entry = entry;
+			this.ctx = ctx;
 		}
 	}
 
@@ -102,6 +104,7 @@ public final class ClipPlayer {
 			while (it.hasNext()) {
 				Src s = it.next();
 				boolean playing;
+				if (s.ctx != currentContext()) { it.remove(); continue; } // エンジン再起動で消えた ID は触らない
 				try {
 					playing = AL10.alGetSourcei(s.id, AL10.AL_SOURCE_STATE) == AL10.AL_PLAYING;
 				} catch (Throwable t) {
@@ -132,9 +135,11 @@ public final class ClipPlayer {
 	static void deleteBuffer(ClientClips.Entry e) {
 		if (e.alBuffer == 0) return;
 		int buf = e.alBuffer;
+		long ctx = e.alContext;
 		e.alBuffer = 0;
+		e.alContext = 0L;
 		try {
-			if (!alAvailable()) return;
+			if (!alAvailable() || ctx != currentContext()) return; // 別コンテキストの ID は消さない
 			AL10.alGetError();
 			AL10.alDeleteBuffers(buf);
 			checkError("alDeleteBuffers");
@@ -153,6 +158,8 @@ public final class ClipPlayer {
 		boolean linear = true;
 		boolean relative = false;
 		double x = 0, y = 0, z = 0;
+		// Mixin は SoundManager.play の HEAD で呼ぶので、まだ resolve されていない（sound が null）
+		try { s.resolve(Minecraft.getInstance().getSoundManager()); } catch (Throwable ignored) { /* 既定値で鳴らす */ }
 		try { instVol = s.getVolume(); } catch (Throwable t) { instVol = 1.0F; }
 		try { pitch = s.getPitch(); } catch (Throwable t) { pitch = 1.0F; }
 		try { category = s.getSource(); } catch (Throwable t) { category = SoundSource.MASTER; }
@@ -225,7 +232,7 @@ public final class ClipPlayer {
 				AL10.alDeleteSources(src);
 				return;
 			}
-			SOURCES.add(new Src(src, e));
+			SOURCES.add(new Src(src, e, currentContext()));
 		} catch (Throwable t) {
 			try { AL10.alDeleteSources(src); } catch (Throwable ignored) { /* ignore */ }
 			logError("start failed", t);
@@ -233,7 +240,9 @@ public final class ClipPlayer {
 	}
 
 	private static int ensureBuffer(ClientClips.Entry e) {
-		if (e.alBuffer != 0) return e.alBuffer;
+		long ctx = currentContext();
+		if (e.alBuffer != 0 && e.alContext == ctx) return e.alBuffer;
+		e.alBuffer = 0; // 古いコンテキストの ID は捨てる（AL は呼ばない）
 		try {
 			AL10.alGetError();
 			int buf = AL10.alGenBuffers();
@@ -247,6 +256,7 @@ public final class ClipPlayer {
 				return 0;
 			}
 			e.alBuffer = buf;
+			e.alContext = ctx;
 			return buf;
 		} catch (Throwable t) {
 			logError("ensureBuffer failed", t);
@@ -255,12 +265,21 @@ public final class ClipPlayer {
 	}
 
 	private static void destroy(Src s) {
+		if (s.ctx != currentContext()) return; // 再起動前の ID は触らない
 		try {
 			AL10.alSourceStop(s.id);
 			AL10.alDeleteSources(s.id);
 			AL10.alGetError();
 		} catch (Throwable t) {
 			logError("destroy source failed", t);
+		}
+	}
+
+	private static long currentContext() {
+		try {
+			return ALC10.alcGetCurrentContext();
+		} catch (Throwable t) {
+			return 0L;
 		}
 	}
 

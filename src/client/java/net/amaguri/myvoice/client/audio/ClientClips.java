@@ -19,6 +19,7 @@ public final class ClientClips {
 		final ClipInfo info;
 		final byte[] pcm;
 		int alBuffer; // 0 = 未作成
+		long alContext; // alBuffer を作った AL コンテキスト（サウンドエンジン再起動で変わる）
 
 		Entry(ClipInfo info, byte[] pcm) {
 			this.info = info;
