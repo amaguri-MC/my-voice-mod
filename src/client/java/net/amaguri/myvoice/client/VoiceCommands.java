@@ -31,7 +31,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-/** /myvoice record|tune|pitch|stop|play|clear|list（クライアントコマンド）。 */
+/** /myvoice record|tune|trim|pitch|stop|play|clear|list（クライアントコマンド）。 */
 public final class VoiceCommands {
 	private VoiceCommands() {}
 
@@ -50,6 +50,8 @@ public final class VoiceCommands {
 			(ctx, builder) -> SharedSuggestionProvider.suggest(List.of("voice", "game"), builder);
 	private static final SuggestionProvider<FabricClientCommandSource> TUNE_VALUES =
 			(ctx, builder) -> SharedSuggestionProvider.suggest(List.of("0.5", "0.75", "1", "1.25", "1.5", "2"), builder);
+	private static final SuggestionProvider<FabricClientCommandSource> TRIM_VALUES =
+			(ctx, builder) -> SharedSuggestionProvider.suggest(List.of("0", "0.2", "0.35", "0.6", "1"), builder);
 	private static final SuggestionProvider<FabricClientCommandSource> SOUNDS_AND_ASSIGNED = (ctx, builder) -> {
 		Set<Identifier> all = new LinkedHashSet<>();
 		for (ClientClips.ClipInfo c : ClientClips.all()) {
@@ -99,6 +101,12 @@ public final class VoiceCommands {
 											.then(ClientCommands.argument("speed", FloatArgumentType.floatArg(VoiceNet.MIN_TUNE, VoiceNet.MAX_TUNE))
 													.suggests(TUNE_VALUES)
 													.executes(VoiceCommands::tune)))))
+					.then(ClientCommands.literal("trim")
+							.then(ClientCommands.argument("sound", IdentifierArgument.id())
+									.suggests(ASSIGNED_ONLY)
+									.then(ClientCommands.argument("amount", FloatArgumentType.floatArg(0f, 1f))
+											.suggests(TRIM_VALUES)
+											.executes(VoiceCommands::trim))))
 					.then(ClientCommands.literal("stop").executes(VoiceCommands::stop))
 					.then(ClientCommands.literal("play")
 							.then(ClientCommands.argument("sound", IdentifierArgument.id())
@@ -127,7 +135,7 @@ public final class VoiceCommands {
 	/** 予約（または返事待ち）があればその値、無ければ ClientClips の値。 */
 	private static VoiceClientNet.Tune baseTune(Identifier sound, ClientClips.ClipInfo cur) {
 		VoiceClientNet.Tune p = VoiceClientNet.pendingTune(sound);
-		return p != null ? p : new VoiceClientNet.Tune(cur.followPitch(), cur.pitch(), cur.speed());
+		return p != null ? p : new VoiceClientNet.Tune(cur.followPitch(), cur.pitch(), cur.speed(), cur.trim());
 	}
 
 	private static int pitch(CommandContext<FabricClientCommandSource> ctx) {
@@ -148,7 +156,7 @@ public final class VoiceCommands {
 		ClientClips.ClipInfo cur = ClientClips.get(sound);
 		VoiceClientNet.Tune base = baseTune(sound, cur);
 		if (base.followPitch() == follow) return 1; // もう同じ設定（予約・返事待ちがあればその値で判定）
-		VoiceClientNet.queueTune(sound, follow, base.pitch(), base.speed());
+		VoiceClientNet.queueTune(sound, follow, base.pitch(), base.speed(), base.trim());
 		return 1;
 	}
 
@@ -165,7 +173,25 @@ public final class VoiceCommands {
 		}
 		float pitch = FloatArgumentType.getFloat(ctx, "pitch");
 		float speed = FloatArgumentType.getFloat(ctx, "speed");
-		VoiceClientNet.queueTune(sound, baseTune(sound, cur).followPitch(), pitch, speed);
+		VoiceClientNet.Tune base = baseTune(sound, cur);
+		VoiceClientNet.queueTune(sound, base.followPitch(), pitch, speed, base.trim());
+		return 1;
+	}
+
+	private static int trim(CommandContext<FabricClientCommandSource> ctx) {
+		if (!VoiceClientNet.canSend()) {
+			ctx.getSource().sendError(Component.translatable("myvoice.cmd.need_server"));
+			return 0;
+		}
+		Identifier sound = ctx.getArgument("sound", Identifier.class);
+		ClientClips.ClipInfo cur = ClientClips.get(sound);
+		if (cur == null) {
+			ctx.getSource().sendError(Component.translatable("myvoice.cmd.play_none", SoundCatalog.displayName(sound)));
+			return 0;
+		}
+		float amount = FloatArgumentType.getFloat(ctx, "amount");
+		VoiceClientNet.Tune base = baseTune(sound, cur);
+		VoiceClientNet.queueTune(sound, base.followPitch(), base.pitch(), base.speed(), amount);
 		return 1;
 	}
 
@@ -180,7 +206,7 @@ public final class VoiceCommands {
 			return 0;
 		}
 		Identifier sound = ctx.getArgument("sound", Identifier.class);
-		RecordFlow.begin(sound, seconds, followPitch, CHAT_LISTENER);
+		RecordFlow.begin(sound, seconds, followPitch, 1.0f, 1.0f, VoiceNet.DEFAULT_TRIM, CHAT_LISTENER);
 		src.sendFeedback(Component.translatable("myvoice.cmd.record_start", SoundCatalog.displayName(sound), seconds));
 		return 1;
 	}

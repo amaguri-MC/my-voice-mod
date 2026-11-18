@@ -47,6 +47,22 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 		return pcm;
 	}
 
+	/** 440Hz の声 voiceSec 秒 + 指数減衰する小さな語尾 tailSec 秒（ピーク 1500）+ 無音 silenceSec 秒。 */
+	private static byte[] voiceWithTail(double voiceSec, double tailSec, double silenceSec) {
+		int sr = VoiceNet.SAMPLE_RATE;
+		int n = (int) Math.round((voiceSec + tailSec + silenceSec) * sr);
+		byte[] pcm = new byte[n * 2];
+		java.util.Random r = new java.util.Random(7);
+		for (int i = 0; i < n; i++) {
+			double t = (double) i / sr;
+			double amp = t < voiceSec ? 12000 : t < voiceSec + tailSec ? 1500 * Math.exp(-(t - voiceSec) * 6.0) : 0;
+			short v = (short) Math.round(Math.sin(2 * Math.PI * 440 * t) * amp + r.nextGaussian() * 8);
+			pcm[i * 2] = (byte) (v & 0xFF);
+			pcm[i * 2 + 1] = (byte) ((v >> 8) & 0xFF);
+		}
+		return pcm;
+	}
+
 	@Override
 	public void runTest(ClientGameTestContext context) {
 		Identifier id = Identifier.fromNamespaceAndPath("minecraft", "ui.button.click");
@@ -57,7 +73,7 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 
 			// a) アップロード
 			byte[] pcm = sine();
-			context.runOnClient(mc -> VoiceClientNet.upload(id, pcm, true, 1.0f, 1.0f));
+			context.runOnClient(mc -> VoiceClientNet.upload(id, pcm, true, 1.0f, 1.0f, 0f));
 			log("a) uploaded %d bytes to %s", pcm.length, id);
 
 			// b) 両側に登録される
@@ -90,7 +106,7 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 
 			// e) followPitch=false でアップ（連投制限を避けて待つ）
 			context.waitTicks(30);
-			context.runOnClient(mc -> VoiceClientNet.upload(id, pcm, false, 1.0f, 1.0f));
+			context.runOnClient(mc -> VoiceClientNet.upload(id, pcm, false, 1.0f, 1.0f, 0f));
 			server.waitFor(s -> VoiceServer.has(id));
 			context.waitFor(mc -> ClientClips.get(id) != null && !ClientClips.get(id).followPitch());
 			boolean eOk = context.computeOnClient(mc -> ClientClips.get(id) != null && !ClientClips.get(id).followPitch());
@@ -99,7 +115,7 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 
 			// f) setTune(followPitch=true, 1, 1)
 			context.waitTicks(30);
-			context.runOnClient(mc -> VoiceClientNet.setTune(id, true, 1.0f, 1.0f));
+			context.runOnClient(mc -> VoiceClientNet.setTune(id, true, 1.0f, 1.0f, 0f));
 			context.waitFor(mc -> ClientClips.get(id) != null && ClientClips.get(id).followPitch());
 			boolean fOk = context.computeOnClient(mc -> ClientClips.get(id) != null && ClientClips.get(id).followPitch());
 			log("f) setTune(followPitch=true) client=%s", fOk);
@@ -108,7 +124,7 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 			// g) pitch=1.5, speed=0.75 でアップ → 長さは元の約 1/0.75 = 1.33 倍
 			float orig = (pcm.length / 2) / (float) VoiceNet.SAMPLE_RATE;
 			context.waitTicks(30);
-			context.runOnClient(mc -> VoiceClientNet.upload(id, pcm, true, 1.5f, 0.75f));
+			context.runOnClient(mc -> VoiceClientNet.upload(id, pcm, true, 1.5f, 0.75f, 0f));
 			context.waitFor(mc -> ClientClips.get(id) != null && ClientClips.get(id).speed() == 0.75f && ClientClips.ready(id));
 			float gSec = context.computeOnClient(mc -> ClientClips.get(id).seconds());
 			float gRatio = gSec / orig;
@@ -119,7 +135,7 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 
 			// h) setTune(1,1) で元の長さに戻る
 			context.waitTicks(30);
-			context.runOnClient(mc -> VoiceClientNet.setTune(id, true, 1.0f, 1.0f));
+			context.runOnClient(mc -> VoiceClientNet.setTune(id, true, 1.0f, 1.0f, 0f));
 			context.waitFor(mc -> ClientClips.get(id) != null && ClientClips.get(id).speed() == 1.0f && ClientClips.ready(id));
 			float hSec = context.computeOnClient(mc -> ClientClips.get(id).seconds());
 			log("h) setTune(1.0, 1.0) seconds=%.3f orig=%.3f", hSec, orig);
@@ -127,16 +143,33 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 
 			// h2) ピッチ追従 on → すぐ off（予約のまとめ）→ 3秒待って followPitch=false に落ち着く
 			context.waitTicks(40);
-			context.runOnClient(mc -> VoiceClientNet.queueTune(id, false, 1.0f, 1.0f));
+			context.runOnClient(mc -> VoiceClientNet.queueTune(id, false, 1.0f, 1.0f, 0f));
 			context.waitFor(mc -> ClientClips.get(id) != null && !ClientClips.get(id).followPitch());
 			context.waitTicks(40);
-			context.runOnClient(mc -> VoiceClientNet.queueTune(id, true, 1.0f, 1.0f));
+			context.runOnClient(mc -> VoiceClientNet.queueTune(id, true, 1.0f, 1.0f, 0f));
 			context.waitTicks(3);
-			context.runOnClient(mc -> VoiceClientNet.queueTune(id, false, 1.0f, 1.0f));
+			context.runOnClient(mc -> VoiceClientNet.queueTune(id, false, 1.0f, 1.0f, 0f));
 			context.waitTicks(60);
 			boolean h2 = context.computeOnClient(mc -> ClientClips.get(id) != null && !ClientClips.get(id).followPitch());
 			log("h2) on -> immediately off, after 3s followPitch=false client=%s", h2);
 			check(h2, "followPitch should settle to false after quick on/off");
+			context.waitTicks(40);
+
+			// k) 無音カット: 1秒の音 + 0.5秒の小さな減衰 + 0.5秒無音 を trim=0 でアップ → 約2.0秒、trim=1 で短くなる
+			context.waitTicks(40);
+			byte[] tailPcm = voiceWithTail(1.0, 0.5, 0.5);
+			context.runOnClient(mc -> VoiceClientNet.upload(id, tailPcm, false, 1.0f, 1.0f, 0f));
+			context.waitFor(mc -> ClientClips.get(id) != null && ClientClips.get(id).trim() == 0f && ClientClips.get(id).seconds() > 1.9f && ClientClips.ready(id));
+			float k0 = context.computeOnClient(mc -> ClientClips.get(id).seconds());
+			log("k) trim=0 seconds=%.3f (expect ~2.0)", k0);
+			check(Math.abs(k0 - 2.0f) < 0.05f, "trim=0 should keep the whole 2.0s, got " + k0);
+			context.waitTicks(40);
+			context.runOnClient(mc -> VoiceClientNet.setTune(id, false, 1.0f, 1.0f, 1.0f));
+			context.waitFor(mc -> ClientClips.get(id) != null && ClientClips.get(id).trim() == 1.0f && ClientClips.ready(id));
+			float k1 = context.computeOnClient(mc -> ClientClips.get(id).seconds());
+			float[] kCut = context.computeOnClient(mc -> ClientClips.cutFraction(id, 1.0f));
+			log("k) trim=1 seconds=%.3f (expect 1.2..1.6) cutFraction=[%.3f, %.3f]", k1, kCut[0], kCut[1]);
+			check(k1 >= 1.2f && k1 <= 1.6f, "trim=1 should shorten the clip to 1.2..1.6s, got " + k1);
 			context.waitTicks(40);
 
 			// ---- 音選び画面（W6） ----
@@ -274,9 +307,14 @@ public class MyVoiceClientGameTest implements FabricClientGameTest {
 		Identifier chosen = context.computeOnClient(m -> ((SoundPickerScreen) m.gui.screen()).selectedSound());
 		log("pj) selected %s", chosen);
 		check(clipId.equals(chosen), "ui.button.click should be selected");
+		// 波形が分かるよう、減衰する語尾つきの声をアップしておく（高さ・速さ・無音カットは既定）
+		byte[] shotPcm = voiceWithTail(0.8, 1.2, 0.6);
+		context.waitTicks(30);
+		context.runOnClient(m -> VoiceClientNet.upload(clipId, shotPcm, true, 1.0f, 1.0f, VoiceNet.DEFAULT_TRIM));
+		context.waitFor(m -> ClientClips.get(clipId) != null && ClientClips.get(clipId).trim() == VoiceNet.DEFAULT_TRIM && ClientClips.ready(clipId));
 		// 画面のバーにその値が出る状態で撮る: 声の調整を 高さ1.5・速さ0.75 にして同期を待つ
 		context.waitTicks(30);
-		context.runOnClient(m -> VoiceClientNet.setTune(clipId, true, 1.5f, 0.75f));
+		context.runOnClient(m -> VoiceClientNet.setTune(clipId, true, 1.5f, 0.75f, VoiceNet.DEFAULT_TRIM));
 		context.waitFor(m -> ClientClips.get(clipId) != null && ClientClips.get(clipId).pitch() == 1.5f && ClientClips.get(clipId).speed() == 0.75f && ClientClips.ready(clipId));
 		context.waitTicks(30);
 		log("pj) tuned %s to pitch=1.5 speed=0.75 for the screenshot", clipId);

@@ -687,5 +687,10 @@
   "myvoice.name.unknown": "不明な音",
   "myvoice.tune.pitch": "高さ ×%s",
   "myvoice.tune.speed": "速さ ×%s",
-  "myvoice.tune.reset": "元に戻す"
+  "myvoice.tune.reset": "元に戻す",
+  "myvoice.trim.label": "無音カット %s",
+  "myvoice.trim.weak": "弱",
+  "myvoice.trim.medium": "中",
+  "myvoice.trim.strong": "強",
+  "myvoice.picker.rerecord": "録り直す"
 }

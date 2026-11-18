@@ -35,7 +35,7 @@ public final class VoiceServer {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static final long MIN_INTERVAL_NANOS = 1_000_000_000L;
 
-	private record Clip(Identifier sound, String owner, UUID ownerId, int sampleRate, byte[] pcm, boolean followPitch, float pitch, float speed) {}
+	private record Clip(Identifier sound, String owner, UUID ownerId, int sampleRate, byte[] pcm, boolean followPitch, float pitch, float speed, float trim) {}
 
 	private static final Map<Identifier, Clip> CLIPS = new ConcurrentHashMap<>();
 	private static final Map<UUID, Long> LAST_UPLOAD = new ConcurrentHashMap<>();
@@ -102,7 +102,7 @@ public final class VoiceServer {
 			}
 			LAST_UPLOAD.put(id, System.nanoTime());
 			Clip clip = new Clip(p.sound(), player.getPlainTextName(), id, p.sampleRate(), pcm.clone(), p.followPitch(),
-					VoiceNet.clampTune(p.pitch()), VoiceNet.clampTune(p.speed()));
+					VoiceNet.clampTune(p.pitch()), VoiceNet.clampTune(p.speed()), VoiceNet.clampTrim(p.trim()));
 			CLIPS.put(clip.sound(), clip); // 上書きは置換
 			save(server, clip);
 			broadcast(server, clip);
@@ -121,7 +121,8 @@ public final class VoiceServer {
 			}
 			float pitch = VoiceNet.clampTune(p.pitch());
 			float speed = VoiceNet.clampTune(p.speed());
-			if (existing.followPitch() == p.followPitch() && existing.pitch() == pitch && existing.speed() == speed) return; // 今と同じ値: 保存も放送も連投制限の更新もしない
+			float trim = VoiceNet.clampTrim(p.trim());
+			if (existing.followPitch() == p.followPitch() && existing.pitch() == pitch && existing.speed() == speed && existing.trim() == trim) return; // 今と同じ値: 保存も放送も連投制限の更新もしない
 			UUID id = player.getUUID();
 			long now = System.nanoTime();
 			Long last = LAST_UPLOAD.get(id);
@@ -130,7 +131,7 @@ public final class VoiceServer {
 				return;
 			}
 			LAST_UPLOAD.put(id, now);
-			Clip clip = new Clip(existing.sound(), existing.owner(), existing.ownerId(), existing.sampleRate(), existing.pcm(), p.followPitch(), pitch, speed);
+			Clip clip = new Clip(existing.sound(), existing.owner(), existing.ownerId(), existing.sampleRate(), existing.pcm(), p.followPitch(), pitch, speed, trim);
 			CLIPS.put(clip.sound(), clip);
 			writeIndex();
 			broadcast(server, clip);
@@ -175,7 +176,7 @@ public final class VoiceServer {
 	}
 
 	private static VoiceNet.ClipS2C toPacket(Clip c) {
-		return new VoiceNet.ClipS2C(c.sound(), c.owner(), c.sampleRate(), c.pcm(), c.followPitch(), c.pitch(), c.speed());
+		return new VoiceNet.ClipS2C(c.sound(), c.owner(), c.sampleRate(), c.pcm(), c.followPitch(), c.pitch(), c.speed(), c.trim());
 	}
 
 	// ---- 保存・読込 ----
@@ -217,12 +218,13 @@ public final class VoiceServer {
 					boolean followPitch = o.has("followPitch") && o.get("followPitch").isJsonPrimitive() && o.get("followPitch").getAsBoolean();
 					float pitch = readTune(o, "pitch");
 					float speed = readTune(o, "speed");
+					float trim = readTrim(o); // 古いデータは 0 = 切らない（録音時に切り済み）
 					byte[] pcm = Files.readAllBytes(dir.resolve(fileName(sound)));
 					if (rate != VoiceNet.SAMPLE_RATE || pcm.length < 2 || pcm.length > VoiceNet.MAX_PCM_BYTES || (pcm.length & 1) != 0) {
 						LOGGER.warn("Skipping invalid clip {}", sound);
 						continue;
 					}
-					CLIPS.put(sound, new Clip(sound, owner, ownerId, rate, pcm, followPitch, pitch, speed));
+					CLIPS.put(sound, new Clip(sound, owner, ownerId, rate, pcm, followPitch, pitch, speed, trim));
 				} catch (Exception e) {
 					LOGGER.warn("Failed to load a clip entry: {}", e.toString());
 				}
@@ -239,6 +241,14 @@ public final class VoiceServer {
 			if (o.has(key) && o.get(key).isJsonPrimitive()) return VoiceNet.clampTune(o.get(key).getAsFloat());
 		} catch (RuntimeException ignored) { /* 1.0 */ }
 		return 1.0f;
+	}
+
+	/** 古い索引（trim が無い）や壊れた値は 0（切らない）。 */
+	private static float readTrim(JsonObject o) {
+		try {
+			if (o.has("trim") && o.get("trim").isJsonPrimitive()) return VoiceNet.clampTrim(o.get("trim").getAsFloat());
+		} catch (RuntimeException ignored) { /* 0 */ }
+		return 0f;
 	}
 
 	private static void save(MinecraftServer server, Clip clip) {
@@ -277,6 +287,7 @@ public final class VoiceServer {
 				o.addProperty("followPitch", c.followPitch());
 				o.addProperty("pitch", c.pitch());
 				o.addProperty("speed", c.speed());
+				o.addProperty("trim", c.trim());
 				arr.add(o);
 			}
 			JsonObject root = new JsonObject();

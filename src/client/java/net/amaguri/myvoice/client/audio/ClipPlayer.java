@@ -95,18 +95,19 @@ public final class ClipPlayer {
 	}
 
 	/**
-	 * 送らずに手元だけで、その高さ・速さで試聴する（バーを動かしながら聞く用）。前の試聴は止めてから鳴らす。
+	 * 送らずに手元だけで、その高さ・速さ・無音カットで試聴する（バーを動かしながら聞く用）。前の試聴は止めてから鳴らす。
 	 * 声が無ければ false。followPitch は関係なく AL_PITCH は 1.0（加工は DSP 側）。
 	 */
-	public static boolean previewTuned(Identifier sound, float pitch, float speed) {
+	public static boolean previewTuned(Identifier sound, float pitch, float speed, float trim) {
 		try {
 			ClientClips.Entry e = ClientClips.entry(sound);
 			if (e == null) return false;
 			releasePreview();
 			float p = VoiceNet.clampTune(pitch);
 			float sp = VoiceNet.clampTune(speed);
+			float tr = VoiceNet.clampTrim(trim);
 			int gen = ++previewGen;
-			ClientClips.tuneAsync(e.rawPcm, e.info.sampleRate(), p, sp, tuned -> {
+			ClientClips.tuneAsync(e.rawPcm, e.info.sampleRate(), p, sp, tr, tuned -> {
 				// 古い試聴の結果、または声が差し替わった・消えた場合は捨てる
 				if (gen != previewGen || ClientClips.entry(sound) != e) return;
 				releasePreview();

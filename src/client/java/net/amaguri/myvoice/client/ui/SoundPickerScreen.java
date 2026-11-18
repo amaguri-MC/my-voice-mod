@@ -57,7 +57,9 @@ public final class SoundPickerScreen extends Screen {
 	private static final int PREVIEW_TICKS = 6; // ドラッグ中の試聴間隔 0.3 秒
 	private static final long SEND_DELAY_MS = 600; // 放してから送るまで
 	private static final long SEND_MIN_GAP_MS = 1100; // サーバーの連投制限（1秒）より少し長く
-	private static final int BAR_NONE = 0, BAR_LENGTH = 1, BAR_PITCH = 2, BAR_SPEED = 3;
+	private static final int BAR_NONE = 0, BAR_LENGTH = 1, BAR_PITCH = 2, BAR_SPEED = 3, BAR_TRIM = 4;
+	private static final int WAVE_H = 18;
+	private static final int CURTAIN = 0xB0101014; // 切られる範囲にかける半透明の暗幕
 	private static final int PERSIST = Integer.MAX_VALUE;
 
 	private record Cat(SoundCatalog.Category category, String key) {}
@@ -96,6 +98,14 @@ public final class SoundPickerScreen extends Screen {
 	/** 高さ・速さ。声があればその設定、無ければ次の録音に使う値。 */
 	private float tunePitch = 1.0f;
 	private float tuneSpeed = 1.0f;
+	/** 無音カットの強さ（0〜1）。声があればその設定、無ければ次の録音に使う値。 */
+	private float trimLocal = VoiceNet.DEFAULT_TRIM;
+	/** 録り直しを押した後（長さバーを出す）。 */
+	private boolean rerecord = false;
+	private float[] envCache = null;
+	private Identifier envFor = null;
+	private int envWidth = 0;
+	private int envTick = -100;
 	/** setTune を送ってからサーバーの返事を待つ間（tick）。 */
 	private int dragging = BAR_NONE;
 	private int tickNo = 0;
@@ -123,8 +133,8 @@ public final class SoundPickerScreen extends Screen {
 	private List<FormattedCharSequence> nameLines = List.of();
 	private List<FormattedCharSequence> messageLines = List.of();
 	private int detailX, detailW;
-	private int nameY, idY, statusY, countY, barY, lengthY, pitchY, tuneY1, tuneY2, clipInfoY, messageY;
-	private R playOrig, playVoice, slider, pitchBar, speedBar, resetBtn, pitchVoice, pitchGame, recordBtn, stopBtn, clearBtn;
+	private int nameY, idY, statusY, countY, barY, lengthY, pitchY, tuneY1, tuneY2, trimY, clipInfoY, messageY;
+	private R playOrig, playVoice, waveRect, trimBar, slider, pitchBar, speedBar, resetBtn, pitchVoice, pitchGame, recordBtn, stopBtn, clearBtn;
 
 	private final RecordFlow.Listener flowListener = new RecordFlow.Listener() {
 		@Override
@@ -284,6 +294,7 @@ public final class SoundPickerScreen extends Screen {
 
 	private void select(Identifier sound) {
 		if (sendTarget != null && !sendTarget.equals(sound)) sendNow();
+		if (!java.util.Objects.equals(selected, sound)) rerecord = false;
 		selected = sound;
 		selectedEntry = sound == null ? null : SoundCatalog.entry(sound);
 		clearMessage();
@@ -294,12 +305,15 @@ public final class SoundPickerScreen extends Screen {
 			followLocal = pend.followPitch();
 			tunePitch = pend.pitch();
 			tuneSpeed = pend.speed();
+			trimLocal = pend.trim();
 		} else if (clip != null) {
 			tunePitch = clip.pitch();
 			tuneSpeed = clip.speed();
+			trimLocal = clip.trim();
 		} else if (prevHadClip) {
 			tunePitch = 1.0f;
 			tuneSpeed = 1.0f;
+			trimLocal = VoiceNet.DEFAULT_TRIM;
 		}
 		prevHadClip = clip != null;
 		previewDirty = false;
@@ -352,6 +366,7 @@ public final class SoundPickerScreen extends Screen {
 				followLocal = clip.followPitch();
 				tunePitch = clip.pitch();
 				tuneSpeed = clip.speed();
+				trimLocal = clip.trim();
 			}
 		}
 	}
@@ -360,7 +375,7 @@ public final class SoundPickerScreen extends Screen {
 	private void previewNow() {
 		previewDirty = false;
 		lastPreviewTick = tickNo;
-		if (selected != null && clip() != null) ClipPlayer.previewTuned(selected, tunePitch, tuneSpeed);
+		if (selected != null && clip() != null) ClipPlayer.previewTuned(selected, tunePitch, tuneSpeed, trimLocal);
 	}
 
 	/** 声があれば、最後の値だけを 0.6 秒後（連投制限を避けて）に送る予約。 */
@@ -379,7 +394,7 @@ public final class SoundPickerScreen extends Screen {
 			return;
 		}
 		lastSendMs = System.currentTimeMillis();
-		VoiceClientNet.queueTune(target, followLocal, tunePitch, tuneSpeed);
+		VoiceClientNet.queueTune(target, followLocal, tunePitch, tuneSpeed, trimLocal);
 	}
 
 	@Override
@@ -391,7 +406,7 @@ public final class SoundPickerScreen extends Screen {
 	// ------------------------------------------------------------ 右列の配置
 
 	private void layoutDetail() {
-		playOrig = playVoice = slider = pitchBar = speedBar = resetBtn = pitchVoice = pitchGame = recordBtn = stopBtn = clearBtn = null;
+		playOrig = playVoice = waveRect = trimBar = slider = pitchBar = speedBar = resetBtn = pitchVoice = pitchGame = recordBtn = stopBtn = clearBtn = null;
 		nameLines = List.of();
 		messageLines = List.of();
 		detailX = px + pw - rightW + 8;
@@ -428,10 +443,21 @@ public final class SoundPickerScreen extends Screen {
 				playOrig = new R(detailX, y, half, BTN_H);
 				playVoice = new R(detailX + half + 4, y, detailW - half - 4, BTN_H);
 				y += BTN_H + 4;
-				lengthY = y;
+				boolean showLength = clip == null || rerecord;
+				if (clip != null) {
+					waveRect = new R(detailX, y, detailW, WAVE_H);
+					y += WAVE_H + 4;
+				}
+				trimY = y;
 				y += lh + 1;
-				slider = new R(detailX, y, detailW, 9);
+				trimBar = new R(detailX, y, detailW, 9);
 				y += 9 + 3;
+				if (showLength) { // 長さは録るときだけ。ラベルと同じ行に置いて場所をとらない
+					int lw = this.font.width(Component.translatable("myvoice.picker.length", "10")) + 4;
+					lengthY = y + 1;
+					slider = new R(detailX + lw, y, detailW - lw, 9);
+					y += 9 + 3;
+				}
 				tuneY1 = y;
 				y += lh + 1;
 				pitchBar = new R(detailX, y, detailW, 9);
@@ -448,12 +474,14 @@ public final class SoundPickerScreen extends Screen {
 					clearBtn = new R(detailX + detailW - cw, y, cw, SMALL_H);
 				}
 				y += SMALL_H + 4;
-				pitchY = y;
-				y += lh + 1;
-				int wl = Math.min(detailW / 2,
+				// 「ピッチ」の見出しと切り替えを同じ行に
+				pitchY = y + (SMALL_H - 8) / 2;
+				int labelW = this.font.width(Component.translatable("myvoice.picker.pitch")) + 6;
+				int segW = Math.max(20, detailW - labelW);
+				int wl = Math.min(segW / 2,
 						this.font.width(Component.translatable("myvoice.pitch.voice")) + 10);
-				pitchVoice = new R(detailX, y, wl, SMALL_H);
-				pitchGame = new R(detailX + wl, y, detailW - wl, SMALL_H);
+				pitchVoice = new R(detailX + labelW, y, wl, SMALL_H);
+				pitchGame = new R(detailX + labelW + wl, y, segW - wl, SMALL_H);
 				y += SMALL_H + 4;
 				recordBtn = new R(detailX, y, detailW, BTN_H);
 				y += BTN_H + 4;
@@ -632,8 +660,13 @@ public final class SoundPickerScreen extends Screen {
 			// 声が無くても押せる見た目のまま。押すと「まだ声がない」と出る
 			drawButton(g, playVoice, Component.translatable("myvoice.picker.play_voice"), mx, my, true);
 
-			g.text(this.font, Component.translatable("myvoice.picker.length", Integer.toString(seconds)), detailX, lengthY, TEXT, false);
-			drawSlider(g);
+			if (waveRect != null) drawWave(g, waveRect);
+			g.text(this.font, trimLabel(), detailX, trimY, TEXT, false);
+			drawLinearBar(g, trimBar, trimLocal);
+			if (slider != null) {
+				g.text(this.font, Component.translatable("myvoice.picker.length", Integer.toString(seconds)), detailX, lengthY, TEXT, false);
+				drawSlider(g);
+			}
 
 			g.text(this.font, Component.translatable("myvoice.tune.pitch", fmt(tunePitch)), detailX, tuneY1, TEXT, false);
 			drawTuneBar(g, pitchBar, tunePitch);
@@ -646,7 +679,7 @@ public final class SoundPickerScreen extends Screen {
 			drawSegment(g, pitchVoice, Component.translatable("myvoice.pitch.voice"), !followLocal, mx, my, true);
 			drawSegment(g, pitchGame, Component.translatable("myvoice.pitch.game"), followLocal, mx, my, false);
 
-			drawButton(g, recordBtn, Component.translatable("myvoice.picker.record"), mx, my, true);
+			drawButton(g, recordBtn, Component.translatable(clip() != null && !rerecord ? "myvoice.picker.rerecord" : "myvoice.picker.record"), mx, my, true);
 
 			ClientClips.ClipInfo clip = clip();
 			if (clip != null) {
@@ -700,6 +733,54 @@ public final class SoundPickerScreen extends Screen {
 		}
 		int hx = s.x() + (s.w() - 3) * (seconds - 1) / (max - 1);
 		g.fill(hx, s.y(), hx + 3, s.y() + s.h(), WHITE);
+	}
+
+	/** 「無音カット 弱／中／強」。数値は出さない。 */
+	private Component trimLabel() {
+		String level = trimLocal < 0.2f ? "myvoice.trim.weak" : trimLocal < 0.6f ? "myvoice.trim.medium" : "myvoice.trim.strong";
+		return Component.translatable("myvoice.trim.label", Component.translatable(level));
+	}
+
+	/** 長さバーと同じ作り（細い線＋つまみ）。左 0 = 切らない、右 1 = 強く切る。 */
+	private void drawLinearBar(GuiGraphicsExtractor g, R s, float t) {
+		int trackY = s.y() + s.h() / 2;
+		g.fill(s.x(), trackY, s.x() + s.w(), trackY + 1, LINE_HOVER);
+		int span = s.w() - 3;
+		g.fill(s.x() + 1, trackY - 2, s.x() + 2, trackY + 3, LINE);
+		g.fill(s.x() + 1 + span, trackY - 2, s.x() + 2 + span, trackY + 3, LINE);
+		int hx = s.x() + Math.round(span * Math.max(0f, Math.min(1f, t)));
+		g.fill(hx, s.y(), hx + 3, s.y() + s.h(), WHITE);
+	}
+
+	/** 波形の帯。残る範囲は明るく、切られる前後は暗幕、境目に細い縦線。trimLocal にその場で連動。 */
+	private void drawWave(GuiGraphicsExtractor g, R r) {
+		int inner = r.w() - 2;
+		if (envCache == null || !selected.equals(envFor) || envWidth != inner || tickNo - envTick >= 20) {
+			envCache = ClientClips.envelope(selected, inner);
+			envFor = selected;
+			envWidth = inner;
+			envTick = tickNo;
+		}
+		g.outline(r.x(), r.y(), r.w(), r.h(), LINE);
+		float[] env = envCache;
+		if (env == null || env.length == 0) return;
+		int mid = r.y() + r.h() / 2;
+		int half = (r.h() - 2) / 2;
+		int x0 = r.x() + 1;
+		for (int i = 0; i < inner && i < env.length; i++) {
+			int hh = Math.max(1, Math.round(Math.max(0f, Math.min(1f, env[i])) * half));
+			g.fill(x0 + i, mid - hh, x0 + i + 1, mid + hh, TEXT);
+		}
+		float[] cut = ClientClips.cutFraction(selected, trimLocal);
+		if (cut == null || cut.length < 2) return;
+		int from = x0 + Math.round(inner * Math.max(0f, Math.min(1f, cut[0])));
+		int to = x0 + Math.round(inner * Math.max(0f, Math.min(1f, cut[1])));
+		if (to < from) to = from;
+		if (from > x0) g.fill(x0, r.y() + 1, from, r.y() + r.h() - 1, CURTAIN);
+		if (to < x0 + inner) g.fill(to, r.y() + 1, x0 + inner, r.y() + r.h() - 1, CURTAIN);
+		int lineTo = Math.min(to, x0 + inner - 1);
+		g.fill(from, r.y() + 1, from + 1, r.y() + r.h() - 1, WHITE);
+		g.fill(lineTo, r.y() + 1, lineTo + 1, r.y() + r.h() - 1, WHITE);
 	}
 
 	private static String fmt(float v) {
@@ -803,6 +884,11 @@ public final class SoundPickerScreen extends Screen {
 			setSecondsFromMouse(mx);
 			return true;
 		}
+		if (trimBar != null && grab(trimBar).has(mx, my)) {
+			dragging = BAR_TRIM;
+			setTrimFromMouse(mx);
+			return true;
+		}
 		if (pitchBar != null && grab(pitchBar).has(mx, my)) {
 			dragging = BAR_PITCH;
 			setTuneFromMouse(mx);
@@ -826,6 +912,10 @@ public final class SoundPickerScreen extends Screen {
 			return true;
 		}
 		if (recordBtn != null && recordBtn.has(mx, my)) {
+			if (clip() != null && !rerecord) {
+				rerecord = true; // 録り直し: 長さバーを出す。もう一度押すと録音開始
+				return true;
+			}
 			startRecord();
 			return true;
 		}
@@ -886,6 +976,19 @@ public final class SoundPickerScreen extends Screen {
 		}
 	}
 
+	private void setTrimFromMouse(double mx) {
+		R s = trimBar;
+		if (s == null) return;
+		float t = (float) ((mx - s.x() - 1.5) / Math.max(1, s.w() - 3));
+		float v = Math.round(VoiceNet.clampTrim(t) * 100f) / 100f;
+		if (v == trimLocal) return;
+		trimLocal = v; // 波形の暗幕は描画のたびに trimLocal から計算するのでその場で動く。試聴は放したとき
+		if (selected != null && clip() != null) { // 送るのは放して 0.6 秒後
+			sendTarget = selected;
+			sendAtMs = Long.MAX_VALUE;
+		}
+	}
+
 	private void startRecord() {
 		if (selected == null || RecordFlow.busy()) return;
 		if (!RecordFlow.canSend()) {
@@ -893,7 +996,8 @@ public final class SoundPickerScreen extends Screen {
 			return;
 		}
 		clearMessage();
-		RecordFlow.begin(selected, seconds, followLocal, tunePitch, tuneSpeed, flowListener);
+		rerecord = false;
+		RecordFlow.begin(selected, seconds, followLocal, tunePitch, tuneSpeed, trimLocal, flowListener);
 	}
 
 	private void clearClip() {
@@ -921,6 +1025,7 @@ public final class SoundPickerScreen extends Screen {
 			layoutDetail();
 			if (!locked()) {
 				if (dragging == BAR_LENGTH) setSecondsFromMouse(event.x());
+				else if (dragging == BAR_TRIM) setTrimFromMouse(event.x());
 				else setTuneFromMouse(event.x());
 			}
 			return true;
@@ -932,7 +1037,7 @@ public final class SoundPickerScreen extends Screen {
 	public boolean mouseReleased(MouseButtonEvent event) {
 		int was = dragging;
 		dragging = BAR_NONE;
-		if (was == BAR_PITCH || was == BAR_SPEED) {
+		if (was == BAR_PITCH || was == BAR_SPEED || was == BAR_TRIM) {
 			previewNow(); // 放したとき必ず試聴
 			if (sendTarget != null) {
 				sendAtMs = Math.max(System.currentTimeMillis() + SEND_DELAY_MS, lastSendMs + SEND_MIN_GAP_MS);
@@ -955,6 +1060,11 @@ public final class SoundPickerScreen extends Screen {
 			int dir = (int) Math.signum(scrollY);
 			if (slider != null && grab(slider).has(mx, my)) {
 				seconds = Math.max(1, Math.min(VoiceNet.MAX_SECONDS, seconds + dir));
+				return true;
+			}
+			if (trimBar != null && grab(trimBar).has(mx, my)) {
+				trimLocal = Math.round(VoiceNet.clampTrim(trimLocal + dir * 0.05f) * 100f) / 100f;
+				tuneChanged(false);
 				return true;
 			}
 			if (pitchBar != null && grab(pitchBar).has(mx, my)) {

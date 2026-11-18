@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.amaguri.myvoice.client.audio.dsp.VoiceDsp;
+import net.amaguri.myvoice.client.audio.dsp.VoiceTrim;
 import net.amaguri.myvoice.net.VoiceNet;
 import net.minecraft.resources.Identifier;
 
@@ -14,38 +15,53 @@ import net.minecraft.resources.Identifier;
 public final class ClientClips {
 	private ClientClips() {}
 
-	public record ClipInfo(Identifier sound, String owner, int sampleRate, float seconds, boolean followPitch, float pitch, float speed) {}
+	public record ClipInfo(Identifier sound, String owner, int sampleRate, float seconds, boolean followPitch, float pitch, float speed, float trim) {}
 
 	/** PCM と（再生時に作る）AL バッファ。 */
 	static final class Entry {
 		final ClipInfo info;
 		byte[] pcm; // AL バッファの元になる加工後 PCM。null = 加工中（まだ鳴らさない）
 		final byte[] rawPcm; // 元の録音（無加工）
+		final double[] rms; // 元 PCM の 10ms 窓 RMS（put 時に1回。cutFraction 用。null = 作っていない）
+		float[] envCache; // envelope の直近の結果
+		int envBuckets;
 		int alBuffer; // 0 = 未作成
 		long alContext; // alBuffer を作った AL コンテキスト（サウンドエンジン再起動で変わる）
 
 		Entry(ClipInfo info, byte[] rawPcm, byte[] pcm) {
+			this(info, rawPcm, pcm, null);
+		}
+
+		Entry(ClipInfo info, byte[] rawPcm, byte[] pcm, double[] rms) {
 			this.info = info;
 			this.rawPcm = rawPcm;
 			this.pcm = pcm;
+			this.rms = rms;
 		}
 	}
 
 	private static final Map<Identifier, Entry> CLIPS = new LinkedHashMap<>();
 
-	/** pitch/speed は元の録音への倍率（1,1 以外なら VoiceDsp で加工した PCM を AL バッファにする）。 */
-	public static void put(Identifier sound, String owner, int sampleRate, byte[] pcm, boolean followPitch, float pitch, float speed) {
+	/**
+	 * 加工順は 元の録音 → VoiceTrim(trim) → VoiceDsp(pitch, speed)。どちらも別スレッド。
+	 * trim=0 かつ pitch=speed=1 なら元のまま即座に鳴らせる。
+	 */
+	public static void put(Identifier sound, String owner, int sampleRate, byte[] pcm, boolean followPitch, float pitch, float speed, float trim) {
 		if (sound == null || pcm == null || sampleRate <= 0) return;
 		remove(sound); // 上書き: 古いソースとバッファを先に片付ける（値が変わったら AL バッファも作り直しになる）
 		pitch = VoiceNet.clampTune(pitch);
 		speed = VoiceNet.clampTune(speed);
+		trim = VoiceNet.clampTrim(trim);
 		byte[] raw = pcm.clone();
-		boolean plain = pitch == 1.0f && speed == 1.0f;
-		float seconds = (raw.length / 2) / (float) sampleRate / speed; // 長さは先に決める（加工は別スレッド）
-		Entry e = new Entry(new ClipInfo(sound, owner == null ? "" : owner, sampleRate, seconds, followPitch, pitch, speed), raw, plain ? raw : null);
+		boolean plain = pitch == 1.0f && speed == 1.0f && trim == 0f;
+		double[] rms = VoiceTrim.windowRms(raw, sampleRate); // 1回だけ
+		int total = raw.length / 2;
+		VoiceTrim.Cut cut = VoiceTrim.findCut(rms, total, sampleRate, trim);
+		float seconds = (cut.toSample() - cut.fromSample()) / (float) sampleRate / speed; // 長さは先に決める（加工は別スレッド）
+		Entry e = new Entry(new ClipInfo(sound, owner == null ? "" : owner, sampleRate, seconds, followPitch, pitch, speed, trim), raw, plain ? raw : null, rms);
 		CLIPS.put(sound, e);
 		if (!plain) {
-			tuneAsync(raw, sampleRate, pitch, speed, tuned -> {
+			tuneAsync(raw, sampleRate, pitch, speed, trim, tuned -> {
 				// 世代確認: 上書き・削除されていたら捨てる（put のたびに新しい Entry）
 				if (CLIPS.get(sound) != e) return;
 				ClipPlayer.stopSourcesOf(e);
@@ -53,6 +69,38 @@ public final class ClientClips {
 				e.pcm = tuned;
 			});
 		}
+	}
+
+	/** 元の録音の波形: buckets 個の区間ごとのピーク 0..1。声が無ければ null。画面用（結果は直近の1つをキャッシュ）。 */
+	public static float[] envelope(Identifier sound, int buckets) {
+		Entry e = entry(sound);
+		if (e == null || buckets <= 0) return null;
+		if (e.envCache != null && e.envBuckets == buckets) return e.envCache.clone();
+		int n = e.rawPcm.length / 2;
+		float[] out = new float[buckets];
+		for (int b = 0; b < buckets; b++) {
+			int from = (int) ((long) n * b / buckets);
+			int to = Math.max(from + 1, (int) ((long) n * (b + 1) / buckets));
+			int peak = 0;
+			for (int i = from; i < to && i < n; i++) {
+				int v = Math.abs((short) ((e.rawPcm[i * 2] & 0xFF) | (e.rawPcm[i * 2 + 1] << 8)));
+				if (v > peak) peak = v;
+			}
+			out[b] = Math.min(1f, peak / 32768f);
+		}
+		e.envCache = out;
+		e.envBuckets = buckets;
+		return out.clone();
+	}
+
+	/** その trim で残る範囲の {先頭, 末尾}（0..1）。キャッシュ済みの窓 RMS でしきい値判定だけするので軽い。声が無ければ null。 */
+	public static float[] cutFraction(Identifier sound, float trim) {
+		Entry e = entry(sound);
+		if (e == null) return null;
+		int n = e.rawPcm.length / 2;
+		if (n == 0) return new float[] {0f, 1f};
+		VoiceTrim.Cut c = VoiceTrim.findCut(e.rms, n, e.info.sampleRate(), VoiceNet.clampTrim(trim));
+		return new float[] {c.fromSample() / (float) n, c.toSample() / (float) n};
 	}
 
 	/** 加工が終わって鳴らせる状態か（テスト用）。 */
@@ -67,22 +115,31 @@ public final class ClientClips {
 		return t;
 	});
 
-	/** 単一スレッドで加工し、結果をクライアントスレッドで渡す。 */
-	static void tuneAsync(byte[] raw, int sampleRate, float pitch, float speed, java.util.function.Consumer<byte[]> onMain) {
+	/** 単一スレッドで加工（trim → DSP）し、結果をクライアントスレッドで渡す。 */
+	static void tuneAsync(byte[] raw, int sampleRate, float pitch, float speed, float trim, java.util.function.Consumer<byte[]> onMain) {
 		DSP.execute(() -> {
-			byte[] out = tune(raw, sampleRate, pitch, speed);
+			byte[] out = tune(raw, sampleRate, pitch, speed, trim);
 			net.minecraft.client.Minecraft.getInstance().execute(() -> onMain.accept(out));
 		});
 	}
 
-	/** 加工。1,1 なら元のまま。DSP が失敗したら元の PCM で鳴らす。 */
-	static byte[] tune(byte[] raw, int sampleRate, float pitch, float speed) {
-		if (pitch == 1.0f && speed == 1.0f) return raw;
+	/** 加工。何も要らなければ元のまま。失敗したら元の PCM で鳴らす。 */
+	static byte[] tune(byte[] raw, int sampleRate, float pitch, float speed, float trim) {
+		byte[] cur = raw;
 		try {
-			byte[] out = VoiceDsp.process(raw, sampleRate, pitch, speed);
-			return out == null || out.length < 2 ? raw : out;
+			if (trim > 0f) {
+				byte[] cutPcm = VoiceTrim.apply(raw, sampleRate, VoiceTrim.findCut(raw, sampleRate, trim));
+				if (cutPcm.length >= 2) cur = cutPcm;
+			}
 		} catch (Throwable t) {
-			return raw;
+			cur = raw;
+		}
+		if (pitch == 1.0f && speed == 1.0f) return cur;
+		try {
+			byte[] out = VoiceDsp.process(cur, sampleRate, pitch, speed);
+			return out == null || out.length < 2 ? cur : out;
+		} catch (Throwable t) {
+			return cur;
 		}
 	}
 
