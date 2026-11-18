@@ -1,0 +1,7 @@
+{
+	"required": true,
+	"package": "net.amaguri.myvoice.mixin.client",
+	"compatibilityLevel": "JAVA_25",
+	"client": [],
+	"injectors": { "defaultRequire": 1 }
+}

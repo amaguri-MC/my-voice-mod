@@ -1,0 +1,42 @@
+name: apidump
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  dump:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'microsoft'
+      - run: chmod +x ./gradlew
+      - run: for i in 1 2 3; do ./gradlew compileJava && exit 0; sleep 30; done; exit 1
+        shell: bash
+      - name: javap minecraft + fabric api
+        shell: bash
+        run: |
+          mkdir -p dump
+          find ~/.gradle /home/runner/work -name "*.jar" \( -path "*minecraft*merged*" -o -path "*minecraft-clientOnly*" -o -path "*minecraft-common*" -o -path "*minecraft-client*" \) 2>/dev/null | sort -u > dump/jars.txt
+          find ~/.gradle -name "fabric-*networking*.jar" -o -name "fabric-command-api*.jar" -o -name "fabric-lifecycle-events*.jar" -o -name "fabric-message-api*.jar" -o -name "fabric-events*.jar" -o -name "fabric-client-gametest*.jar" -o -name "fabric-gametest*.jar" -o -name "fabric-key-mapping*.jar" -o -name "fabric-rendering-v1*.jar" -o -name "fabric-api-base*.jar" | grep -v sources >> dump/jars.txt
+          cat dump/jars.txt
+          while read j; do
+            n=$(basename "$j" .jar)
+            unzip -Z1 "$j" | grep '\.class$' | grep -v '\$[0-9]' | sed 's/\.class$//' > "dump/$n.classes.txt"
+            split -l 400 "dump/$n.classes.txt" "/tmp/part_"
+            for p in /tmp/part_*; do javap -p -cp "$j" $(sed 's#/#.#g' $p) >> "dump/$n.javap.txt" 2>/dev/null || true; rm $p; done
+          done < dump/jars.txt
+          ls -la dump
+      - name: lwjgl openal
+        shell: bash
+        run: |
+          j=$(find ~/.gradle -name "lwjgl-openal-*.jar" | grep -v natives | grep -v sources | head -1); echo $j
+          javap -cp "$j" org.lwjgl.openal.AL10 org.lwjgl.openal.ALC11 org.lwjgl.openal.ALC10 > dump/openal.javap.txt || true
+      - name: publish
+        shell: bash
+        run: |
+          cd dump && git init -q -b apidump && git add -A
+          git -c user.name=ci -c user.email=ci@users.noreply.github.com commit -q -m "apidump"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}" apidump
