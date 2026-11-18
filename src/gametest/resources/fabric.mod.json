@@ -1,0 +1,11 @@
+{
+	"schemaVersion": 1,
+	"id": "myvoice-gametest",
+	"version": "1.0.0",
+	"name": "My Voice client game test",
+	"environment": "client",
+	"entrypoints": {
+		"fabric-client-gametest": ["net.amaguri.myvoice.gametest.MyVoiceClientGameTest"]
+	},
+	"depends": { "myvoice": "*" }
+}

@@ -1,0 +1,22 @@
+{
+  "myvoice.chat.clip_added": "%s が %s を声に変えた",
+  "myvoice.chat.clip_removed": "%s が %s の声を消した",
+  "myvoice.notice.saved": "%s を自分の声にした",
+  "myvoice.notice.rejected": "声を登録できなかった（%s）",
+  "myvoice.notice.not_found": "%s には声が割り当てられていない",
+  "myvoice.error.no_mic": "マイクが見つからない",
+  "myvoice.error.mic_failed": "録音に失敗した",
+  "myvoice.cmd.need_server": "サーバーにも My Voice が必要",
+  "myvoice.cmd.already_recording": "すでに録音の準備中か録音中",
+  "myvoice.cmd.not_recording": "録音していない",
+  "myvoice.cmd.countdown_cancelled": "録音をやめた",
+  "myvoice.cmd.record_start": "%s を %s 秒録音する。3秒後に始まる",
+  "myvoice.cmd.play_none": "%s には声が割り当てられていない",
+  "myvoice.cmd.list_empty": "割り当てられた声はまだない",
+  "myvoice.cmd.list_header": "割り当て済みの声（%s 件）",
+  "myvoice.cmd.list_entry": "%s ・ %s ・ %s 秒",
+  "myvoice.hud.get_ready": "もうすぐ録音",
+  "myvoice.hud.recording": "● 録音中 残り %s 秒",
+  "myvoice.error.silent": "声が入っていなかった。マイクを確認してもう一度録音しよう",
+  "myvoice.error.already_recording": "もう録音中だ"
+}
